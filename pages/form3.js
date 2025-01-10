@@ -1,4 +1,6 @@
 import { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const Form3 = () => {
   const [formData, setFormData] = useState({
@@ -33,13 +35,11 @@ const Form3 = () => {
     ],
   });
 
-  // Manipular alterações nos campos de texto
   const handleChange = (e, field) => {
     const { value } = e.target;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Manipular alterações em arrays (indices, interpretacoesCultura, interpretacoesManejo)
   const handleArrayChange = (e, index, arrayField, field) => {
     const { value } = e.target;
     setFormData((prev) => {
@@ -49,7 +49,6 @@ const Form3 = () => {
     });
   };
 
-  // Adicionar novas entradas para arrays
   const addEntry = (arrayField, defaultValues) => {
     setFormData((prev) => ({
       ...prev,
@@ -57,7 +56,6 @@ const Form3 = () => {
     }));
   };
 
-  // Submeter o formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -78,283 +76,275 @@ const Form3 = () => {
   };
 
   return (
-    <div style={{ marginBottom: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h2>Formulário 3: Dados de Monitoramento</h2>
+    <div className="container-fluid my-4">
+      <h2 className="text-center mb-4">Dados de Monitoramento</h2>
+      <h6 className="text-danger text-center">
+        Informações obrigatórias estão marcadas com *
+      </h6>
       <form onSubmit={handleSubmit}>
-        <label>
-          Data Inicial:
-          <input
-            type="date"
-            value={formData.dataInicial}
-            onChange={(e) => handleChange(e, "dataInicial")}
-            style={{ margin: "5px 0", padding: "8px", width: "100%" }}
-          />
-        </label>
-        <label>
-          Data Final:
-          <input
-            type="date"
-            value={formData.dataFinal}
-            onChange={(e) => handleChange(e, "dataFinal")}
-            style={{ margin: "5px 0", padding: "8px", width: "100%" }}
-          />
-        </label>
-        <label>
-          Declividade Média:
-          <input
-            type="number"
-            value={formData.declividadeMedia}
-            onChange={(e) => handleChange(e, "declividadeMedia")}
-            style={{ margin: "5px 0", padding: "8px", width: "100%" }}
-          />
-        </label>
-        <label>
-          Plantio Contorno:
-          <input
-            type="number"
-            value={formData.plantioContorno}
-            onChange={(e) => handleChange(e, "plantioContorno")}
-            style={{ margin: "5px 0", padding: "8px", width: "100%" }}
-          />
-        </label>
-        <label>
-          Terraceamento:
-          <input
-            type="number"
-            value={formData.terraceamento}
-            onChange={(e) => handleChange(e, "terraceamento")}
-            style={{ margin: "5px 0", padding: "8px", width: "100%" }}
-          />
-        </label>
+        <div className="card mb-4 border-0">
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
+            <h3>Dados de Sensoriamento Remoto</h3>
+          </div>
+          <div className="card-body">
 
-        {/* Indices */}
-        <h3>Índices de Monitoramento</h3>
-        {formData.indices.map((indice, index) => (
-          <div
-            key={index}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            <label>
-              Satélite:
-              <input
-                type="text"
-                value={indice.satelite}
-                onChange={(e) =>
-                  handleArrayChange(e, index, "indices", "satelite")
-                }
-              />
-            </label>
-            <label>
-              Coordenada:
-              <input
-                type="text"
-                value={indice.coordenada}
-                onChange={(e) =>
-                  handleArrayChange(e, index, "indices", "coordenada")
-                }
-              />
-            </label>
-            <label>
-              Data:
+            <div className="md-3" style={{ marginBottom: "1rem" }}>
+              <label className="form-label">Data Início do Monitoramento *</label>
               <input
                 type="date"
-                value={indice.data}
-                onChange={(e) => handleArrayChange(e, index, "indices", "data")}
+                className="form-control"
+                value={formData.dataInicial}
+                onChange={(e) => handleChange(e, "dataInicial")}
+                required
               />
-            </label>
-            <label>
-              NDVI:
+            </div>
+            <div className="md-3" style={{ marginBottom: "1rem" }}>
+              <label className="form-label">Data Término do Monitoramento *</label>
+              <input
+                type="date"
+                className="form-control"
+                value={formData.dataFinal}
+                onChange={(e) => handleChange(e, "dataFinal")}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+                Declividade média da gleba/talhão(%):
+              </label>
               <input
                 type="number"
-                value={indice.ndvi}
-                onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
+                name="declividadeMedia"
+                min={0}
+                max={100}
+                className="form-control"
+                placeholder="EX: 12"
+                value={formData.declividadeMedia}
+                onChange={(e) => handleChange(e, "formData.declividadeMedia")}
               />
-            </label>
-            <label>
-              NDTI:
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+                Plantio em contorno (1-Sim, 0-Não):
+              </label>
               <input
                 type="number"
-                value={indice.ndti}
-                onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
+                name="plantioContorno"
+                min={0}
+                max={1}
+                className="form-control"
+                placeholder="EX: 1"
+                value={formData.plantioContorno}
+                onChange={(e) => handleChange(e, "formData.plantioContorno")}
               />
-            </label>
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+                Terraceamento (1-Sim, 0-Não):
+              </label>
+              <input
+                type="number"
+                name="terraceamento"
+                min={0}
+                max={1}
+                className="form-control"
+                placeholder="EX: 0"
+                value={formData.terraceamento}
+                onChange={(e) => handleChange(e, "formData.terraceamento")}
+              />
+            </div>
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={() =>
-            addEntry("indices", {
-              satelite: "",
-              coordenada: "",
-              data: "",
-              ndvi: 0,
-              ndti: 0,
-            })
-          }
-        >
-          Adicionar Índice
-        </button>
+        </div>
+
+        {/* Índices */}
+        <div className="card mb-4 border-0">
+          <div className="card-header text-white" style={{ backgroundColor: "#2a7a22" }}>
+            <h3>Índices</h3>
+          </div>
+          <div className="card-body">
+            {formData.indices.map((indice, index) => (
+              <div key={index} className="mb-3">
+                <label className="form-label">Satélite*:</label>
+                <input
+
+                name="satelite"
+                  type="text"
+                  required
+                  placeholder="EX: Sentinel"
+                  className="form-control mb-2"
+                  value={indice.satelite}
+                  onChange={(e) => handleArrayChange(e, index, "indices", "satelite")}
+                />
+                <label className="form-label">Coordenada (WKT)*:</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="EX: POINT(40.71727401 -74.00898606)"
+                  className="form-control mb-2"
+                  name="coordenada"
+                  value={indice.coordenada}
+                  onChange={(e) => handleArrayChange(e, index, "indices", "coordenada")}
+                />
+                <label className="form-label">NDVI*:</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="EX: 0.3342"
+                  className="form-control mb-2"
+                  value={indice.ndvi}
+                  name="ndvi"
+                  onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
+                />
+                <label className="form-label">NDTI*:</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="EX: 0.1342"
+                  className="form-control mb-2"
+                  name="ndti"
+                  value={indice.ndti}
+                  onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
+                />
+              </div>
+            ))}
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() =>
+                addEntry("indices", { satelite: "", coordenada: "", data: "", ndvi: 0, ndti: 0 })
+              }
+            >
+              Adicionar Índice
+            </button>
+          </div>
+        </div>
 
         {/* Interpretações de Cultura */}
-        <h3>Interpretações de Cultura</h3>
-        {formData.interpretacoesCultura.map((cultura, index) => (
-          <div
-            key={index}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            <label>
-              Cultura:
-              <input
-                type="text"
-                value={cultura.cultura}
-                onChange={(e) =>
-                  handleArrayChange(
-                    e,
-                    index,
-                    "interpretacoesCultura",
-                    "cultura"
-                  )
-                }
-              />
-            </label>
-            <label>
-              Data Início:
-              <input
-                type="date"
-                value={cultura.dataInicio}
-                onChange={(e) =>
-                  handleArrayChange(
-                    e,
-                    index,
-                    "interpretacoesCultura",
-                    "dataInicio"
-                  )
-                }
-              />
-            </label>
-            <label>
-              Data Fim:
-              <input
-                type="date"
-                value={cultura.dataFim}
-                onChange={(e) =>
-                  handleArrayChange(
-                    e,
-                    index,
-                    "interpretacoesCultura",
-                    "dataFim"
-                  )
-                }
-              />
-            </label>
-            <label>
-              Cobertura Solo:
-              <input
-                type="number"
-                value={cultura.coberturaSolo}
-                onChange={(e) =>
-                  handleArrayChange(
-                    e,
-                    index,
-                    "interpretacoesCultura",
-                    "coberturaSolo"
-                  )
-                }
-              />
-            </label>
+        <div className="card mb-4 border-0">
+          <div className="card-header text-white" style={{ backgroundColor: "#2a7a22" }}>
+            <h3>Interpretações de Cultura</h3>
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={() =>
-            addEntry("interpretacoesCultura", {
-              cultura: "",
-              dataInicio: "",
-              dataFim: "",
-              coberturaSolo: 0,
-            })
-          }
-        >
-          Adicionar Cultura
-        </button>
+          <div className="card-body">
+            {formData.interpretacoesCultura.map((cultura, index) => (
+              <div key={index} className="mb-3">
+                <label className="form-label">Cultura:</label>
+                <input
+                  type="text"
+                  name="cultura"
+                  placeholder="EX: Soja (grão)"
+                  className="form-control mb-2"
+                  value={cultura.cultura}
+                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "cultura")}
+                />
+                <label className="form-label">Data de Emergência:</label>
+                <input
+                  type="date"
+                  name="dataInicio"
+                  className="form-control mb-2"
+                  value={cultura.dataInicio}
+                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "dataInicio")}
+                />
+                <label className="form-label">Data da Colheita:</label>
+                <input
+                  type="date"
+                  className="form-control mb-2"
+                  name="dataFim"
+                  value={cultura.dataFim}
+                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "dataFim")}
+                />
+                <label className="form-label">
+                  Cobertura do solo (%):
+                </label>
+                <input
+                  type="number"
+                  name="coberturaSolo"
+                  min={0}
+                  max={100}
+                  className="form-control"
+                  value={cultura.coberturaSolo}
+                  placeholder="EX: 12"
+                  onChange={(e) => handleChange(e, "planta.coberuraSolo")}
+                />
+              </div>
+            ))}
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() =>
+                addEntry("interpretacoesCultura", {
+                  cultura: "",
+                  dataInicio: "",
+                  dataFim: "",
+                  coberturaSolo: 0,
+                })
+              }
+            >
+              Adicionar Cultura
+            </button>
+          </div>
+        </div>
 
         {/* Interpretações de Manejo */}
-        <h3>Interpretações de Manejo</h3>
-        {formData.interpretacoesManejo.map((manejo, index) => (
-          <div
-            key={index}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            <label>
-              Data:
-              <input
-                type="date"
-                value={manejo.data}
-                onChange={(e) =>
-                  handleArrayChange(e, index, "interpretacoesManejo", "data")
-                }
-              />
-            </label>
-            <label>
-              Operação:
-              <input
-                type="text"
-                value={manejo.operacao}
-                onChange={(e) =>
-                  handleArrayChange(
-                    e,
-                    index,
-                    "interpretacoesManejo",
-                    "operacao"
-                  )
-                }
-              />
-            </label>
-            <label>
-              Tipo de Operação:
-              <input
-                type="text"
-                value={manejo.tipoOperacao}
-                onChange={(e) =>
-                  handleArrayChange(
-                    e,
-                    index,
-                    "interpretacoesManejo",
-                    "tipoOperacao"
-                  )
-                }
-              />
-            </label>
+        <div className="card mb-4 border-0">
+          <div className="card-header text-white" style={{ backgroundColor: "#2a7a22" }}>
+            <h3>Interpretações de Manejo</h3>
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={() =>
-            addEntry("interpretacoesManejo", {
-              data: "",
-              operacao: "",
-              tipoOperacao: "",
-            })
-          }
-        >
-          Adicionar Manejo
-        </button>
+          <div className="card-body">
+            {formData.interpretacoesManejo.map((manejo, index) => (
+              <div key={index} className="mb-3">
+                <label className="form-label">Data:</label>
+                <input
+                  type="date"
+                  className="form-control mb-2"
+                  value={manejo.data}
+                  name="data"
+                  onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "data")}
+                />
+                <label className="form-label">Operação: </label>
+                <input
+                  type="text"
+                  placeholder="EX: Revolvimento do solo"
+                  className="form-control mb-2"
+                  name="operacao"
+                  value={manejo.operacao}
+                  onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "operacao")}
+                />
+                <label className="form-label">Tipo de Operação:</label>
+                <input
+                  type="text"
+                  className="form-control mb-2"
+                  placeholder="EX: Aração"
+                  name="tipoOperacao"
+                  value={manejo.tipoOperacao}
+                  onChange={(e) =>
+                    handleArrayChange(e, index, "interpretacoesManejo", "tipoOperacao")
+                  }
+                />
+                
+                
+              </div>
+            ))}
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() =>
+                addEntry("interpretacoesManejo", {
+                  data: "",
+                  operacao: "",
+                  tipoOperacao: "",
+                })
+              }
+            >
+              Adicionar Manejo
+            </button>
+          </div>
+        </div>
 
-        <button type="submit" style={{ marginTop: "10px" }}>
-          Enviar
-        </button>
+        <div className="text-center">
+          <button type="submit" className="btn btn-success">
+            Enviar Dados
+          </button>
+        </div>
       </form>
     </div>
   );
