@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import modeloAnaliseSolo from "./modeloAnaliseSolo";
+import modeloAnaliseSolo from "modelos/modeloAnaliseSolo";
 
 const Form2 = () => {
   const [analisesSolo, setAnalisesSolo] = useState([
