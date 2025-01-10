@@ -1,4 +1,5 @@
 import { useState } from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const FormPage = () => {
   const [formData, setFormData] = useState({
@@ -11,11 +12,11 @@ const FormPage = () => {
       codigoCar: "MT-5107248-1025F299474640148FE845C7A0B62635",
       codigoIbge: "3509502",
       poligono:
-        "POLYGON((-58.9144585643381 -13.5072128852218,-58.8657268985861 -13.5134933385645,-58.8657268985861 -13.5139585573307,-58.8666573361184 -13.5153542136291,-58.8667736408099 -13.5177966121512,-58.8658432032777 -13.5175640027682,-58.8629355859894 -13.5172150886936,-58.8614236249994 -13.5196574872158,-58.8586323124027 -13.5234955420363,-58.8577018748704 -13.5272172921653,-58.8559573044974 -13.5300086047621,-58.8535149059753 -13.5348934018065,-58.8553757810398 -13.5373358003286,-58.8550268669652 -13.5379173237863,-58.8546779528906 -13.5398945035423,-58.8627029766063 -13.5526880196109,-58.881660641326 -13.5498967070141,-58.9236466349691 -13.5444303865121,-58.9144585643381 -13.5072128852218))",
+        "POLYGON((-58.9144585643381 -13.5072128852218,...))",
     },
     talhao: {
       poligono:
-        "POLYGON((-58.67396951647091186 -13.24646265710462245, -58.67326208632626106 -13.26291040796766652, -58.71004845384790372 -13.26237983535918019, -58.70969473877558187 -13.23523220355835051, -58.69413127559334953 -13.23558591863067413, -58.67396951647091186 -13.24646265710462245))",
+        "POLYGON((-58.67396951647091186 -13.24646265710462245,...))",
       area: 10,
       tipoProdutor: "Proprietário",
     },
@@ -31,27 +32,15 @@ const FormPage = () => {
         dataPlantio: "2023-10-28",
         dataColheita: "2024-02-28",
         coberturaSolo: 40,
-        ilp: "false",
+        ilp: "SIM",
         cultura: { nome: "Soja (grão)" },
-      },
-      {
-        dataPlantio: "2024-02-28",
-        dataColheita: "2024-06-28",
-        coberturaSolo: 46,
-        ilp: "false",
-        cultura: { nome: "Milho (grão)" },
-      },
-      {
-        dataPrevisaoPlantio: "2024-06-28",
-        dataPrevisaoColheita: "2024-10-28",
-        ilp: "false",
-        cultura: { nome: "Soja (grão)" },
+        tipoOperacao: { tipo: "ARACAO" },
       },
     ],
   });
 
   const handleChange = (e, path) => {
-    const { name, value } = e.target;
+    const { value } = e.target;
 
     setFormData((prev) => {
       const keys = path.split(".");
@@ -89,137 +78,339 @@ const FormPage = () => {
   };
 
   return (
-    <div>
-      <h1>Formulário de Cadastro</h1>
+    <div className="container-fluid my-4">
+      <h1 className="text-center mb-4">Formulário de Cadastro</h1>
+      <h6 className="text-danger text-center">
+        Informações obrigatórias estão marcadas com *
+      </h6>
       <form onSubmit={handleSubmit}>
-        <h2>Produtor</h2>
-        <input
-          type="text"
-          name="nome"
-          placeholder="Nome"
-          value={formData.produtor.nome}
-          onChange={(e) => handleChange(e, "produtor.nome")}
-        />
-        <input
-          type="text"
-          name="cpf"
-          placeholder="CPF"
-          value={formData.produtor.cpf}
-          onChange={(e) => handleChange(e, "produtor.cpf")}
-        />
-
-        <h2>Propriedade</h2>
-        <input
-          type="text"
-          name="nome"
-          placeholder="Nome"
-          value={formData.propriedade.nome}
-          onChange={(e) => handleChange(e, "propriedade.nome")}
-        />
-        <input
-          type="text"
-          name="codigoCar"
-          placeholder="Código CAR"
-          value={formData.propriedade.codigoCar}
-          onChange={(e) => handleChange(e, "propriedade.codigoCar")}
-        />
-        <input
-          type="text"
-          name="codigoIbge"
-          placeholder="Código IBGE"
-          value={formData.propriedade.codigoIbge}
-          onChange={(e) => handleChange(e, "propriedade.codigoIbge")}
-        />
-        <textarea
-          name="poligono"
-          placeholder="Polígono"
-          value={formData.propriedade.poligono}
-          onChange={(e) => handleChange(e, "propriedade.poligono")}
-        ></textarea>
-
-        <h2>Talhão</h2>
-        <textarea
-          name="poligono"
-          placeholder="Polígono"
-          value={formData.talhao.poligono}
-          onChange={(e) => handleChange(e, "talhao.poligono")}
-        ></textarea>
-        <input
-          type="number"
-          name="area"
-          placeholder="Área"
-          value={formData.talhao.area}
-          onChange={(e) => handleChange(e, "talhao.area")}
-        />
-        <input
-          type="text"
-          name="tipoProdutor"
-          placeholder="Tipo de Produtor"
-          value={formData.talhao.tipoProdutor}
-          onChange={(e) => handleChange(e, "talhao.tipoProdutor")}
-        />
-
-        <h2>Manejo</h2>
-        {formData.manejos.map((manejo, index) => (
-          <div key={index}>
-            <input
-              type="date"
-              name="data"
-              value={manejo.data}
-              onChange={(e) => handleChange(e, `manejos.${index}.data`)}
-            />
-            <input
-              type="text"
-              name="nomeOperacao"
-              placeholder="Nome da Operação"
-              value={manejo.operacao.nomeOperacao}
-              onChange={(e) =>
-                handleChange(e, `manejos.${index}.operacao.nomeOperacao`)
-              }
-            />
-            <input
-              type="text"
-              name="tipo"
-              placeholder="Tipo de Operação"
-              value={manejo.tipoOperacao.tipo}
-              onChange={(e) =>
-                handleChange(e, `manejos.${index}.tipoOperacao.tipo`)
-              }
-            />
+        {/* Dados do Produtor */}
+        <div className="mb-4 card border-0 shadow-sm">
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
+            <h2 className="mb-0">Dados do Produtor</h2>
           </div>
-        ))}
-
-        <h2>Produções</h2>
-        {formData.producoes.map((producao, index) => (
-          <div key={index}>
-            <input
-              type="date"
-              name="dataPlantio"
-              value={producao.dataPlantio || ""}
-              onChange={(e) =>
-                handleChange(e, `producoes.${index}.dataPlantio`)
-              }
-            />
-            <input
-              type="date"
-              name="dataColheita"
-              value={producao.dataColheita || ""}
-              onChange={(e) =>
-                handleChange(e, `producoes.${index}.dataColheita`)
-              }
-            />
-            <input
-              type="text"
-              name="nome"
-              placeholder="Nome da Cultura"
-              value={producao.cultura.nome}
-              onChange={(e) =>
-                handleChange(e, `producoes.${index}.cultura.nome`)
-              }
-            />
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6">
+                <label className="form-label">Nome:</label>
+                <input
+                  type="text"
+                  name="nome"
+                  className="form-control"
+                  placeholder="Ex: José da Silva"
+                  value={formData.produtor.nome}
+                  onChange={(e) => handleChange(e, "formData.produtor.nome")}
+                />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">CPF:</label>
+                <input
+                  type="text"
+                  name="cpf"
+                  className="form-control"
+                  placeholder="EX: 12345678900"
+                  value={formData.produtor.cpf}
+                  onChange={(e) => handleChange(e, "formData.produtor.cpf")}
+                />
+              </div>
+            </div>
           </div>
-        ))}
-        <button type="submit">Enviar</button>
+        </div>
+
+        {/* Dados da Propriedade */}
+        <div className="mb-4 card border-0 shadow-sm">
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
+            <h2 className="mb-0">Dados da Propriedade</h2>
+          </div>
+          <div className="card-body">
+            <div className="mb-3">
+              <label className="form-label">Nome da propriedade:</label>
+              <input
+                type="text"
+                name="nome"
+                className="form-control"
+                placeholder="EX: Fazenda Santa Maria"
+                value={formData.propriedade.nome}
+                onChange={(e) => handleChange(e, "formData.propriedade.nome")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+                Código CAR (Cadastro Ambiental Rural)*:
+              </label>
+              <input
+                type="text"
+                name="codigoCar"
+                className="form-control"
+                required
+                value={formData.propriedade.codigoCar}
+                placeholder="EX: MT-5107248-1025F299474640148FE845C7A0B62635"
+                onChange={(e) => handleChange(e, "formData.propriedade.codigoCar")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Código IBGE:</label>
+              <input
+                type="text"
+                name="codigoIbge"
+                className="form-control"
+                value={formData.propriedade.codigoIbge}
+                placeholder="EX: 3509502"
+                onChange={(e) => handleChange(e, "formData.propriedade.codigoIbge")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Polígono (Formato WKT):</label>
+              <textarea
+                name="poligono"
+                className="form-control"
+                value={formData.propriedade.poligono}
+                placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
+                onChange={(e) => handleChange(e, "formData.propriedade.poligono")}
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        {/* Dados da Gleba/Talhão */}
+        <div className="mb-4 card border-0 shadow-sm">
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
+            <h2 className="mb-0"> Dados da Gleba/Talhão</h2>
+          </div>
+          <div className="card-body">
+            <div className="mb-3">
+              <label className="form-label">Polígono (Formato WKT)*:</label>
+              <textarea
+                name="poligono"
+                required
+                className="form-control"
+                value={formData.talhao.poligono}
+                placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
+                onChange={(e) => handleChange(e, "formData.talhao.poligono")}
+              ></textarea>
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+                Área (Em hectares)*:
+              </label>
+              <input
+                type="number"
+                name="area"
+                min={0}
+                className="form-control"
+                required
+                placeholder="EX: 25"
+                value={formData.talhao.area}
+                onChange={(e) => handleChange(e, "formData.talhao.area")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Tipo do produtor (Proprietário ou Arrendatário):</label>
+              <input
+                type="text"
+                required
+                name="tipoProdutor"
+                value={formData.talhao.tipoProdutor}
+                className="form-control"
+                placeholder="EX: Proprietário"
+                onChange={(e) => handleChange(e, "formData.talhao.tipoProdutor")}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Operações mecanizadas realizadas na gleba: */}
+        <div className="mb-4 card border-0 shadow-sm">
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
+            <h2 className="mb-0"> Operações mecanizadas realizadas na gleba:</h2>
+          </div>
+          <div className="card-body">
+            <div className="mb-3">
+              <label className="form-label">Data da operação*: </label>
+              <input
+                type="date"
+                className="form-control"
+                name="dataOperacao"
+                value={formData.manejos[0].data}
+                onChange={(e) => handleChange(e, "formData.manejos[0].data")}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+                Nome da Operação*:
+              </label>
+              <input
+                type="text"
+                name="nomeOperacao"
+                min={0}
+                className="form-control"
+                required
+                placeholder="EX: REVOLVIMENTO DO SOLO"
+                value={formData.manejos[0].operacao.nomeOperacao}
+                onChange={(e) => handleChange(e, "formData.manejos[0].operacao.nomeOperacao")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Tipo da Operação*: </label>
+              <input
+                type="text"
+                required
+                name="tipoOperacao"
+                className="form-control"
+                placeholder="EX: ARACAO"
+                value={formData.manejos[0].tipoOperacao.tipo}
+                onChange={(e) => handleChange(e, "formData.manejos[0].tipoOperacao.tipo")}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Histórico de culturas na gleba/talhão: */}
+        <div className="mb-4 card border-0 shadow-sm">
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
+            <h2 className="mb-0"> Histórico de culturas na gleba/talhão:</h2>
+          </div>
+          <div className="card-body">
+            <div className="mb-3">
+              <label className="form-label">Data do plantio (data real ou aproximada)*: </label>
+              <input
+                type="date"
+                className="form-control"
+                value={formData.producoes[0].dataPlantio}
+                name="dataPlantio"
+                onChange={(e) => handleChange(e, "formData.producoes[0].dataPlantio")}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Data da colheita (data real ou aproximada)*: </label>
+              <input
+                type="date"
+                className="form-control"
+                value={formData.producoes[0].dataColheita}
+                name="dataColheita"
+                onChange={(e) => handleChange(e, "formData.producoes[0].dataColheita")}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">
+              Cobertura do solo (%)*:
+              </label>
+              <input
+                type="number"
+                name="coberturaSolo"
+                min={0}
+                max={100}
+                className="form-control"
+                required
+                placeholder="EX: REVOLVIMENTO DO SOLO"
+                value={formData.producoes[0].coberturaSolo}
+                onChange={(e) => handleChange(e, "formData.producoes[0].coberturaSolo")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Tipo da Operação*: </label>
+              <input
+                type="text"
+                required
+                name="tipoOperacao"
+                className="form-control"
+                placeholder="EX: ARACAO"
+                value={formData.producoes[0].tipoOperacao.tipo}
+                onChange={(e) => handleChange(e, "formData.producoes[0].tipoOperacao.tipo")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
+              <input
+                type="text"
+                required
+                name="ILP"
+                className="form-control"
+                placeholder="EX: SIM"
+                value={formData.producoes[0].ilp}
+                onChange={(e) => handleChange(e, "formData.producoes[0].ilp")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Cultura*: </label>
+              <input
+                type="text"
+                required
+                name="cultura"
+                className="form-control"
+                placeholder="EX: Soja (grão)"
+                value={formData.producoes[0].cultura.nome}
+                onChange={(e) => handleChange(e, "formData.producoes[0].cultura.nome")}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/*Próxima cultura */}
+        <div className="mb-4 card border-0 shadow-sm">
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
+            <h2 className="mb-0"> Próxima cultura:</h2>
+          </div>
+          <div className="card-body">
+            <div className="mb-3">
+              <label className="form-label">Data de previsão do plantio*: </label>
+              <input
+                type="date"
+                className="form-control"
+                value={formData.producoes[0].dataPlantio}
+                name="dataPlantio"
+                onChange={(e) => handleChange(e, "formData.producoes[0].dataPlantio")}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Data de previsão da colheita*: </label>
+              <input
+                type="date"
+                className="form-control"
+                value={formData.producoes[0].dataColheita}
+                name="dataColheita"
+                onChange={(e) => handleChange(e, "formData.producoes[0].dataColheita")}
+                required
+              />
+            </div>
+            
+            <div className="mb-3">
+              <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
+              <input
+                type="text"
+                required
+                name="ILP"
+                className="form-control"
+                value={formData.producoes[0].ilp}
+                placeholder="EX: SIM"
+                onChange={(e) => handleChange(e, "formData.producoes[0].ilp")}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Cultura*: </label>
+              <input
+                type="text"
+                required
+                name="cultura"
+                className="form-control"
+                placeholder="EX: Soja (grão)"
+                value={formData.producoes[0].cultura.nome}
+                onChange={(e) => handleChange(e, "formData.producoes[0].cultura.nome")}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Botões */}
+        <div className="d-flex justify-content-between">
+          <button type="submit" className="btn btn-success">
+            Enviar
+          </button>
+        </div>
       </form>
     </div>
   );
