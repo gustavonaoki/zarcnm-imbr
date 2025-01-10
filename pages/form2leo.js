@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import modeloAnaliseSolo from "modelos/modeloAnaliseSolo";
+import modeloAnaliseSolo from "../modelos/modeloAnaliseSolo";
 
 const Form2 = () => {
   const [analisesSolo, setAnalisesSolo] = useState([
@@ -54,7 +54,8 @@ const Form2 = () => {
   // Função para validar campos obrigatórios
   const isFormValid = () => {
     return analisesSolo.every((analise) =>
-      ["dataColeta",
+      [
+        "dataColeta",
         "pontoColeta",
         "camada",
         "areia",
@@ -69,25 +70,32 @@ const Form2 = () => {
         "phh2o",
         "fosforoMehlich",
         "enxofre",
-        "mos"].every(
-          (field) => analise[field] !== null && analise[field] !== "" // Verifica se os campos obrigatórios estão preenchidos
-        )
+        "mos",
+      ].every(
+        (field) => analise[field] !== null && analise[field] !== "" // Verifica se os campos obrigatórios estão preenchidos
+      )
     );
   };
 
   // Função para envio do formulário
-  const handleSubmit = async (e) => {
-  };
+  const handleSubmit = async (e) => {};
 
   return (
     <div className="container my-4">
       <h2 className="mb-4">Análises de Solo</h2>
       <form onSubmit={handleSubmit}>
         {analisesSolo.map((analise, index) => (
-          <div className="card mb-4 border-0" key={index} style={{ backgroundColor: "#DBDBDB" }}>
+          <div
+            className="card mb-4 border-0"
+            key={index}
+            style={{ backgroundColor: "#DBDBDB" }}
+          >
             {/* Cabeçalho do card com o título e botão de remoção */}
             <div className="border-2">
-              <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
+              <div
+                className="card-header text-white"
+                style={{ backgroundColor: "#0b4809" }}
+              >
                 <div className="d-flex justify-content-between align-items-center">
                   <h3 className="mb-0">Análise {index + 1}</h3>
                   {index > 0 && (
@@ -102,7 +110,10 @@ const Form2 = () => {
                   )}
                 </div>
                 {/* Informação de campos obrigatórios */}
-                <p className="mb-0 mt-2" style={{ fontSize: "0.9rem", color: "#f8f9fa" }}>
+                <p
+                  className="mb-0 mt-2"
+                  style={{ fontSize: "0.9rem", color: "#f8f9fa" }}
+                >
                   Campos com ( * ) são obrigatórios
                 </p>
               </div>
@@ -115,7 +126,9 @@ const Form2 = () => {
                       type="text"
                       className="form-control"
                       value={analise.cpfResponsavelColeta || ""}
-                      onChange={(e) => handleChange(e, index, "cpfResponsavelColeta")}
+                      onChange={(e) =>
+                        handleChange(e, index, "cpfResponsavelColeta")
+                      }
                     />
                   </div>
                   <div className="col-md-6">
@@ -162,8 +175,14 @@ const Form2 = () => {
             {/* Divisão entre Informações Físicas e Químicas */}
             <div className="row m-2">
               <div className="col-md-6">
-                <div className="card mb-3 border-3" style={{ borderColor: "#20691a", backgroundColor: "#DBDBDB" }}>
-                  <div className="card-header text-white" style={{ backgroundColor: "#20691a" }}>
+                <div
+                  className="card mb-3 border-3"
+                  style={{ borderColor: "#20691a", backgroundColor: "#DBDBDB" }}
+                >
+                  <div
+                    className="card-header text-white"
+                    style={{ backgroundColor: "#20691a" }}
+                  >
                     <h4 className="mb-0">Informações Físicas</h4>
                   </div>
                   <div className="card-body">
@@ -201,13 +220,24 @@ const Form2 = () => {
                 </div>
               </div>
               <div className="col-md-6">
-                <div className="card mb-3 border-3" style={{ borderColor: "#20691a", backgroundColor: "#DBDBDB" }}>
-                  <div className="card-header text-white" style={{ backgroundColor: "#20691a" }}>
+                <div
+                  className="card mb-3 border-3"
+                  style={{ borderColor: "#20691a", backgroundColor: "#DBDBDB" }}
+                >
+                  <div
+                    className="card-header text-white"
+                    style={{ backgroundColor: "#20691a" }}
+                  >
                     <h4 className="mb-0">Informações Químicas</h4>
                   </div>
-                  <div className="card-body overflow-auto" style={{ maxHeight: "273px" }}>
+                  <div
+                    className="card-body overflow-auto"
+                    style={{ maxHeight: "273px" }}
+                  >
                     <div className="mb-3">
-                      <label className="form-label">Cálcio (Ca) (cmolc/kg): *</label>
+                      <label className="form-label">
+                        Cálcio (Ca) (cmolc/kg): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
@@ -217,7 +247,9 @@ const Form2 = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">Magnésio (Mg) (cmolc/kg): *</label>
+                      <label className="form-label">
+                        Magnésio (Mg) (cmolc/kg): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
@@ -227,7 +259,9 @@ const Form2 = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">Potássio (K) (mg/dm³): *</label>
+                      <label className="form-label">
+                        Potássio (K) (mg/dm³): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
@@ -237,7 +271,9 @@ const Form2 = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">Sódio (Na) (mg/dm³): *</label>
+                      <label className="form-label">
+                        Sódio (Na) (mg/dm³): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
@@ -247,7 +283,9 @@ const Form2 = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">Alumínio (Al) (cmolc/dm³): *</label>
+                      <label className="form-label">
+                        Alumínio (Al) (cmolc/dm³): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
@@ -257,17 +295,23 @@ const Form2 = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">Acidez potencial (H + AL) (cmolc/dm³): *</label>
+                      <label className="form-label">
+                        Acidez potencial (H + AL) (cmolc/dm³): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
                         value={analise.acidezPotencial || ""}
-                        onChange={(e) => handleChange(e, index, "acidezPotencial")}
+                        onChange={(e) =>
+                          handleChange(e, index, "acidezPotencial")
+                        }
                         required
                       />
                     </div>
                     <div>
-                      <label className="form-label">pH em H₂O (Valor adimensional): *</label>
+                      <label className="form-label">
+                        pH em H₂O (Valor adimensional): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
@@ -277,7 +321,9 @@ const Form2 = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">pH em CaCl₂ (Valor adimensional):</label>
+                      <label className="form-label">
+                        pH em CaCl₂ (Valor adimensional):
+                      </label>
                       <input
                         type="number"
                         className="form-control"
@@ -286,26 +332,36 @@ const Form2 = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">Fósforo disponível (P) Mehlich (mg/dm³): *</label>
+                      <label className="form-label">
+                        Fósforo disponível (P) Mehlich (mg/dm³): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
                         value={analise.fosforoMehlich || ""}
-                        onChange={(e) => handleChange(e, index, "fosforoMehlich")}
+                        onChange={(e) =>
+                          handleChange(e, index, "fosforoMehlich")
+                        }
                         required
                       />
                     </div>
                     <div>
-                      <label className="form-label">Fósforo disponível (P) Resina (mg/dm³):</label>
+                      <label className="form-label">
+                        Fósforo disponível (P) Resina (mg/dm³):
+                      </label>
                       <input
                         type="number"
                         className="form-control"
                         value={analise.fosforoResina || ""}
-                        onChange={(e) => handleChange(e, index, "fosforoResina")}
+                        onChange={(e) =>
+                          handleChange(e, index, "fosforoResina")
+                        }
                       />
                     </div>
                     <div>
-                      <label className="form-label">Enxofre (S) (mg/dm³): *</label>
+                      <label className="form-label">
+                        Enxofre (S) (mg/dm³): *
+                      </label>
                       <input
                         type="number"
                         className="form-control"
@@ -325,30 +381,42 @@ const Form2 = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">Arilsulfatase (mg PNP Kg-1 h-1):</label>
+                      <label className="form-label">
+                        Arilsulfatase (mg PNP Kg-1 h-1):
+                      </label>
                       <input
                         type="number"
                         className="form-control"
                         value={analise.arilsulfatase || ""}
-                        onChange={(e) => handleChange(e, index, "arilsulfatase")}
+                        onChange={(e) =>
+                          handleChange(e, index, "arilsulfatase")
+                        }
                       />
                     </div>
                     <div>
-                      <label className="form-label">Beta-glicosidase (PNP Kg-1 h-1):</label>
+                      <label className="form-label">
+                        Beta-glicosidase (PNP Kg-1 h-1):
+                      </label>
                       <input
                         type="number"
                         className="form-control"
                         value={analise.betaGlicosedade || ""}
-                        onChange={(e) => handleChange(e, index, "betaGlicosedade")}
+                        onChange={(e) =>
+                          handleChange(e, index, "betaGlicosedade")
+                        }
                       />
                     </div>
                     <div>
-                      <label className="form-label">Densidade do solo (g/cm³):</label>
+                      <label className="form-label">
+                        Densidade do solo (g/cm³):
+                      </label>
                       <input
                         type="number"
                         className="form-control"
                         value={analise.densidadeSolo || ""}
-                        onChange={(e) => handleChange(e, index, "densidadeSolo")}
+                        onChange={(e) =>
+                          handleChange(e, index, "densidadeSolo")
+                        }
                       />
                     </div>
                   </div>
@@ -356,13 +424,13 @@ const Form2 = () => {
               </div>
             </div>
           </div>
-
         ))}
         <div className="d-flex m-3 justify-content-between">
           <button
             type="button"
             onClick={addAnalise}
-            className="btn btn-primary" style={{ backgroundColor: "#25526d" }}
+            className="btn btn-primary"
+            style={{ backgroundColor: "#25526d" }}
           >
             Adicionar Nova Análise
           </button>
@@ -370,7 +438,8 @@ const Form2 = () => {
           <button
             type="submit"
             className="btn btn-success"
-            disabled={!isFormValid()}>
+            disabled={!isFormValid()}
+          >
             Enviar
           </button>
         </div>
