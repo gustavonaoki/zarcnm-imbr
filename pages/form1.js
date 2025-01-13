@@ -2,6 +2,17 @@ import { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const FormPage = () => {
+  /*const [numeroIteravel, setNumeroIteravel] = useState(1); //Estado para o número iterável que será incrementado
+
+  const incrementarNumero = () => {
+    setNumeroIteravel((prevNumero) => prevNumero + 1);
+  }; //Função para incrementar o número iterável
+  */
+   const newDiv = () => {
+    return (
+      <div> ------------- </div>
+    )
+   }
   const [formData, setFormData] = useState({
     produtor: {
       nome: "João da Silva",
@@ -59,7 +70,7 @@ const FormPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/v1/endpoint1", {
+      const response = await fetch("/api/v1/status", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +87,12 @@ const FormPage = () => {
       console.error("Erro na requisição:", error);
     }
   };
-
+  const addEntry = (arrayField, defaultValues) => {
+    setFormData((prev) => ({
+      ...prev,
+      [arrayField]: [...prev[arrayField], defaultValues],
+    }));
+  };
   return (
     <div className="container-fluid my-4">
       <h1 className="text-center mb-4">Formulário de Cadastro</h1>
@@ -225,44 +241,51 @@ const FormPage = () => {
             <h2 className="mb-0"> Operações mecanizadas realizadas na gleba:</h2>
           </div>
           <div className="card-body">
-            <div className="mb-3">
-              <label className="form-label">Data da operação*: </label>
-              <input
-                type="date"
-                className="form-control"
-                name="dataOperacao"
-                value={formData.manejos[0].data}
-                onChange={(e) => handleChange(e, "formData.manejos[0].data")}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">
-                Nome da Operação*:
-              </label>
-              <input
-                type="text"
-                name="nomeOperacao"
-                min={0}
-                className="form-control"
-                required
-                placeholder="EX: REVOLVIMENTO DO SOLO"
-                value={formData.manejos[0].operacao.nomeOperacao}
-                onChange={(e) => handleChange(e, "formData.manejos[0].operacao.nomeOperacao")}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Tipo da Operação*: </label>
-              <input
-                type="text"
-                required
-                name="tipoOperacao"
-                className="form-control"
-                placeholder="EX: ARACAO"
-                value={formData.manejos[0].tipoOperacao.tipo}
-                onChange={(e) => handleChange(e, "formData.manejos[0].tipoOperacao.tipo")}
-              />
-            </div>
+            {formData.manejos.map((manejo, index) => (
+              <div key={index} className="mb-3">
+                <label className="form-label">Data da operação*: </label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="dataOperacao"
+                  value={manejo.data}
+                  onChange={(e) => handleChange(e, index, "manejos", "data")}
+                  required
+                />
+
+                <label className="form-label">Nome da Operação*: </label>
+                <input
+                  type="text"
+                  name="nomeOperacao"
+                  min={0}
+                  className="form-control"
+                  required
+                  placeholder="EX: REVOLVIMENTO DO SOLO"
+                  value={manejo.operacao.nomeOperacao}
+                  onChange={(e) => handleChange(e, index, "manejos", "operacao", "nomeOperacao")}
+                />
+
+                <label className="form-label">Tipo da Operação*: </label>
+                <input
+                  type="text"
+                  required
+                  name="tipoOperacao"
+                  className="form-control"
+                  placeholder="EX: ARACAO"
+                  value={manejo.tipoOperacao.tipo}
+                  onChange={(e) => handleChange(e, index, "manejos", "tipoOperacao", "tipo")}
+                />
+              </div>
+
+            ))}
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() =>
+                addEntry("manejos", { dataOperacao: "", operacao: "", tipoOperacao: "" })
+              }>
+              Adicionar Operação
+            </button>
           </div>
         </div>
 
@@ -272,80 +295,86 @@ const FormPage = () => {
             <h2 className="mb-0"> Histórico de culturas na gleba/talhão:</h2>
           </div>
           <div className="card-body">
-            <div className="mb-3">
-              <label className="form-label">Data do plantio (data real ou aproximada)*: </label>
-              <input
-                type="date"
-                className="form-control"
-                value={formData.producoes[0].dataPlantio}
-                name="dataPlantio"
-                onChange={(e) => handleChange(e, "formData.producoes[0].dataPlantio")}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Data da colheita (data real ou aproximada)*: </label>
-              <input
-                type="date"
-                className="form-control"
-                value={formData.producoes[0].dataColheita}
-                name="dataColheita"
-                onChange={(e) => handleChange(e, "formData.producoes[0].dataColheita")}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">
-              Cobertura do solo (%)*:
-              </label>
-              <input
-                type="number"
-                name="coberturaSolo"
-                min={0}
-                max={100}
-                className="form-control"
-                required
-                placeholder="EX: REVOLVIMENTO DO SOLO"
-                value={formData.producoes[0].coberturaSolo}
-                onChange={(e) => handleChange(e, "formData.producoes[0].coberturaSolo")}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Tipo da Operação*: </label>
-              <input
-                type="text"
-                required
-                name="tipoOperacao"
-                className="form-control"
-                placeholder="EX: ARACAO"
-                value={formData.producoes[0].tipoOperacao.tipo}
-                onChange={(e) => handleChange(e, "formData.producoes[0].tipoOperacao.tipo")}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
-              <input
-                type="text"
-                required
-                name="ILP"
-                className="form-control"
-                placeholder="EX: SIM"
-                value={formData.producoes[0].ilp}
-                onChange={(e) => handleChange(e, "formData.producoes[0].ilp")}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Cultura*: </label>
-              <input
-                type="text"
-                required
-                name="cultura"
-                className="form-control"
-                placeholder="EX: Soja (grão)"
-                value={formData.producoes[0].cultura.nome}
-                onChange={(e) => handleChange(e, "formData.producoes[0].cultura.nome")}
-              />
-            </div>
+            {formData.producoes.map((producao, index) => (
+              <div key={index} className="mb-3">
+                <label className="form-label">Data do plantio (data real ou aproximada)*: </label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={producao.dataPlantio}
+                  name="dataPlantio"
+                  onChange={(e) => handleChange(e, index, "producoes", "dataPlantio")}
+                  required
+                />
+
+                <label className="form-label">Data da colheita (data real ou aproximada)*: </label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={producao.dataColheita}
+                  name="dataColheita"
+                  onChange={(e) => handleChange(e, index, "producoes", "dataColheita")}
+                  required
+                />
+
+                <label className="form-label">
+                  Cobertura do solo (%)*:
+                </label>
+                <input
+                  type="number"
+                  name="coberturaSolo"
+                  min={0}
+                  max={100}
+                  className="form-control"
+                  required
+                  value={producao.coberturaSolo}
+                  onChange={(e) => handleChange(e, index, "producoes", "coberturaSolo")}
+                />
+
+                <label className="form-label">Tipo da Operação*: </label>
+                <input
+                  type="text"
+                  required
+                  name="tipoOperacao"
+                  className="form-control"
+                  placeholder="EX: ARACAO"
+                  value={producao.tipoOperacao.tipo}
+                  onChange={(e) => handleChange(e, index, "producoes", "tipoOperacao", "tipo")}
+                />
+
+                <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
+                <input
+                  type="text"
+                  required
+                  name="ILP"
+                  className="form-control"
+                  placeholder="EX: SIM"
+                  value={producao.ilp}
+                  onChange={(e) => handleChange(e, index, "producoes", "ilp")}
+                />
+
+                <label className="form-label">Cultura*: </label>
+                <input
+                  type="text"
+                  required
+                  name="cultura"
+                  className="form-control"
+                  placeholder="EX: Soja (grão)"
+                  value={producao.cultura.nome}
+                  onChange={(e) => handleChange(e, index, "producoes", "cultura", "nome")}
+                />
+              </div>
+            ))}
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                
+                addEntry("producoes", { dataPlantio: "", coberturaSolo: 0, ilp: "", cultura: "", tipoOperacao: "" });
+              }
+              }>
+              Adicionar Histórico
+            </button>
           </div>
         </div>
 
@@ -355,53 +384,59 @@ const FormPage = () => {
             <h2 className="mb-0"> Próxima cultura:</h2>
           </div>
           <div className="card-body">
-            <div className="mb-3">
-              <label className="form-label">Data de previsão do plantio*: </label>
-              <input
-                type="date"
-                className="form-control"
-                value={formData.producoes[0].dataPlantio}
-                name="dataPlantio"
-                onChange={(e) => handleChange(e, "formData.producoes[0].dataPlantio")}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Data de previsão da colheita*: </label>
-              <input
-                type="date"
-                className="form-control"
-                value={formData.producoes[0].dataColheita}
-                name="dataColheita"
-                onChange={(e) => handleChange(e, "formData.producoes[0].dataColheita")}
-                required
-              />
-            </div>
-            
-            <div className="mb-3">
-              <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
-              <input
-                type="text"
-                required
-                name="ILP"
-                className="form-control"
-                value={formData.producoes[0].ilp}
-                placeholder="EX: SIM"
-                onChange={(e) => handleChange(e, "formData.producoes[0].ilp")}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Cultura*: </label>
-              <input
-                type="text"
-                required
-                name="cultura"
-                className="form-control"
-                placeholder="EX: Soja (grão)"
-                value={formData.producoes[0].cultura.nome}
-                onChange={(e) => handleChange(e, "formData.producoes[0].cultura.nome")}
-              />
-            </div>
+            {formData.producoes.map((producao, index) => (
+              <div key={index} className="mb-3">
+                <label className="form-label">Data de previsão do plantio*: </label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={producao.dataPlantio}
+                  name="dataPlantio"
+                  onChange={(e) => handleChange(e, index, "producoes", "dataPlantio")}
+                  required
+                />
+
+                <label className="form-label">Data de previsão da colheita*: </label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={producao.dataColheita}
+                  name="dataColheita"
+                  onChange={(e) => handleChange(e, index, "producoes", "dataColheita")}
+                  required
+                />
+
+                <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
+                <input
+                  type="text"
+                  required
+                  name="ILP"
+                  className="form-control"
+                  placeholder="EX: SIM"
+                  value={producao.ilp}
+                  onChange={(e) => handleChange(e, index, "producoes", "ilp")}
+                />
+
+                <label className="form-label">Cultura*: </label>
+                <input
+                  type="text"
+                  required
+                  name="cultura"
+                  className="form-control"
+                  placeholder="EX: Soja (grão)"
+                  value={producao.cultura.nome}
+                  onChange={(e) => handleChange(e, index, "producoes", "cultura", "nome")}
+                />
+              </div>
+            ))}
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() =>
+                addEntry("manejos", { dataOperacao: "", operacao: "", tipoOperacao: "" })
+              }>
+              Adicionar Próxima Cultura
+            </button>
           </div>
         </div>
 
