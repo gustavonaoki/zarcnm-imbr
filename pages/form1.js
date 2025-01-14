@@ -1,5 +1,6 @@
 import { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import InputMask from "react-input-mask";
 
 const FormPage = () => {
   /*const [numeroIteravel, setNumeroIteravel] = useState(1); //Estado para o número iterável que será incrementado
@@ -8,11 +9,57 @@ const FormPage = () => {
     setNumeroIteravel((prevNumero) => prevNumero + 1);
   }; //Função para incrementar o número iterável
   */
-   const newDiv = () => {
+  const newDiv = () => {
     return (
       <div> ------------- </div>
     )
-   }
+  }
+
+  // Validador de CPF
+  const validateCPF = (cpf) => {
+    const cleanCPF = cpf.replace(/\D/g, ""); // Remove caracteres não numéricos
+    if (cleanCPF.length !== 11) {
+      return false;
+    }
+    /*
+
+    Validação dos últimos 2 digitos do CPF
+    let soma = 0;
+    let resto;
+   
+   // Validação do primeiro dígito
+    for (let i = 1; i <= 9; i++) {
+      soma += parseInt(cleanCPF[i - 1]) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cleanCPF[9])) {
+      return false;
+    }
+ 
+    soma = 0;
+    // Validação do segundo dígito
+    for (let i = 1; i <= 10; i++) {
+      soma += parseInt(cleanCPF[i - 1]) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cleanCPF[10])) {
+      return false;
+    }*/
+
+    return true;
+  };
+
+  const validateIBGECode = (ibgeCode) => {
+    const cleanIBGECode = ibgeCode.replace(/\D/g, ""); // Remove caracteres não numéricos
+    if (cleanIBGECode.length !== 7) {
+      return false;
+    }
+
+    return true;
+  }
+
   const [formData, setFormData] = useState({
     produtor: {
       nome: "João da Silva",
@@ -59,6 +106,7 @@ const FormPage = () => {
 
       let obj = prev;
       for (let key of keys) {
+        if (!obj[key]) obj[key] = {}; // Garante que as propriedades intermediárias existem
         obj = obj[key];
       }
 
@@ -69,6 +117,19 @@ const FormPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const isValidCPF = validateCPF(formData.produtor.cpf);
+    if (!isValidCPF) {
+      alert("CPF inválido");
+      return;
+    }
+
+    const isValidIBGECode = validateIBGECode(formData.propriedade.codigoIbge);
+    if (!isValidIBGECode) {
+      alert("Código IBGE inválido");
+      return;
+    }
+
     try {
       const response = await fetch("/api/v1/status", {
         method: "POST",
@@ -77,6 +138,8 @@ const FormPage = () => {
         },
         body: JSON.stringify(formData),
       });
+
+
 
       if (response.ok) {
         alert("Dados enviados com sucesso!");
@@ -93,6 +156,8 @@ const FormPage = () => {
       [arrayField]: [...prev[arrayField], defaultValues],
     }));
   };
+
+
   return (
     <div className="container-fluid my-4">
       <h1 className="text-center mb-4">Formulário de Cadastro</h1>
@@ -115,18 +180,19 @@ const FormPage = () => {
                   className="form-control"
                   placeholder="Ex: José da Silva"
                   value={formData.produtor.nome}
-                  onChange={(e) => handleChange(e, "formData.produtor.nome")}
+                  onChange={(e) => handleChange(e, "produtor.nome")}
                 />
               </div>
               <div className="col-md-6">
                 <label className="form-label">CPF:</label>
-                <input
+                <InputMask
+                  mask={"999.999.999-99"} //Máscara para o campo de CPF
                   type="text"
                   name="cpf"
                   className="form-control"
                   placeholder="EX: 12345678900"
                   value={formData.produtor.cpf}
-                  onChange={(e) => handleChange(e, "formData.produtor.cpf")}
+                  onChange={(e) => handleChange(e, "produtor.cpf")}
                 />
               </div>
             </div>
@@ -147,7 +213,7 @@ const FormPage = () => {
                 className="form-control"
                 placeholder="EX: Fazenda Santa Maria"
                 value={formData.propriedade.nome}
-                onChange={(e) => handleChange(e, "formData.propriedade.nome")}
+                onChange={(e) => handleChange(e, "propriedade.nome")}
               />
             </div>
             <div className="mb-3">
@@ -172,7 +238,7 @@ const FormPage = () => {
                 className="form-control"
                 value={formData.propriedade.codigoIbge}
                 placeholder="EX: 3509502"
-                onChange={(e) => handleChange(e, "formData.propriedade.codigoIbge")}
+                onChange={(e) => handleChange(e, "propriedade.codigoIbge")}
               />
             </div>
             <div className="mb-3">
@@ -182,7 +248,7 @@ const FormPage = () => {
                 className="form-control"
                 value={formData.propriedade.poligono}
                 placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
-                onChange={(e) => handleChange(e, "formData.propriedade.poligono")}
+                onChange={(e) => handleChange(e, "propriedade.poligono")}
               ></textarea>
             </div>
           </div>
@@ -202,7 +268,7 @@ const FormPage = () => {
                 className="form-control"
                 value={formData.talhao.poligono}
                 placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
-                onChange={(e) => handleChange(e, "formData.talhao.poligono")}
+                onChange={(e) => handleChange(e, "talhao.poligono")}
               ></textarea>
             </div>
             <div className="mb-3">
@@ -217,7 +283,7 @@ const FormPage = () => {
                 required
                 placeholder="EX: 25"
                 value={formData.talhao.area}
-                onChange={(e) => handleChange(e, "formData.talhao.area")}
+                onChange={(e) => handleChange(e, "talhao.area")}
               />
             </div>
             <div className="mb-3">
@@ -229,7 +295,7 @@ const FormPage = () => {
                 value={formData.talhao.tipoProdutor}
                 className="form-control"
                 placeholder="EX: Proprietário"
-                onChange={(e) => handleChange(e, "formData.talhao.tipoProdutor")}
+                onChange={(e) => handleChange(e, "talhao.tipoProdutor")}
               />
             </div>
           </div>
@@ -369,7 +435,7 @@ const FormPage = () => {
               type="button"
               className="btn btn-primary"
               onClick={() => {
-                
+
                 addEntry("producoes", { dataPlantio: "", coberturaSolo: 0, ilp: "", cultura: "", tipoOperacao: "" });
               }
               }>
