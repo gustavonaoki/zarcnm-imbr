@@ -130,6 +130,8 @@ const FormPage = () => {
       return;
     }
 
+   
+    
     try {
       const response = await fetch("/api/v1/status", {
         method: "POST",
@@ -287,16 +289,17 @@ const FormPage = () => {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">Tipo do produtor (Proprietário ou Arrendatário):</label>
-              <input
-                type="text"
+              <label className="form-label">Tipo do produtor (Proprietário ou Arrendatário)*: </label>
+              <select
                 required
                 name="tipoProdutor"
-                value={formData.talhao.tipoProdutor}
-                className="form-control"
-                placeholder="EX: Proprietário"
+                value={formData.talhao.tipoProdutor || ""} 
+                className="form-select"
                 onChange={(e) => handleChange(e, "talhao.tipoProdutor")}
-              />
+              >
+                <option value="Proprietário">Proprietário</option>
+                <option value="Arrendatário">Arrendatário</option>
+              </select>
             </div>
           </div>
         </div>
