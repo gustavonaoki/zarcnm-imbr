@@ -3,117 +3,107 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 
 const FormPage = () => {
-  /*const [numeroIteravel, setNumeroIteravel] = useState(1); //Estado para o número iterável que será incrementado
 
-  const incrementarNumero = () => {
-    setNumeroIteravel((prevNumero) => prevNumero + 1);
-  }; //Função para incrementar o número iterável
-  */
-  const newDiv = () => {
-    return (
-      <div> ------------- </div>
-    )
-  }
 
   const [selectedCulturaOption, setSelectedCulturaOption] = useState(""); // Valor inicial como string vazia
 
-  const culturaOptions = [ 
-  "Algodão",
-  "Amendoim",
-  "Amendoim forrageiro (pastagem)",
-  "Amendoim forrageiro (cobertura solo)",
-  "Andropogon (pastagem)",
-  "Andropogon (cobertura do solo)",
-  "Azevém (pastagem)",
-  "Azevém (cobertura do solo)",
-  "Arroz terras altas (grão)",
-  "Arroz terras baixas (inundado) (grão)",
-  "Aveia branca (grão)",
-  "Aveia branca (silagem/feno)",
-  "Aveia branca (pastagem)",
-  "Aveia branca (cobertura do solo)",
-  "Aveia preta (grão)",
-  "Aveia preta (silagem/feno)",
-  "Aveia preta (pastagem)",
-  "Aveia preta (cobertura do solo)",
-  "Aveia amarela (grão)",
-  "Aveia amarela (silagem/feno)",
-  "Aveia amarela (pastagem)",
-  "Aveia amarela (cobertura do solo)",
-  "Brachiaria brizantha (pastagem)",
-  "Brachiaria brizantha (cobertura do solo)",
-  "Brachiaria decumbens (pastagem)",
-  "Brachiaria decumbens (cobertura do solo)",
-  "Brachiaria humidicola (pastagem)",
-  "Brachiaria humidicola (cobertura do solo)",
-  "Brachiaria ruziziensis (pastagem)",
-  "Brachiaria ruziziensis (cobertura do solo)",
-  "Canola (grão)",
-  "Capim sudão (pastagem)",
-  "Capim sudão (cobertura do solo)",
-  "Capim Elefante (pastagem)",
-  "Capim Elefante (cobertura do solo)",
-  "Centeio (grão)",
-  "Centeio (silagem/feno)",
-  "Centeio (pastagem)",
-  "Centeio (cobertura do solo)",
-  "Cevada (grão)",
-  "Cevada (silagem/feno)",
-  "Cevada (pastagem)",
-  "Cevada (cobertura do solo)",
-  "Cornichão (silagem/feno)",
-  "Cornichão (pastagem)",
-  "Cornichão (cobertura do solo)",
-  "Crotalária(s) (silagem/feno)",
-  "Crotalária(s) (silagem/feno)",
-  "Crotalária(s) (silagem/feno)",
-  "Ervilha",
-  "Ervilhaca (silagem/feno)",
-  "Ervilhaca (pastagem)",
-  "Ervilhaca (cobertura do solo)",
-  "Estilosantes (silagem/feno)",
-  "Estilosantes (pastagem)",
-  "Estilosantes (cobertura do solo)",
-  "Feijão (grão)",
-  "Feijão caupi (grão)",
-  "Feijão guandu (silagem/feno)",
-  "Feijão guandu (pastagem)",
-  "Feijão guandu (cobertura do solo)",
-  "Gergelim (grão)",
-  "Girassol (grão)",
-  "Girassol (silagem/feno)",
-  "Girassol (cobertura do solo)",
-  "Grão de Bico (grão)",
-  "Mamona (grão)",
-  "Mandioca",
-  "Milheto (grão)",
-  "Milheto (silagem/feno)",
-  "Milheto (pastagem)",
-  "Milheto (cobertura do solo)",
-  "Milho (grão)",
-  "Milho (silagem/feno)",
-  "Mucuna(s) (cobertura do solo)",
-  "Panicum maximum (silagem/feno)",
-  "Panicum maximum (pastagem)",
-  "Panicum maximum (cobertura do solo)",
-  "Soja (grão)",
-  "Sorgo (grão)",
-  "Sorgo (silagem/feno)",
-  "Sorgo (pastagem)",
-  "Sorgo (cobertura do solo)",
-  "Tremoço branco (cobertura do solo)",
-  "Trevo (silagem/feno)",
-  "Trevo (pastagem)",
-  "Trevo (cobertura do solo)",
-  "Trigo (grão)",
-  "Trigo (silagem/feno)",
-  "Trigo (pastagem)",
-  "Trigo (cobertura do solo)",
-  "Triticale (grão)",
-  "Triticale (silagem/feno)",
-  "Triticale (pastagem)",
-  "Triticale (cobertura do solo)"
-]
+  const culturaOptions = [
+    "Algodão",
+    "Amendoim",
+    "Amendoim forrageiro (pastagem)",
+    "Amendoim forrageiro (cobertura solo)",
+    "Andropogon (pastagem)",
+    "Andropogon (cobertura do solo)",
+    "Azevém (pastagem)",
+    "Azevém (cobertura do solo)",
+    "Arroz terras altas (grão)",
+    "Arroz terras baixas (inundado) (grão)",
+    "Aveia branca (grão)",
+    "Aveia branca (silagem/feno)",
+    "Aveia branca (pastagem)",
+    "Aveia branca (cobertura do solo)",
+    "Aveia preta (grão)",
+    "Aveia preta (silagem/feno)",
+    "Aveia preta (pastagem)",
+    "Aveia preta (cobertura do solo)",
+    "Aveia amarela (grão)",
+    "Aveia amarela (silagem/feno)",
+    "Aveia amarela (pastagem)",
+    "Aveia amarela (cobertura do solo)",
+    "Brachiaria brizantha (pastagem)",
+    "Brachiaria brizantha (cobertura do solo)",
+    "Brachiaria decumbens (pastagem)",
+    "Brachiaria decumbens (cobertura do solo)",
+    "Brachiaria humidicola (pastagem)",
+    "Brachiaria humidicola (cobertura do solo)",
+    "Brachiaria ruziziensis (pastagem)",
+    "Brachiaria ruziziensis (cobertura do solo)",
+    "Canola (grão)",
+    "Capim sudão (pastagem)",
+    "Capim sudão (cobertura do solo)",
+    "Capim Elefante (pastagem)",
+    "Capim Elefante (cobertura do solo)",
+    "Centeio (grão)",
+    "Centeio (silagem/feno)",
+    "Centeio (pastagem)",
+    "Centeio (cobertura do solo)",
+    "Cevada (grão)",
+    "Cevada (silagem/feno)",
+    "Cevada (pastagem)",
+    "Cevada (cobertura do solo)",
+    "Cornichão (silagem/feno)",
+    "Cornichão (pastagem)",
+    "Cornichão (cobertura do solo)",
+    "Crotalária(s) (silagem/feno)",
+    "Crotalária(s) (silagem/feno)",
+    "Crotalária(s) (silagem/feno)",
+    "Ervilha",
+    "Ervilhaca (silagem/feno)",
+    "Ervilhaca (pastagem)",
+    "Ervilhaca (cobertura do solo)",
+    "Estilosantes (silagem/feno)",
+    "Estilosantes (pastagem)",
+    "Estilosantes (cobertura do solo)",
+    "Feijão (grão)",
+    "Feijão caupi (grão)",
+    "Feijão guandu (silagem/feno)",
+    "Feijão guandu (pastagem)",
+    "Feijão guandu (cobertura do solo)",
+    "Gergelim (grão)",
+    "Girassol (grão)",
+    "Girassol (silagem/feno)",
+    "Girassol (cobertura do solo)",
+    "Grão de Bico (grão)",
+    "Mamona (grão)",
+    "Mandioca",
+    "Milheto (grão)",
+    "Milheto (silagem/feno)",
+    "Milheto (pastagem)",
+    "Milheto (cobertura do solo)",
+    "Milho (grão)",
+    "Milho (silagem/feno)",
+    "Mucuna(s) (cobertura do solo)",
+    "Panicum maximum (silagem/feno)",
+    "Panicum maximum (pastagem)",
+    "Panicum maximum (cobertura do solo)",
+    "Soja (grão)",
+    "Sorgo (grão)",
+    "Sorgo (silagem/feno)",
+    "Sorgo (pastagem)",
+    "Sorgo (cobertura do solo)",
+    "Tremoço branco (cobertura do solo)",
+    "Trevo (silagem/feno)",
+    "Trevo (pastagem)",
+    "Trevo (cobertura do solo)",
+    "Trigo (grão)",
+    "Trigo (silagem/feno)",
+    "Trigo (pastagem)",
+    "Trigo (cobertura do solo)",
+    "Triticale (grão)",
+    "Triticale (silagem/feno)",
+    "Triticale (pastagem)",
+    "Triticale (cobertura do solo)"
+  ]
 
   // Validador de CPF
   const validateCPF = (cpf) => {
@@ -160,6 +150,8 @@ const FormPage = () => {
     return true;
   }
 
+
+  // Estado para armazenar os dados do formulário
   const [formData, setFormData] = useState({
     produtor: {
       nome: "João da Silva",
@@ -204,7 +196,7 @@ const FormPage = () => {
 
   const handleChange = (e, index, arrayField, fieldName) => {
     const { value } = e.target;
-  
+
     setFormData((prev) => {
       // Verifica se está lidando com um array
       if (Array.isArray(prev[arrayField])) {
@@ -213,28 +205,28 @@ const FormPage = () => {
           ...updatedArray[index],
           [fieldName]: value, // Atualiza o campo específico no objeto do array
         };
-  
+
         return {
           ...prev,
           [arrayField]: updatedArray, // Atualiza o array no estado
         };
       }
-  
+
       // Caso não seja array, comportamento padrão
       const keys = arrayField.split(".");
       const lastKey = keys.pop();
-  
+
       let obj = prev;
       for (let key of keys) {
         if (!obj[key]) obj[key] = {};
         obj = obj[key];
       }
-  
+
       obj[lastKey] = value;
       return { ...prev };
     });
   };
-  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -252,8 +244,8 @@ const FormPage = () => {
     }
 
     console.log(formData);
-    
-    
+
+
     try {
       const response = await fetch("/api/v1/status", {
         method: "POST",
@@ -282,6 +274,7 @@ const FormPage = () => {
   };
 
 
+  
   return (
     <div className="container-fluid my-4">
       <h1 className="text-center mb-4">Formulário de Cadastro</h1>
@@ -415,7 +408,7 @@ const FormPage = () => {
               <select
                 required
                 name="tipoProdutor"
-                value={formData.talhao.tipoProdutor || ""} 
+                value={formData.talhao.tipoProdutor || ""}
                 className="form-select"
                 onChange={(e) => handleChange(e, "talhao.tipoProdutor")}
               >
@@ -529,7 +522,7 @@ const FormPage = () => {
                   name="tipoOperacao"
                   className="form-control"
                   placeholder="EX: ARACAO"
-                  value={producao.tipoOperacao.tipo}
+                  value={producao.tipoOperacao?.tipo || ""}
                   onChange={(e) => handleChange(e, index, "producoes", "tipoOperacao", "tipo")}
                 />
 
@@ -538,11 +531,11 @@ const FormPage = () => {
                   required
                   name="ILP"
                   className="form-select"
-                  value={producao.ilp}  
+                  value={producao.ilp}
                   onChange={(e) => handleChange(e, index, "producoes", "ilp")}
                 >
-                  <option value="1">SIM</option> 
-                  <option value="0">NÃO</option>  
+                  <option value="1">SIM</option>
+                  <option value="0">NÃO</option>
                 </select>
 
                 <label className="form-label">Cultura*: </label>
@@ -550,11 +543,11 @@ const FormPage = () => {
                   required
                   name="cultura"
                   className="form-control"
-                  value={producao.cultura.nome} 
-                  onChange={(e) =>{  handleSelectChange; handleChange(e, index, "producoes", "cultura", "nome") }}
+                  value={producao.cultura?.nome || ""}
+                  onChange={(e) => { handleSelectChange; handleChange(e, index, "producoes", "cultura", "nome") }}
                 >
-                   {/*Mapeia as opções de culturas disponíveis*/}
-                  {culturaOptions.map((cultura, index) => ( 
+                  {/*Mapeia as opções de culturas disponíveis*/}
+                  {culturaOptions.map((cultura, index) => (
                     <option key={index} value={cultura}>
                       {cultura}
                     </option>
@@ -566,7 +559,6 @@ const FormPage = () => {
               type="button"
               className="btn btn-primary"
               onClick={() => {
-
                 addEntry("producoes", { dataPlantio: "", coberturaSolo: 0, ilp: "", cultura: "", tipoOperacao: "" });
               }
               }>
@@ -589,7 +581,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataPlantio}
                   name="dataPlantio"
-                  onChange={(e) => handleChange(e, index, "producoes", "dataPlantio")}
+                  onChange={(e) =>  handleChange(e, index, "producoes", "dataPlantio")}
                   required
                 />
 
@@ -608,11 +600,11 @@ const FormPage = () => {
                   required
                   name="ILP"
                   className="form-select"
-                  value={producao.ilp}  
+                  value={producao.ilp}
                   onChange={(e) => handleChange(e, index, "producoes", "ilp")}
                 >
-                  <option value="1">SIM</option> 
-                  <option value="0">NÃO</option>  
+                  <option value="1">SIM</option>
+                  <option value="0">NÃO</option>
                 </select>
 
                 <label className="form-label">Cultura*: </label>
@@ -620,11 +612,11 @@ const FormPage = () => {
                   required
                   name="cultura"
                   className="form-control"
-                  value={producao.cultura.nome} 
-                  onChange={(e) =>{  handleSelectChange; handleChange(e, index, "producoes", "cultura", "nome") }}
+                  value={producao.cultura?.nome || ""}
+                  onChange={(e) => { handleSelectChange; handleChange(e, index, "producoes", "cultura", "nome") }}
                 >
-                   {/*Mapeia as opções de culturas disponíveis*/}
-                  {culturaOptions.map((cultura, index) => ( 
+                  {/*Mapeia as opções de culturas disponíveis*/}
+                  {culturaOptions.map((cultura, index) => (
                     <option key={index} value={cultura}>
                       {cultura}
                     </option>
@@ -636,7 +628,7 @@ const FormPage = () => {
               type="button"
               className="btn btn-primary"
               onClick={() =>
-                addEntry("manejos", { dataOperacao: "", operacao: "", tipoOperacao: "" })
+                addEntry("producoes", { dataPlantio: "", coberturaSolo: 0, ilp: "", cultura: "", tipoOperacao: "" })
               }>
               Adicionar Próxima Cultura
             </button>
