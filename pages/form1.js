@@ -1,109 +1,12 @@
 import { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
-
+import { culturaOptions } from "../optionsInputs/culturas";
 const FormPage = () => {
 
 
   const [selectedCulturaOption, setSelectedCulturaOption] = useState(""); // Valor inicial como string vazia
-
-  const culturaOptions = [
-    "Algodão",
-    "Amendoim",
-    "Amendoim forrageiro (pastagem)",
-    "Amendoim forrageiro (cobertura solo)",
-    "Andropogon (pastagem)",
-    "Andropogon (cobertura do solo)",
-    "Azevém (pastagem)",
-    "Azevém (cobertura do solo)",
-    "Arroz terras altas (grão)",
-    "Arroz terras baixas (inundado) (grão)",
-    "Aveia branca (grão)",
-    "Aveia branca (silagem/feno)",
-    "Aveia branca (pastagem)",
-    "Aveia branca (cobertura do solo)",
-    "Aveia preta (grão)",
-    "Aveia preta (silagem/feno)",
-    "Aveia preta (pastagem)",
-    "Aveia preta (cobertura do solo)",
-    "Aveia amarela (grão)",
-    "Aveia amarela (silagem/feno)",
-    "Aveia amarela (pastagem)",
-    "Aveia amarela (cobertura do solo)",
-    "Brachiaria brizantha (pastagem)",
-    "Brachiaria brizantha (cobertura do solo)",
-    "Brachiaria decumbens (pastagem)",
-    "Brachiaria decumbens (cobertura do solo)",
-    "Brachiaria humidicola (pastagem)",
-    "Brachiaria humidicola (cobertura do solo)",
-    "Brachiaria ruziziensis (pastagem)",
-    "Brachiaria ruziziensis (cobertura do solo)",
-    "Canola (grão)",
-    "Capim sudão (pastagem)",
-    "Capim sudão (cobertura do solo)",
-    "Capim Elefante (pastagem)",
-    "Capim Elefante (cobertura do solo)",
-    "Centeio (grão)",
-    "Centeio (silagem/feno)",
-    "Centeio (pastagem)",
-    "Centeio (cobertura do solo)",
-    "Cevada (grão)",
-    "Cevada (silagem/feno)",
-    "Cevada (pastagem)",
-    "Cevada (cobertura do solo)",
-    "Cornichão (silagem/feno)",
-    "Cornichão (pastagem)",
-    "Cornichão (cobertura do solo)",
-    "Crotalária(s) (silagem/feno)",
-    "Crotalária(s) (silagem/feno)",
-    "Crotalária(s) (silagem/feno)",
-    "Ervilha",
-    "Ervilhaca (silagem/feno)",
-    "Ervilhaca (pastagem)",
-    "Ervilhaca (cobertura do solo)",
-    "Estilosantes (silagem/feno)",
-    "Estilosantes (pastagem)",
-    "Estilosantes (cobertura do solo)",
-    "Feijão (grão)",
-    "Feijão caupi (grão)",
-    "Feijão guandu (silagem/feno)",
-    "Feijão guandu (pastagem)",
-    "Feijão guandu (cobertura do solo)",
-    "Gergelim (grão)",
-    "Girassol (grão)",
-    "Girassol (silagem/feno)",
-    "Girassol (cobertura do solo)",
-    "Grão de Bico (grão)",
-    "Mamona (grão)",
-    "Mandioca",
-    "Milheto (grão)",
-    "Milheto (silagem/feno)",
-    "Milheto (pastagem)",
-    "Milheto (cobertura do solo)",
-    "Milho (grão)",
-    "Milho (silagem/feno)",
-    "Mucuna(s) (cobertura do solo)",
-    "Panicum maximum (silagem/feno)",
-    "Panicum maximum (pastagem)",
-    "Panicum maximum (cobertura do solo)",
-    "Soja (grão)",
-    "Sorgo (grão)",
-    "Sorgo (silagem/feno)",
-    "Sorgo (pastagem)",
-    "Sorgo (cobertura do solo)",
-    "Tremoço branco (cobertura do solo)",
-    "Trevo (silagem/feno)",
-    "Trevo (pastagem)",
-    "Trevo (cobertura do solo)",
-    "Trigo (grão)",
-    "Trigo (silagem/feno)",
-    "Trigo (pastagem)",
-    "Trigo (cobertura do solo)",
-    "Triticale (grão)",
-    "Triticale (silagem/feno)",
-    "Triticale (pastagem)",
-    "Triticale (cobertura do solo)"
-  ]
+    
 
   // Validador de CPF
   const validateCPF = (cpf) => {
@@ -191,43 +94,31 @@ const FormPage = () => {
 
   // Função para atualizar o estado com a opção selecionada
   const handleSelectChange = (e) => {
-    selectedCulturaOption(e.target.value); // Atualiza o estado com a opção selecionada
+    setSelectedCulturaOption(e.target.value); // Atualiza o estado com a opção selecionada
   };
 
-  const handleChange = (e, index, arrayField, fieldName) => {
+  const handleChange = (e, path) => {
     const { value } = e.target;
-
+  
     setFormData((prev) => {
-      // Verifica se está lidando com um array
-      if (Array.isArray(prev[arrayField])) {
-        const updatedArray = [...prev[arrayField]];
-        updatedArray[index] = {
-          ...updatedArray[index],
-          [fieldName]: value, // Atualiza o campo específico no objeto do array
-        };
-
-        return {
-          ...prev,
-          [arrayField]: updatedArray, // Atualiza o array no estado
-        };
-      }
-
-      // Caso não seja array, comportamento padrão
-      const keys = arrayField.split(".");
-      const lastKey = keys.pop();
-
-      let obj = prev;
-      for (let key of keys) {
-        if (!obj[key]) obj[key] = {};
-        obj = obj[key];
-      }
-
-      obj[lastKey] = value;
+      const keys = path.split("."); // Divide o caminho
+      const lastKey = keys.pop(); // Obtém a última chave
+      let target = prev;
+  
+      // Navega até o objeto/pai correto
+      keys.forEach((key) => {
+        if (!target[key]) target[key] = {}; // Inicializa se não existir
+        target = target[key];
+      });
+  
+      // Atualiza o valor do campo
+      target[lastKey] = value;
+  
       return { ...prev };
     });
   };
-
-
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -296,7 +187,7 @@ const FormPage = () => {
                   name="nome"
                   className="form-control"
                   placeholder="Ex: José da Silva"
-                  value={formData.produtor.nome}
+                  value={formData.produtor.nome || ""}
                   onChange={(e) => handleChange(e, "produtor.nome")}
                 />
               </div>
@@ -308,7 +199,7 @@ const FormPage = () => {
                   name="cpf"
                   className="form-control"
                   placeholder="EX: 12345678900"
-                  value={formData.produtor.cpf}
+                  value={formData.produtor.cpf || ""}
                   onChange={(e) => handleChange(e, "produtor.cpf")}
                 />
               </div>
@@ -344,7 +235,7 @@ const FormPage = () => {
                 required
                 value={formData.propriedade.codigoCar}
                 placeholder="EX: MT-5107248-1025F299474640148FE845C7A0B62635"
-                onChange={(e) => handleChange(e, "formData.propriedade.codigoCar")}
+                onChange={(e) => handleChange(e, "propriedade.codigoCar")}
               />
             </div>
             <div className="mb-3">
@@ -408,7 +299,7 @@ const FormPage = () => {
               <select
                 required
                 name="tipoProdutor"
-                value={formData.talhao.tipoProdutor || ""}
+                value={formData.talhao.tipoProdutor}
                 className="form-select"
                 onChange={(e) => handleChange(e, "talhao.tipoProdutor")}
               >
@@ -433,7 +324,8 @@ const FormPage = () => {
                   className="form-control"
                   name="dataOperacao"
                   value={manejo.data}
-                  onChange={(e) => handleChange(e, index, "manejos", "data")}
+                  onChange={(e) => handleChange(e, `manejos.${index}.data`)}
+
                   required
                 />
 
@@ -446,8 +338,8 @@ const FormPage = () => {
                   required
                   placeholder="EX: REVOLVIMENTO DO SOLO"
                   value={manejo.operacao.nomeOperacao}
-                  onChange={(e) => handleChange(e, index, "manejos", "operacao", "nomeOperacao")}
-                />
+                  onChange={(e) => handleChange(e, `manejos.${index}.operacao.nomeOperacao`)}
+                  />
 
                 <label className="form-label">Tipo da Operação*: </label>
                 <input
@@ -456,9 +348,9 @@ const FormPage = () => {
                   name="tipoOperacao"
                   className="form-control"
                   placeholder="EX: ARACAO"
-                  value={manejo.tipoOperacao.tipo}
-                  onChange={(e) => handleChange(e, index, "manejos", "tipoOperacao", "tipo")}
-                />
+                  value={manejo.tipoOperacao.tipo || ""}
+                  onChange={(e) => handleChange(e, `manejos.${index}.tipoOperacao.tipo`)}
+                  />
               </div>
 
             ))}
@@ -487,7 +379,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataPlantio}
                   name="dataPlantio"
-                  onChange={(e) => handleChange(e, index, "producoes", "dataPlantio")}
+                  onChange={(e) => handleChange(e, `producoes.${index}.dataPlantio`)}
                   required
                 />
 
@@ -497,7 +389,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataColheita}
                   name="dataColheita"
-                  onChange={(e) => handleChange(e, index, "producoes", "dataColheita")}
+                  onChange={(e) => handleChange(e, `producoes.${index}.dataColheita`)}
                   required
                 />
 
@@ -512,7 +404,7 @@ const FormPage = () => {
                   className="form-control"
                   required
                   value={producao.coberturaSolo}
-                  onChange={(e) => handleChange(e, index, "producoes", "coberturaSolo")}
+                  onChange={(e) => handleChange(e, `producoes.${index}.coberturaSolo`)}
                 />
 
                 <label className="form-label">Tipo da Operação*: </label>
@@ -523,7 +415,7 @@ const FormPage = () => {
                   className="form-control"
                   placeholder="EX: ARACAO"
                   value={producao.tipoOperacao?.tipo || ""}
-                  onChange={(e) => handleChange(e, index, "producoes", "tipoOperacao", "tipo")}
+                  onChange={(e) => handleChange(e, `producoes.${index}.tipoOperacao.tipo`)}
                 />
 
                 <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
@@ -532,7 +424,7 @@ const FormPage = () => {
                   name="ILP"
                   className="form-select"
                   value={producao.ilp}
-                  onChange={(e) => handleChange(e, index, "producoes", "ilp")}
+                  onChange={(e) => handleChange(e, `producoes.${index}.ilp`)}
                 >
                   <option value="1">SIM</option>
                   <option value="0">NÃO</option>
@@ -544,7 +436,7 @@ const FormPage = () => {
                   name="cultura"
                   className="form-control"
                   value={producao.cultura?.nome || ""}
-                  onChange={(e) => { handleSelectChange; handleChange(e, index, "producoes", "cultura", "nome") }}
+                  onChange={(e) => handleChange(e, `producoes.${index}.cultura.nome`)}
                 >
                   {/*Mapeia as opções de culturas disponíveis*/}
                   {culturaOptions.map((cultura, index) => (
@@ -581,7 +473,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataPlantio}
                   name="dataPlantio"
-                  onChange={(e) =>  handleChange(e, index, "producoes", "dataPlantio")}
+                  onChange={(e) => handleChange(e, `producoes.${index}.dataPlantio`)}
                   required
                 />
 
@@ -591,7 +483,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataColheita}
                   name="dataColheita"
-                  onChange={(e) => handleChange(e, index, "producoes", "dataColheita")}
+                  onChange={(e) => handleChange(e, `producoes.${index}.dataColheita`)}
                   required
                 />
 
@@ -601,7 +493,7 @@ const FormPage = () => {
                   name="ILP"
                   className="form-select"
                   value={producao.ilp}
-                  onChange={(e) => handleChange(e, index, "producoes", "ilp")}
+                  onChange={(e) => handleChange(e, `producoes.${index}.ilp`)}
                 >
                   <option value="1">SIM</option>
                   <option value="0">NÃO</option>
@@ -613,7 +505,7 @@ const FormPage = () => {
                   name="cultura"
                   className="form-control"
                   value={producao.cultura?.nome || ""}
-                  onChange={(e) => { handleSelectChange; handleChange(e, index, "producoes", "cultura", "nome") }}
+                  onChange={(e) => handleChange(e, `producoes.${index}.cultura.nome`)}
                 >
                   {/*Mapeia as opções de culturas disponíveis*/}
                   {culturaOptions.map((cultura, index) => (
