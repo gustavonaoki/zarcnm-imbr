@@ -1,8 +1,23 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { culturaOptions } from "../optionsInputs/culturas";
 
 const Form3 = () => {
+
+  const validateNDVI_NDTI = (value) => {
+    const cleanValue = Number(value);
+    if (isNaN(cleanValue) || cleanValue < -1 || cleanValue > 1) {
+      return false;
+    }
+    return true;
+  };
+
+  const [selectedCulturaOption, setSelectedCulturaOption] = useState(""); // Valor inicial como string vazia
+  const handleSelectChange = (e) => {
+    setSelectedCulturaOption(e.target.value); // Atualiza o estado com a opção selecionada
+  };
+  
   const [formData, setFormData] = useState({
     dataInicial: "2021-01-17",
     dataFinal: "2024-05-14",
@@ -44,10 +59,13 @@ const Form3 = () => {
     const { value } = e.target;
     setFormData((prev) => {
       const updatedArray = [...prev[arrayField]];
-      updatedArray[index][field] = value;
+      if (updatedArray[index]) {
+        updatedArray[index][field] = value;
+      }
       return { ...prev, [arrayField]: updatedArray };
     });
   };
+  
 
   const addEntry = (arrayField, defaultValues) => {
     setFormData((prev) => ({
@@ -58,8 +76,26 @@ const Form3 = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+   
+    const isValidNDVI = formData.indices.every((indice) =>
+      validateNDVI_NDTI(indice.ndvi)
+    );
+    const isValidNDTI = formData.indices.every((indice) =>
+      validateNDVI_NDTI(indice.ndti)
+    );
+  
+    if (!isValidNDVI) {
+      alert("Todos os NDVI devem ser valores entre -1 e 1");
+      return;
+    }
+    if (!isValidNDTI) {
+      alert("Todos os NDTI devem ser valores entre -1 e 1");
+      return;
+    }
+    console.log(formData);
     try {
-      const response = await fetch("/api/v1/endpoint3", {
+      const response = await fetch("/api/v1/status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -120,38 +156,36 @@ const Form3 = () => {
                 className="form-control"
                 placeholder="EX: 12"
                 value={formData.declividadeMedia}
-                onChange={(e) => handleChange(e, "formData.declividadeMedia")}
+                onChange={(e) => handleChange(e, "declividadeMedia")}
               />
             </div>
             <div className="mb-3">
               <label className="form-label">
-                Plantio em contorno (1-Sim, 0-Não):
+                Plantio em contorno:
               </label>
-              <input
-                type="number"
+              <select
                 name="plantioContorno"
-                min={0}
-                max={1}
-                className="form-control"
-                placeholder="EX: 1"
+                className="form-select"
                 value={formData.plantioContorno}
-                onChange={(e) => handleChange(e, "formData.plantioContorno")}
-              />
+                onChange={(e) => handleChange(e, "plantioContorno")}
+              >
+                <option value={1}>SIM</option>
+                <option value={0}>NÃO</option>
+              </select>
             </div>
             <div className="mb-3">
               <label className="form-label">
-                Terraceamento (1-Sim, 0-Não):
+                Terraceamento:
               </label>
-              <input
-                type="number"
+              <select
                 name="terraceamento"
-                min={0}
-                max={1}
                 className="form-control"
-                placeholder="EX: 0"
                 value={formData.terraceamento}
-                onChange={(e) => handleChange(e, "formData.terraceamento")}
-              />
+                onChange={(e) => handleChange(e, "terraceamento")}
+              >
+                <option value={1}>SIM</option>
+                <option value={0}>NÃO</option>
+              </select>
             </div>
           </div>
         </div>
@@ -164,10 +198,17 @@ const Form3 = () => {
           <div className="card-body">
             {formData.indices.map((indice, index) => (
               <div key={index} className="mb-3">
+                <label className="form-label">Data da imagem do pixel*: </label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={indice.data}
+                  onChange={(e) => handleArrayChange(e, index, "indices", "data")}
+                  required
+                />
                 <label className="form-label">Satélite*:</label>
                 <input
-
-                name="satelite"
+                  name="satelite"
                   type="text"
                   required
                   placeholder="EX: Sentinel"
@@ -191,7 +232,7 @@ const Form3 = () => {
                   required
                   placeholder="EX: 0.3342"
                   className="form-control mb-2"
-                  value={indice.ndvi}
+                  value={indice.ndvi || ""}
                   name="ndvi"
                   onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
                 />
@@ -228,14 +269,19 @@ const Form3 = () => {
             {formData.interpretacoesCultura.map((cultura, index) => (
               <div key={index} className="mb-3">
                 <label className="form-label">Cultura:</label>
-                <input
-                  type="text"
+                <select
                   name="cultura"
-                  placeholder="EX: Soja (grão)"
-                  className="form-control mb-2"
-                  value={cultura.cultura}
+                  className="form-control"
+                  value={cultura.cultura || ""}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "cultura")}
-                />
+                >
+                  {/*Mapeia as opções de culturas disponíveis*/}
+                  {culturaOptions.map((cultura, index) => (
+                    <option key={index} value={cultura}>
+                      {cultura}
+                    </option>
+                  ))}
+                </select>
                 <label className="form-label">Data de Emergência:</label>
                 <input
                   type="date"
@@ -263,7 +309,7 @@ const Form3 = () => {
                   className="form-control"
                   value={cultura.coberturaSolo}
                   placeholder="EX: 12"
-                  onChange={(e) => handleChange(e, "planta.coberuraSolo")}
+                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
                 />
               </div>
             ))}
@@ -320,8 +366,8 @@ const Form3 = () => {
                     handleArrayChange(e, index, "interpretacoesManejo", "tipoOperacao")
                   }
                 />
-                
-                
+
+
               </div>
             ))}
             <button
