@@ -3,9 +3,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 import { culturaOptions } from "../optionsInputs/culturas";
 const FormPage = () => {
+
+    
     
   // Validador de CPF
   const validateCPF = (cpf) => {
+    if (!cpf) return true; // Verifica se o CPF está definido
     const cleanCPF = cpf.replace(/\D/g, ""); // Remove caracteres não numéricos
     if (cleanCPF.length !== 11) {
       return false;
@@ -13,7 +16,9 @@ const FormPage = () => {
     return true;
   };
 
+  // Validador de Código IBGE (7 dígitos)
   const validateIBGECode = (ibgeCode) => {
+    if (!ibgeCode) return true; // Verifica se o ibgeCode está definido
     const cleanIBGECode = ibgeCode.replace(/\D/g, ""); // Remove caracteres não numéricos
     if (cleanIBGECode.length !== 7) {
       return false;
@@ -52,32 +57,71 @@ const FormPage = () => {
       {
         dataPlantio: "2023-10-28",
         dataColheita: "2024-02-28",
+        //dataPrevisaoPlantio: "2023-10-28",
+        //dataPrevisaoColheita: "2024-02-28",
         coberturaSolo: 40,
         ilp: "SIM",
         cultura: { nome: "Soja (grão)" },
-        tipoOperacao: { tipo: "ARACAO" },
+        //tipoOperacao: { tipo: "ARACAO" }, TIRAR???
       },
+    /*{
+        dataPrevisaoPlantio: "2023-10-28",
+        dataPrevisaoColheita: "2024-02-28",
+        ilp: "SIM",
+        cultura: { nome: "Soja (grão)" },
+        //tipoOperacao: { tipo: "ARACAO" }, TIRAR???
+      },*/
+
     ],
   });
 
   // Função para atualizar o estado do formulário
-  const handleChange = (e, field) => {
+  const handleChange = (e, fieldPath) => {
     const { value } = e.target;
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  
+    setFormData((prev) => {
+      const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
+      const updatedData = { ...prev };
+  
+      let current = updatedData;
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i];
+        current[key] = { ...current[key] }; // Cria cópias para evitar mutações diretas
+        current = current[key];
+      }
+  
+      current[keys[keys.length - 1]] = value; // Atualiza o valor final
+  
+      return updatedData;
+    });
   };
   
   // Função para atualizar o estado do formulário em campos de array
-  const handleArrayChange = (e, index, arrayField, field) => {
+  const handleArrayChange = (e, index, arrayField, fieldPath) => {
     const { value } = e.target;
+  
     setFormData((prev) => {
       const updatedArray = [...prev[arrayField]];
+  
       if (updatedArray[index]) {
-        updatedArray[index][field] = value;
+        const keys = fieldPath.split("."); // Divide o caminho aninhado em partes
+        let current = updatedArray[index];
+  
+        for (let i = 0; i < keys.length - 1; i++) {
+          const key = keys[i];
+          current[key] = { ...current[key] }; // Cria uma cópia do objeto para evitar mutações diretas
+          current = current[key];
+        }
+  
+        current[keys[keys.length - 1]] = value; // Atualiza o valor final
       }
+  
       return { ...prev, [arrayField]: updatedArray };
     });
   };
   
+  
+  // Função para enviar os dados do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -115,6 +159,8 @@ const FormPage = () => {
       console.error("Erro na requisição:", error);
     }
   };
+
+  // Função para adicionar uma nova entrada em um campo de array
   const addEntry = (arrayField, defaultValues) => {
     setFormData((prev) => ({
       ...prev,
@@ -145,7 +191,7 @@ const FormPage = () => {
                   name="nome"
                   className="form-control"
                   placeholder="Ex: José da Silva"
-                  value={formData.produtor.nome || ""}
+                  value={formData.produtor?.nome || ""} //Exibe o valor do campo nome do produtor
                   onChange={(e) => handleChange(e, "produtor.nome")}
                 />
               </div>
@@ -157,7 +203,7 @@ const FormPage = () => {
                   name="cpf"
                   className="form-control"
                   placeholder="EX: 12345678900"
-                  value={formData.produtor.cpf || ""}
+                  value={formData.produtor?.cpf || ""}
                   onChange={(e) => handleChange(e, "produtor.cpf")}
                 />
               </div>
@@ -178,7 +224,7 @@ const FormPage = () => {
                 name="nome"
                 className="form-control"
                 placeholder="EX: Fazenda Santa Maria"
-                value={formData.propriedade.nome}
+                value={formData.propriedade?.nome || ""}
                 onChange={(e) => handleChange(e, "propriedade.nome")}
               />
             </div>
@@ -191,7 +237,7 @@ const FormPage = () => {
                 name="codigoCar"
                 className="form-control"
                 required
-                value={formData.propriedade.codigoCar}
+                value={formData.propriedade?.codigoCar || ""}
                 placeholder="EX: MT-5107248-1025F299474640148FE845C7A0B62635"
                 onChange={(e) => handleChange(e, "propriedade.codigoCar")}
               />
@@ -202,7 +248,7 @@ const FormPage = () => {
                 type="text"
                 name="codigoIbge"
                 className="form-control"
-                value={formData.propriedade.codigoIbge}
+                value={formData.propriedade?.codigoIbge || ""}
                 placeholder="EX: 3509502"
                 onChange={(e) => handleChange(e, "propriedade.codigoIbge")}
               />
@@ -212,7 +258,7 @@ const FormPage = () => {
               <textarea
                 name="poligono"
                 className="form-control"
-                value={formData.propriedade.poligono}
+                value={formData.propriedade?.poligono || ""}
                 placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
                 onChange={(e) => handleChange(e, "propriedade.poligono")}
               ></textarea>
@@ -232,7 +278,7 @@ const FormPage = () => {
                 name="poligono"
                 required
                 className="form-control"
-                value={formData.talhao.poligono}
+                value={formData.talhao?.poligono || ""}
                 placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
                 onChange={(e) => handleChange(e, "talhao.poligono")}
               ></textarea>
@@ -248,7 +294,7 @@ const FormPage = () => {
                 className="form-control"
                 required
                 placeholder="EX: 25"
-                value={formData.talhao.area}
+                value={formData.talhao?.area || ""}
                 onChange={(e) => handleChange(e, "talhao.area")}
               />
             </div>
@@ -257,7 +303,7 @@ const FormPage = () => {
               <select
                 required
                 name="tipoProdutor"
-                value={formData.talhao.tipoProdutor}
+                value={formData.talhao?.tipoProdutor || ""} 
                 className="form-select"
                 onChange={(e) => handleChange(e, "talhao.tipoProdutor")}
               >
@@ -281,7 +327,7 @@ const FormPage = () => {
                   type="date"
                   className="form-control"
                   name="dataOperacao"
-                  value={manejo.data}
+                  value={manejo?.data || ""}
                   onChange={(e) => handleArrayChange(e, index, "manejos", "data")}
 
                   required
@@ -295,7 +341,7 @@ const FormPage = () => {
                   className="form-control"
                   required
                   placeholder="EX: REVOLVIMENTO DO SOLO"
-                  value={manejo.operacao.nomeOperacao}
+                  value={manejo.operacao?.nomeOperacao || ""}
                   onChange={(e) => handleArrayChange(e, index, "manejos", "operacao.nomeOperacao")}
                   />
 
@@ -306,8 +352,8 @@ const FormPage = () => {
                   name="tipoOperacao"
                   className="form-control"
                   placeholder="EX: ARACAO"
-                  value={manejo.tipoOperacao.tipo || ""}
-                  onChange={(e) => handleChange(e, index, "manejos", "tipoOperacao.tipo")}
+                  value={manejo.tipoOperacao?.tipo || ""}
+                  onChange={(e) => handleArrayChange(e, index, "manejos", "tipoOperacao.tipo")}
                   />
               </div>
 
@@ -335,7 +381,7 @@ const FormPage = () => {
                 <input
                   type="date"
                   className="form-control"
-                  value={producao.dataPlantio}
+                  value={producao?.dataPlantio || ""}
                   name="dataPlantio"
                   onChange={(e) => handleArrayChange(e, index, "producoes", "dataPlantio")}
                   required
@@ -345,7 +391,7 @@ const FormPage = () => {
                 <input
                   type="date"
                   className="form-control"
-                  value={producao.dataColheita}
+                  value={producao?.dataColheita || ""}
                   name="dataColheita"
                   onChange={(e) => handleArrayChange(e, index, "producoes", "dataColheita")}
                   required
@@ -361,11 +407,11 @@ const FormPage = () => {
                   max={100}
                   className="form-control"
                   required
-                  value={producao.coberturaSolo}
+                  value={producao?.coberturaSolo || ""}
                   onChange={(e) => handleArrayChange(e, index, "producoes", "coberturaSolo")}
                 />
 
-                <label className="form-label">Tipo da Operação*: </label>
+                {/*<label className="form-label">Tipo da Operação*: </label>
                 <input
                   type="text"
                   required
@@ -374,14 +420,14 @@ const FormPage = () => {
                   placeholder="EX: ARACAO"
                   value={producao.tipoOperacao?.tipo || ""}
                   onChange={(e) => handleArrayChange(e, index, "producoes", "tipoOperacao.tipo")}
-                />
+                />*/}
 
                 <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
                 <select
                   required
                   name="ILP"
                   className="form-select"
-                  value={producao.ilp}
+                  value={producao?.ilp || ""}
                   onChange={(e) => handleArrayChange(e, index, "producoes", "ilp")}
                 >
                   <option value="1">SIM</option>
@@ -394,7 +440,7 @@ const FormPage = () => {
                   name="cultura"
                   className="form-control"
                   value={producao.cultura?.nome || ""}
-                  onChange={(e) => handleChange(e, index, "producoes", "cultura.nome")}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "cultura.nome")}
                 >
                   {/*Mapeia as opções de culturas disponíveis*/}
                   <option value="">Selecione uma cultura</option>
@@ -424,25 +470,24 @@ const FormPage = () => {
             <h2 className="mb-0"> Próxima cultura:</h2>
           </div>
           <div className="card-body">
-            {formData.producoes.map((producao, index) => (
+            {formData.producoes.map((producao, index) => ( 
               <div key={index} className="mb-3">
                 <label className="form-label">Data de previsão do plantio*: </label>
                 <input
                   type="date"
                   className="form-control"
-                  value={producao.dataPlantio}
+                  value={producao?.dataPrevisaoPlantio || ""}
                   name="dataPlantio"
-                  onChange={(e) => handleArrayChange(e, index, "producoes", "dataPlantio")}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "dataPrevisaoPlantio")}
                   required
                 />
-
                 <label className="form-label">Data de previsão da colheita*: </label>
                 <input
                   type="date"
                   className="form-control"
-                  value={producao.dataColheita}
+                  value={producao?.dataPrevisaoColheita || ""}
                   name="dataColheita"
-                  onChange={(e) => handleArrayChange(e, index, "producoes", "dataColheita")}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "dataPrevisaoColheita")}
                   required
                 />
 
@@ -451,7 +496,7 @@ const FormPage = () => {
                   required
                   name="ILP"
                   className="form-select"
-                  value={producao.ilp}
+                  value={producao?.ilp || ""}
                   onChange={(e) => handleArrayChange(e, index, "producoes", "ilp")}
                 >
                   <option value="1">SIM</option>
@@ -480,13 +525,14 @@ const FormPage = () => {
               type="button"
               className="btn btn-primary"
               onClick={() =>
-                addEntry("producoes", { dataPlantio: "", coberturaSolo: 0, ilp: "", cultura: "", tipoOperacao: "" })
+                addEntry("producoes", { dataPrevisaoPlantio: "", ilp: "", cultura: "", dataPrevisaoColheita: "" }) 
+              
               }>
               Adicionar Próxima Cultura
             </button>
           </div>
         </div>
-
+        
         {/* Botões */}
         <div className="d-flex justify-content-between">
           <button type="submit" className="btn btn-success">
