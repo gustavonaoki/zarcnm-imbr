@@ -3,44 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 import { culturaOptions } from "../optionsInputs/culturas";
 const FormPage = () => {
-
-
-  const [selectedCulturaOption, setSelectedCulturaOption] = useState(""); // Valor inicial como string vazia
     
-
   // Validador de CPF
   const validateCPF = (cpf) => {
     const cleanCPF = cpf.replace(/\D/g, ""); // Remove caracteres não numéricos
     if (cleanCPF.length !== 11) {
       return false;
     }
-    /*
-
-    Validação dos últimos 2 digitos do CPF
-    let soma = 0;
-    let resto;
-   
-   // Validação do primeiro dígito
-    for (let i = 1; i <= 9; i++) {
-      soma += parseInt(cleanCPF[i - 1]) * (11 - i);
-    }
-    resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cleanCPF[9])) {
-      return false;
-    }
- 
-    soma = 0;
-    // Validação do segundo dígito
-    for (let i = 1; i <= 10; i++) {
-      soma += parseInt(cleanCPF[i - 1]) * (12 - i);
-    }
-    resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cleanCPF[10])) {
-      return false;
-    }*/
-
     return true;
   };
 
@@ -49,7 +18,6 @@ const FormPage = () => {
     if (cleanIBGECode.length !== 7) {
       return false;
     }
-
     return true;
   }
 
@@ -92,32 +60,23 @@ const FormPage = () => {
     ],
   });
 
-  // Função para atualizar o estado com a opção selecionada
-  const handleSelectChange = (e) => {
-    setSelectedCulturaOption(e.target.value); // Atualiza o estado com a opção selecionada
-  };
-
-  const handleChange = (e, path) => {
+  // Função para atualizar o estado do formulário
+  const handleChange = (e, field) => {
     const { value } = e.target;
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
   
+  // Função para atualizar o estado do formulário em campos de array
+  const handleArrayChange = (e, index, arrayField, field) => {
+    const { value } = e.target;
     setFormData((prev) => {
-      const keys = path.split("."); // Divide o caminho
-      const lastKey = keys.pop(); // Obtém a última chave
-      let target = prev;
-  
-      // Navega até o objeto/pai correto
-      keys.forEach((key) => {
-        if (!target[key]) target[key] = {}; // Inicializa se não existir
-        target = target[key];
-      });
-  
-      // Atualiza o valor do campo
-      target[lastKey] = value;
-  
-      return { ...prev };
+      const updatedArray = [...prev[arrayField]];
+      if (updatedArray[index]) {
+        updatedArray[index][field] = value;
+      }
+      return { ...prev, [arrayField]: updatedArray };
     });
   };
-  
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,7 +94,6 @@ const FormPage = () => {
     }
 
     console.log(formData);
-
 
     try {
       const response = await fetch("/api/v1/status", {
@@ -324,7 +282,7 @@ const FormPage = () => {
                   className="form-control"
                   name="dataOperacao"
                   value={manejo.data}
-                  onChange={(e) => handleChange(e, `manejos.${index}.data`)}
+                  onChange={(e) => handleArrayChange(e, index, "manejos", "data")}
 
                   required
                 />
@@ -338,7 +296,7 @@ const FormPage = () => {
                   required
                   placeholder="EX: REVOLVIMENTO DO SOLO"
                   value={manejo.operacao.nomeOperacao}
-                  onChange={(e) => handleChange(e, `manejos.${index}.operacao.nomeOperacao`)}
+                  onChange={(e) => handleArrayChange(e, index, "manejos", "operacao.nomeOperacao")}
                   />
 
                 <label className="form-label">Tipo da Operação*: </label>
@@ -349,7 +307,7 @@ const FormPage = () => {
                   className="form-control"
                   placeholder="EX: ARACAO"
                   value={manejo.tipoOperacao.tipo || ""}
-                  onChange={(e) => handleChange(e, `manejos.${index}.tipoOperacao.tipo`)}
+                  onChange={(e) => handleChange(e, index, "manejos", "tipoOperacao.tipo")}
                   />
               </div>
 
@@ -379,7 +337,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataPlantio}
                   name="dataPlantio"
-                  onChange={(e) => handleChange(e, `producoes.${index}.dataPlantio`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "dataPlantio")}
                   required
                 />
 
@@ -389,7 +347,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataColheita}
                   name="dataColheita"
-                  onChange={(e) => handleChange(e, `producoes.${index}.dataColheita`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "dataColheita")}
                   required
                 />
 
@@ -404,7 +362,7 @@ const FormPage = () => {
                   className="form-control"
                   required
                   value={producao.coberturaSolo}
-                  onChange={(e) => handleChange(e, `producoes.${index}.coberturaSolo`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "coberturaSolo")}
                 />
 
                 <label className="form-label">Tipo da Operação*: </label>
@@ -415,7 +373,7 @@ const FormPage = () => {
                   className="form-control"
                   placeholder="EX: ARACAO"
                   value={producao.tipoOperacao?.tipo || ""}
-                  onChange={(e) => handleChange(e, `producoes.${index}.tipoOperacao.tipo`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "tipoOperacao.tipo")}
                 />
 
                 <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
@@ -424,7 +382,7 @@ const FormPage = () => {
                   name="ILP"
                   className="form-select"
                   value={producao.ilp}
-                  onChange={(e) => handleChange(e, `producoes.${index}.ilp`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "ilp")}
                 >
                   <option value="1">SIM</option>
                   <option value="0">NÃO</option>
@@ -436,9 +394,10 @@ const FormPage = () => {
                   name="cultura"
                   className="form-control"
                   value={producao.cultura?.nome || ""}
-                  onChange={(e) => handleChange(e, `producoes.${index}.cultura.nome`)}
+                  onChange={(e) => handleChange(e, index, "producoes", "cultura.nome")}
                 >
                   {/*Mapeia as opções de culturas disponíveis*/}
+                  <option value="">Selecione uma cultura</option>
                   {culturaOptions.map((cultura, index) => (
                     <option key={index} value={cultura}>
                       {cultura}
@@ -473,7 +432,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataPlantio}
                   name="dataPlantio"
-                  onChange={(e) => handleChange(e, `producoes.${index}.dataPlantio`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "dataPlantio")}
                   required
                 />
 
@@ -483,7 +442,7 @@ const FormPage = () => {
                   className="form-control"
                   value={producao.dataColheita}
                   name="dataColheita"
-                  onChange={(e) => handleChange(e, `producoes.${index}.dataColheita`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "dataColheita")}
                   required
                 />
 
@@ -493,7 +452,7 @@ const FormPage = () => {
                   name="ILP"
                   className="form-select"
                   value={producao.ilp}
-                  onChange={(e) => handleChange(e, `producoes.${index}.ilp`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "ilp")}
                 >
                   <option value="1">SIM</option>
                   <option value="0">NÃO</option>
@@ -505,9 +464,10 @@ const FormPage = () => {
                   name="cultura"
                   className="form-control"
                   value={producao.cultura?.nome || ""}
-                  onChange={(e) => handleChange(e, `producoes.${index}.cultura.nome`)}
+                  onChange={(e) => handleArrayChange(e, index, "producoes", "cultura.nome")}
                 >
                   {/*Mapeia as opções de culturas disponíveis*/}
+                  <option value="">Selecione uma cultura</option>
                   {culturaOptions.map((cultura, index) => (
                     <option key={index} value={cultura}>
                       {cultura}

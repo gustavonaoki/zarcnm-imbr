@@ -13,10 +13,7 @@ const Form3 = () => {
     return true;
   };
 
-  const [selectedCulturaOption, setSelectedCulturaOption] = useState(""); // Valor inicial como string vazia
-  const handleSelectChange = (e) => {
-    setSelectedCulturaOption(e.target.value); // Atualiza o estado com a opção selecionada
-  };
+  
   
   const [formData, setFormData] = useState({
     dataInicial: "2021-01-17",
@@ -77,7 +74,6 @@ const Form3 = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-   
     const isValidNDVI = formData.indices.every((indice) =>
       validateNDVI_NDTI(indice.ndvi)
     );
@@ -276,6 +272,7 @@ const Form3 = () => {
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "cultura")}
                 >
                   {/*Mapeia as opções de culturas disponíveis*/}
+                  <option value="">Selecione uma cultura</option>
                   {culturaOptions.map((cultura, index) => (
                     <option key={index} value={cultura}>
                       {cultura}
