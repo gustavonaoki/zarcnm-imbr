@@ -4,6 +4,13 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
 import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
+import { fillTestValues_NM2a } from "../teste_exemplos/NM2a";
+import { fillTestValues_NM2b } from "../teste_exemplos/NM2b";
+import { fillTestValues_NM3a } from "../teste_exemplos/NM3a";
+import { fillTestValues_NM3b } from "../teste_exemplos/NM3b";
+import { fillTestValues_NM4a } from "../teste_exemplos/NM4a";
+import { fillTestValues_NM4b } from "../teste_exemplos/NM4b";
+import { ToggleButton, ToggleButtonGroup } from "react-bootstrap"
 
 const Form3 = () => {
 
@@ -15,8 +22,8 @@ const Form3 = () => {
     return true;
   };
 
-  
-  
+
+
   const [formData, setFormData] = useState({
     dataInicial: "2021-01-17",
     dataFinal: "2024-05-14",
@@ -64,7 +71,7 @@ const Form3 = () => {
       return { ...prev, [arrayField]: updatedArray };
     });
   };
-  
+
 
   const addEntry = (arrayField, defaultValues) => {
     setFormData((prev) => ({
@@ -82,7 +89,7 @@ const Form3 = () => {
     const isValidNDTI = formData.indices.every((indice) =>
       validateNDVI_NDTI(indice.ndti)
     );
-  
+
     if (!isValidNDVI) {
       alert("Todos os NDVI devem ser valores entre -1 e 1");
       return;
@@ -116,6 +123,61 @@ const Form3 = () => {
         Informações obrigatórias estão marcadas com *
       </h6>
       <form onSubmit={handleSubmit}>
+
+        <div className="card-body mb-4">
+          <div className="card-header text-black" >
+            <h4>Escolha um caso de teste rápido</h4>
+          </div>
+          <div className="row">
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-1" value={1} onClick={() => fillTestValues_NM1a(setFormData)}>
+                TESTE NM1a
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-2" value={2} onClick={() => fillTestValues_NM1b(setFormData)}>
+                TESTE NM1b
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-3" value={3} onClick={() => fillTestValues_NM2a(setFormData)}>
+                TESTE NM2a
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-4" value={4} onClick={() => fillTestValues_NM2b(setFormData)}>
+                TESTE NM2b
+              </ToggleButton>
+            </div>
+
+          </div>
+        </div>
+
+        <div className="card-body mb-4">
+          <div className="row">
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-5" value={5} onClick={() => fillTestValues_NM3a(setFormData)}>
+                TESTE NM3a
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-6" value={6} onClick={() => fillTestValues_NM3b(setFormData)}>
+                TESTE NM3b
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-7" value={7} onClick={() => fillTestValues_NM4a(setFormData)}>
+                TESTE NM4a
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-8" value={8} onClick={() => fillTestValues_NM4b(setFormData)}>
+                TESTE NM4b
+              </ToggleButton>
+            </div>
+          </div >
+        </div>
+
         <div className="card mb-4 border-0">
           <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
             <h3>Dados de Sensoriamento Remoto</h3>
@@ -385,23 +447,14 @@ const Form3 = () => {
           </div>
         </div>
 
-        <div className="text-center">
+        <div className="d-flex justify-content-between">
           <button type="submit" className="btn btn-success">
             Enviar Dados
           </button>
         </div>
-        <div className="text-center">
-          <button type="button" className="btn btn-success" onClick={ () => fillTestValues_NM1a(setFormData)}>
-            Teste NM1a
-          </button>
-        </div>
-        <div className="text-center">
-          <button type="button" className="btn btn-success" onClick={ () => fillTestValues_NM1b(setFormData)}>
-            Teste NM1b
-          </button>
-        </div>
-      </form>
-    </div>
+
+      </form >
+    </div >
   );
 };
 
