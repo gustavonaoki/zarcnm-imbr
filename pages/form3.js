@@ -1,8 +1,29 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { culturaOptions } from "../optionsInputs/culturas";
+import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
+import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
+import { fillTestValues_NM2a } from "../teste_exemplos/NM2a";
+import { fillTestValues_NM2b } from "../teste_exemplos/NM2b";
+import { fillTestValues_NM3a } from "../teste_exemplos/NM3a";
+import { fillTestValues_NM3b } from "../teste_exemplos/NM3b";
+import { fillTestValues_NM4a } from "../teste_exemplos/NM4a";
+import { fillTestValues_NM4b } from "../teste_exemplos/NM4b";
+import { ToggleButton, ToggleButtonGroup } from "react-bootstrap"
 
 const Form3 = () => {
+
+  const validateNDVI_NDTI = (value) => {
+    const cleanValue = Number(value);
+    if (isNaN(cleanValue) || cleanValue < -1 || cleanValue > 1) {
+      return false;
+    }
+    return true;
+  };
+
+
+
   const [formData, setFormData] = useState({
     dataInicial: "2021-01-17",
     dataFinal: "2024-05-14",
@@ -44,10 +65,13 @@ const Form3 = () => {
     const { value } = e.target;
     setFormData((prev) => {
       const updatedArray = [...prev[arrayField]];
-      updatedArray[index][field] = value;
+      if (updatedArray[index]) {
+        updatedArray[index][field] = value;
+      }
       return { ...prev, [arrayField]: updatedArray };
     });
   };
+
 
   const addEntry = (arrayField, defaultValues) => {
     setFormData((prev) => ({
@@ -58,8 +82,25 @@ const Form3 = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const isValidNDVI = formData.indices.every((indice) =>
+      validateNDVI_NDTI(indice.ndvi)
+    );
+    const isValidNDTI = formData.indices.every((indice) =>
+      validateNDVI_NDTI(indice.ndti)
+    );
+
+    if (!isValidNDVI) {
+      alert("Todos os NDVI devem ser valores entre -1 e 1");
+      return;
+    }
+    if (!isValidNDTI) {
+      alert("Todos os NDTI devem ser valores entre -1 e 1");
+      return;
+    }
+    console.log(formData);
     try {
-      const response = await fetch("/api/v1/endpoint3", {
+      const response = await fetch("/api/v1/status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -82,6 +123,61 @@ const Form3 = () => {
         Informações obrigatórias estão marcadas com *
       </h6>
       <form onSubmit={handleSubmit}>
+
+        <div className="card-body mb-4">
+          <div className="card-header text-black" >
+            <h4>Escolha um caso de teste rápido</h4>
+          </div>
+          <div className="row">
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-1" value={1} onClick={() => fillTestValues_NM1a(setFormData)}>
+                TESTE NM1a
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-2" value={2} onClick={() => fillTestValues_NM1b(setFormData)}>
+                TESTE NM1b
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-3" value={3} onClick={() => fillTestValues_NM2a(setFormData)}>
+                TESTE NM2a
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-4" value={4} onClick={() => fillTestValues_NM2b(setFormData)}>
+                TESTE NM2b
+              </ToggleButton>
+            </div>
+
+          </div>
+        </div>
+
+        <div className="card-body mb-4">
+          <div className="row">
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-5" value={5} onClick={() => fillTestValues_NM3a(setFormData)}>
+                TESTE NM3a
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-6" value={6} onClick={() => fillTestValues_NM3b(setFormData)}>
+                TESTE NM3b
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-7" value={7} onClick={() => fillTestValues_NM4a(setFormData)}>
+                TESTE NM4a
+              </ToggleButton>
+            </div>
+            <div className="col-md-2">
+              <ToggleButton id="tbg-radio-8" value={8} onClick={() => fillTestValues_NM4b(setFormData)}>
+                TESTE NM4b
+              </ToggleButton>
+            </div>
+          </div >
+        </div>
+
         <div className="card mb-4 border-0">
           <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
             <h3>Dados de Sensoriamento Remoto</h3>
@@ -120,38 +216,36 @@ const Form3 = () => {
                 className="form-control"
                 placeholder="EX: 12"
                 value={formData.declividadeMedia}
-                onChange={(e) => handleChange(e, "formData.declividadeMedia")}
+                onChange={(e) => handleChange(e, "declividadeMedia")}
               />
             </div>
             <div className="mb-3">
               <label className="form-label">
-                Plantio em contorno (1-Sim, 0-Não):
+                Plantio em contorno:
               </label>
-              <input
-                type="number"
+              <select
                 name="plantioContorno"
-                min={0}
-                max={1}
-                className="form-control"
-                placeholder="EX: 1"
+                className="form-select"
                 value={formData.plantioContorno}
-                onChange={(e) => handleChange(e, "formData.plantioContorno")}
-              />
+                onChange={(e) => handleChange(e, "plantioContorno")}
+              >
+                <option value="1">SIM</option>
+                <option value="0">NÃO</option>
+              </select>
             </div>
             <div className="mb-3">
               <label className="form-label">
-                Terraceamento (1-Sim, 0-Não):
+                Terraceamento:
               </label>
-              <input
-                type="number"
+              <select
                 name="terraceamento"
-                min={0}
-                max={1}
                 className="form-control"
-                placeholder="EX: 0"
                 value={formData.terraceamento}
-                onChange={(e) => handleChange(e, "formData.terraceamento")}
-              />
+                onChange={(e) => handleChange(e, "terraceamento")}
+              >
+                <option value="1">SIM</option>
+                <option value="0">NÃO</option>
+              </select>
             </div>
           </div>
         </div>
@@ -164,10 +258,17 @@ const Form3 = () => {
           <div className="card-body">
             {formData.indices.map((indice, index) => (
               <div key={index} className="mb-3">
+                <label className="form-label">Data da imagem do pixel*: </label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={indice.data}
+                  onChange={(e) => handleArrayChange(e, index, "indices", "data")}
+                  required
+                />
                 <label className="form-label">Satélite*:</label>
                 <input
-
-                name="satelite"
+                  name="satelite"
                   type="text"
                   required
                   placeholder="EX: Sentinel"
@@ -191,7 +292,7 @@ const Form3 = () => {
                   required
                   placeholder="EX: 0.3342"
                   className="form-control mb-2"
-                  value={indice.ndvi}
+                  value={indice.ndvi || ""}
                   name="ndvi"
                   onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
                 />
@@ -228,14 +329,20 @@ const Form3 = () => {
             {formData.interpretacoesCultura.map((cultura, index) => (
               <div key={index} className="mb-3">
                 <label className="form-label">Cultura:</label>
-                <input
-                  type="text"
+                <select
                   name="cultura"
-                  placeholder="EX: Soja (grão)"
-                  className="form-control mb-2"
-                  value={cultura.cultura}
+                  className="form-control"
+                  value={cultura.cultura || ""}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "cultura")}
-                />
+                >
+                  {/*Mapeia as opções de culturas disponíveis*/}
+                  <option value="">Selecione uma cultura</option>
+                  {culturaOptions.map((cultura, index) => (
+                    <option key={index} value={cultura}>
+                      {cultura}
+                    </option>
+                  ))}
+                </select>
                 <label className="form-label">Data de Emergência:</label>
                 <input
                   type="date"
@@ -263,7 +370,7 @@ const Form3 = () => {
                   className="form-control"
                   value={cultura.coberturaSolo}
                   placeholder="EX: 12"
-                  onChange={(e) => handleChange(e, "planta.coberuraSolo")}
+                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
                 />
               </div>
             ))}
@@ -320,8 +427,8 @@ const Form3 = () => {
                     handleArrayChange(e, index, "interpretacoesManejo", "tipoOperacao")
                   }
                 />
-                
-                
+
+
               </div>
             ))}
             <button
@@ -340,13 +447,14 @@ const Form3 = () => {
           </div>
         </div>
 
-        <div className="text-center">
+        <div className="d-flex justify-content-between">
           <button type="submit" className="btn btn-success">
             Enviar Dados
           </button>
         </div>
-      </form>
-    </div>
+
+      </form >
+    </div >
   );
 };
 
