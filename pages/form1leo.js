@@ -2,7 +2,7 @@ import { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 import { culturaOptions } from "../optionsInputs/culturas";
-
+import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
 const FormPage = () => {
     // Validador de CPF
     const validateCPF = (cpf) => {
@@ -150,6 +150,7 @@ const FormPage = () => {
             console.error("Erro na requisição:", error);
         }
     };
+
     const addEntry = (arrayField, defaultValues) => {
         setFormData((prev) => ({
             ...prev,
@@ -181,6 +182,7 @@ const FormPage = () => {
             });
         }
     };
+
 
     return (
         <div className="container-fluid my-4">
@@ -401,7 +403,7 @@ const FormPage = () => {
                                 {producao.isHistorical === true && (
                                     <>
                                         <label className="form-label">
-                                            Data do plantio*: (real ao aproximada) 
+                                            Data do plantio*: (real ao aproximada)
                                         </label>
                                         <input
                                             type="date"
@@ -413,7 +415,7 @@ const FormPage = () => {
                                         />
 
                                         <label className="form-label">
-                                            Data previsão da colheita*: (real ao aproximada)  
+                                            Data previsão da colheita*: (real ao aproximada)
                                         </label>
                                         <input
                                             type="date"
@@ -430,7 +432,7 @@ const FormPage = () => {
                                 {producao.isHistorical === false && (
                                     <>
                                         <label className="form-label">
-                                            Data previsão do plantio*: 
+                                            Data previsão do plantio*:
                                         </label>
                                         <input
                                             type="date"
@@ -442,7 +444,7 @@ const FormPage = () => {
                                         />
 
                                         <label className="form-label">
-                                            Data previsão da colheita*: 
+                                            Data previsão da colheita*:
                                         </label>
                                         <input
                                             type="date"
@@ -544,6 +546,11 @@ const FormPage = () => {
                 <div className="d-flex justify-content-between">
                     <button type="submit" className="btn btn-success">
                         Enviar
+                    </button>
+                </div>
+                <div className="d-flex justify-content-between">
+                    <button type="button" className="btn btn-success" onClick={ () => fillTestValues_NM1a(setFormData)}>
+                        TESTE 1
                     </button>
                 </div>
             </form>

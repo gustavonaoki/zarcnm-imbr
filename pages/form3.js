@@ -2,6 +2,7 @@ import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { culturaOptions } from "../optionsInputs/culturas";
+import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
 
 const Form3 = () => {
 
@@ -386,6 +387,11 @@ const Form3 = () => {
         <div className="text-center">
           <button type="submit" className="btn btn-success">
             Enviar Dados
+          </button>
+        </div>
+        <div className="text-center">
+          <button type="button" className="btn btn-success" onClick={ () => fillTestValues_NM1a(setFormData)}>
+            Teste
           </button>
         </div>
       </form>
