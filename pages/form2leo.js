@@ -2,43 +2,87 @@ import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { modeloAnaliseSolo } from "../modelos/modeloAnaliseSolo";
+import { validateCPF } from "../utils/validateCPF";
+import { validateSoilComponents } from "../utils/validateSoil";
+import NM1a from "../data/NM1a.json";
+import NM1b from "../data/NM1b.json";
+import NM2a from "../data/NM2a.json";
+import NM2b from "../data/NM2b.json";
+import NM3a from "../data/NM3a.json";
+import NM3b from "../data/NM3b.json";
+import NM4a from "../data/NM4a.json";
+import NM4b from "../data/NM4b.json";
 
 const Form2 = () => {
   const [analisesSolo, setAnalisesSolo] = useState([
-    {
-      cpfResponsavelColeta: "12345678900",
-      dataColeta: "2024-04-17",
-      pontoColeta: "POINT(40.71727401 -74.00898606)",
-      camada: "20",
-      areia: "",
-      silte: "",
-      argila: "",
-      calcio: "",
-      magnesio: "",
-      potassio: "",
-      sodio: "",
-      aluminio: "",
-      acidezPotencial: "",
-      phh2o: "",
-      phcaci: "",
-      fosforoMehlich: "",
-      fosforoResina: "",
-      enxofre: "",
-      mos: "",
-      arilsulfatase: "",
-      betaGlicosedade: "",
-      densidadeSolo: "",
-    },
+    { ...modeloAnaliseSolo, camada: "20" }, // Primeiro formulário vazio com camada 20
+    { ...modeloAnaliseSolo, camada: "40" }, // Segundo formulário vazio com camada 40
   ]);
+
+  const [errors, setErrors] = useState({
+    0: {}, // Erros do primeiro formulário
+    1: {}, // Erros do segundo formulário
+  });
+
+  const [opcaoSelecionada, setOpcaoSelecionada] = useState(""); // Estado do select
+
+  // Map JSON options
+  const opcoesJson = {
+    "NM1a": NM1a,
+    "NM1b": NM1b,
+    "NM2a": NM2a,
+    "NM2b": NM2b,
+    "NM3a": NM3a,
+    "NM3b": NM3b,
+    "NM4a": NM4a,
+    "NM4b": NM4b,
+  };
 
   // Função para atualizar os valores de um campo específico no estado
   const handleChange = (e, index, field) => {
     const { value } = e.target;
+
+    // Atualiza o valor do campo no estado
     setAnalisesSolo((prev) => {
       const updated = [...prev];
       updated[index][field] = value;
       return updated;
     });
+
+    // Inicializa os erros se necessário
+    setErrors((prev) => ({
+      ...prev,
+      [index]: prev[index] || {}, // Garante que o objeto de erros para o índice existe
+    }));
+
+    // Validação do CPF caso seja o campo correspondente
+    if (field === "cpfResponsavelColeta") {
+      const error = validateCPF(value); // Valida o CPF
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          cpfResponsavelColeta: error,
+        },
+      }));
+    }
+
+    // Validação de argila, areia e silte
+    if (["argila", "areia", "silte"].includes(field)) {
+      const { argila, areia, silte } = {
+        ...analisesSolo[index],
+        [field]: value, // Atualiza o campo alterado no objeto temporário
+      };
+
+      const error = validateSoilComponents(argila, areia, silte); // Chama a validação externa
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          soilComponents: error, // Atualiza o erro se inválido ou null se válido
+        },
+      }));
+    }
   };
 
   // Função para adicionar uma nova análise de solo
@@ -53,32 +97,82 @@ const Form2 = () => {
 
   // Função para validar campos obrigatórios
   const isFormValid = () => {
-    return analisesSolo.every((analise) =>
-      [
-        "dataColeta",
-        "pontoColeta",
-        "camada",
-        "areia",
-        "silte",
-        "argila",
-        "calcio",
-        "magnesio",
-        "potassio",
-        "sodio",
-        "aluminio",
-        "acidezPotencial",
-        "phh2o",
-        "fosforoMehlich",
-        "enxofre",
-        "mos",
-      ].every(
-        (field) => analise[field] !== null && analise[field] !== "" // Verifica se os campos obrigatórios estão preenchidos
-      )
-    );
+    return analisesSolo.every((analise, index) => {
+      const analiseErrors = errors[index] || {}; // Garante que errors[index] existe
+      return (
+        analiseErrors.cpfResponsavelColeta == null && // Verifica se não há erro de CPF
+        [
+          "dataColeta",
+          "pontoColeta",
+          "camada",
+          "areia",
+          "silte",
+          "argila",
+          "calcio",
+          "magnesio",
+          "potassio",
+          "sodio",
+          "aluminio",
+          "acidezPotencial",
+          "phh2o",
+          "fosforoMehlich",
+          "enxofre",
+          "mos",
+        ].every((field) => analise[field] !== null && analise[field] !== "")
+      );
+    });
+  };
+
+  const handleAutoPreencher = (index) => {
+    // Extrair o JSON correto com base na opção selecionada
+    const jsonSelecionado = opcoesJson[opcaoSelecionada];
+  
+    if (!jsonSelecionado) {
+      alert("Por favor, selecione um JSON válido.");
+      return;
+    }
+  
+    // Navegar no JSON até o array de dados relevantes
+    let dadosSelecionados = [];
+    try {
+      dadosSelecionados = jsonSelecionado.item[1].item[0].request.body.raw; // Caminho para os dados de laboratório
+    } catch (error) {
+      alert("Erro ao acessar os dados no JSON selecionado.");
+      return;
+    }
+  
+    if (!Array.isArray(dadosSelecionados) || dadosSelecionados.length === 0) {
+      alert("Nenhum dado encontrado no JSON para autopreenchimento.");
+      return;
+    }
+  
+    // Atualizar o estado para preencher formulários existentes antes de criar novos
+    setAnalisesSolo((prevAnalises) => {
+      const novasAnalises = [...prevAnalises];
+  
+      // Iterar sobre os dados do JSON e preencher os formulários disponíveis
+      for (let i = 0; i < dadosSelecionados.length; i++) {
+        if (i < novasAnalises.length) {
+          // Preenche os formulários existentes
+          novasAnalises[i] = {
+            ...novasAnalises[i],
+            ...dadosSelecionados[i],
+          };
+        } else {
+          // Adiciona novos formulários para os dados restantes
+          novasAnalises.push({
+            ...modeloAnaliseSolo, // Base vazia
+            ...dadosSelecionados[i], // Dados do JSON
+          });
+        }
+      }
+  
+      return novasAnalises;
+    });
   };
 
   // Função para envio do formulário
-  const handleSubmit = async (e) => {};
+  const handleSubmit = async (e) => { };
 
   return (
     <div className="container my-4">
@@ -90,15 +184,54 @@ const Form2 = () => {
             key={index}
             style={{ backgroundColor: "#DBDBDB" }}
           >
-            {/* Cabeçalho do card com o título e botão de remoção */}
+            {/* Cabeçalho do card com título, mensagem, select e botões */}
             <div className="border-2">
               <div
-                className="card-header text-white"
+                className="card-header text-white d-flex justify-content-between align-items-center"
                 style={{ backgroundColor: "#0b4809" }}
               >
-                <div className="d-flex justify-content-between align-items-center">
+                {/* Título da análise */}
+                <div>
                   <h3 className="mb-0">Análise {index + 1}</h3>
-                  {index > 0 && (
+                  {/* Mensagem de campos obrigatórios */}
+                  <p
+                    className="mb-0 mt-2"
+                    style={{ fontSize: "0.9rem", color: "#f8f9fa" }}
+                  >
+                    Campos com ( * ) são obrigatórios
+                  </p>
+                </div>
+
+                {/* Controles (Select + Autopreencher + Remover) */}
+                <div className="d-flex gap-2 align-items-center">
+                  {/* Select para selecionar JSON */}
+                  <select
+                    className="form-select form-select-sm w-auto"
+                    value={opcaoSelecionada}
+                    onChange={(e) => setOpcaoSelecionada(e.target.value)}
+                  >
+                    <option value="">Selecione</option>
+                    <option value="NM1a">NM1a</option>
+                    <option value="NM1b">NM1b</option>
+                    <option value="NM2a">NM2a</option>
+                    <option value="NM2b">NM2b</option>
+                    <option value="NM3a">NM3a</option>
+                    <option value="NM3b">NM3b</option>
+                    <option value="NM4a">NM4a</option>
+                    <option value="NM4b">NM4b</option>
+                  </select>
+
+                  {/* Botão de Autopreencher */}
+                  <button
+                    type="button"
+                    className="btn btn-light btn-sm"
+                    onClick={() => handleAutoPreencher(index)} // Passa o índice da análise atual
+                  >
+                    Autopreencher
+                  </button>
+
+                  {/* Botão de Remover Análise (se não for a primeira análise) */}
+                  {index > 1 && (
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"
@@ -109,13 +242,7 @@ const Form2 = () => {
                     </button>
                   )}
                 </div>
-                {/* Informação de campos obrigatórios */}
-                <p
-                  className="mb-0 mt-2"
-                  style={{ fontSize: "0.9rem", color: "#f8f9fa" }}
-                >
-                  Campos com ( * ) são obrigatórios
-                </p>
+
               </div>
               <div className="card-body">
                 {/* Informações principais */}
@@ -126,10 +253,14 @@ const Form2 = () => {
                       type="text"
                       className="form-control"
                       value={analise.cpfResponsavelColeta || ""}
-                      onChange={(e) =>
-                        handleChange(e, index, "cpfResponsavelColeta")
-                      }
+                      onChange={(e) => handleChange(e, index, "cpfResponsavelColeta")}
                     />
+                    {/* Exibe o erro se existir para o campo correspondente */}
+                    {errors[index]?.cpfResponsavelColeta && (
+                      <div className="text-danger mt-1">
+                        {errors[index]?.cpfResponsavelColeta}
+                      </div>
+                    )}
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">Data da Coleta: *</label>
@@ -196,6 +327,7 @@ const Form2 = () => {
                         required
                       />
                     </div>
+
                     <div className="mb-3">
                       <label className="form-label">Silte (%): *</label>
                       <input
@@ -206,6 +338,7 @@ const Form2 = () => {
                         required
                       />
                     </div>
+
                     <div>
                       <label className="form-label">Argila (%): *</label>
                       <input
@@ -216,6 +349,11 @@ const Form2 = () => {
                         required
                       />
                     </div>
+
+                    {/* Exibição da mensagem de erro para Areia, Silte e Argila */}
+                    {errors[index]?.soilComponents && (
+                      <div className="text-danger mt-2">{errors[index].soilComponents}</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -236,7 +374,7 @@ const Form2 = () => {
                   >
                     <div className="mb-3">
                       <label className="form-label">
-                        Cálcio (Ca) (cmolc/kg): *
+                        Cálcio (Ca) (cmolc/dm³): *
                       </label>
                       <input
                         type="number"
@@ -248,7 +386,7 @@ const Form2 = () => {
                     </div>
                     <div className="mb-3">
                       <label className="form-label">
-                        Magnésio (Mg) (cmolc/kg): *
+                        Magnésio (Mg) (cmolc/dm³): *
                       </label>
                       <input
                         type="number"
@@ -371,7 +509,7 @@ const Form2 = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">MOS (g/dm³): *</label>
+                      <label className="form-label">MOS (Matéria organica do solo) (g/dm³): *</label>
                       <input
                         type="number"
                         className="form-control"
