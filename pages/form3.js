@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
+import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
 
 const Form3 = () => {
 
@@ -391,7 +392,12 @@ const Form3 = () => {
         </div>
         <div className="text-center">
           <button type="button" className="btn btn-success" onClick={ () => fillTestValues_NM1a(setFormData)}>
-            Teste
+            Teste NM1a
+          </button>
+        </div>
+        <div className="text-center">
+          <button type="button" className="btn btn-success" onClick={ () => fillTestValues_NM1b(setFormData)}>
+            Teste NM1b
           </button>
         </div>
       </form>

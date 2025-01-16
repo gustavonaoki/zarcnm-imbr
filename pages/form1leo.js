@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
+import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
 const FormPage = () => {
     // Validador de CPF
     const validateCPF = (cpf) => {
@@ -550,9 +551,15 @@ const FormPage = () => {
                 </div>
                 <div className="d-flex justify-content-between">
                     <button type="button" className="btn btn-success" onClick={ () => fillTestValues_NM1a(setFormData)}>
-                        TESTE 1
+                        TESTE NM1a
                     </button>
                 </div>
+                <div className="d-flex justify-content-between">
+                    <button type="button" className="btn btn-success" onClick={ () => fillTestValues_NM1b(setFormData)}>
+                        TESTE NM1b
+                    </button>
+                </div>
+                
             </form>
         </div>
     );
