@@ -1,4 +1,5 @@
-export const modeloAnaliseSolo = {
+export const modeloAnaliseSolo = () => {
+  return {
     cpfResponsavelColeta: "",
     dataColeta: "",
     pontoColeta: "",
@@ -22,4 +23,4 @@ export const modeloAnaliseSolo = {
     betaGlicosedade: "",
     densidadeSolo: "",
   };
-  
+};
