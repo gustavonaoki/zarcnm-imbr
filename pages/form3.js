@@ -167,8 +167,8 @@ const Form3 = () => {
                 value={formData.plantioContorno}
                 onChange={(e) => handleChange(e, "plantioContorno")}
               >
-                <option value={1}>SIM</option>
-                <option value={0}>NÃO</option>
+                <option value="1">SIM</option>
+                <option value="0">NÃO</option>
               </select>
             </div>
             <div className="mb-3">
@@ -181,8 +181,8 @@ const Form3 = () => {
                 value={formData.terraceamento}
                 onChange={(e) => handleChange(e, "terraceamento")}
               >
-                <option value={1}>SIM</option>
-                <option value={0}>NÃO</option>
+                <option value="1">SIM</option>
+                <option value="0">NÃO</option>
               </select>
             </div>
           </div>
