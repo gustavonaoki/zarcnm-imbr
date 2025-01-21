@@ -2,6 +2,8 @@ import { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 import { validateIBGECode } from "../utils/validateIBGEcode";
+import { validateArea } from "../utils/validateArea";
+import { validateCPF } from "../utils/validateCPF_victor";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
 import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
@@ -15,16 +17,6 @@ import { ToggleButton } from "react-bootstrap"
 
 
 const FormPage = () => {
-    // Validador de CPF
-    const validateCPF = (cpf) => {
-        if (!cpf) return true; // Verifica se o CPF está definido
-        const cleanCPF = cpf.replace(/\D/g, ""); // Remove caracteres não numéricos
-        if (cleanCPF.length !== 11) {
-            return false;
-        }
-        return true;
-    };
-
     const [errors, setErrors] = useState({
         0: {},
 
@@ -80,7 +72,7 @@ const FormPage = () => {
             ...prev, // Mantém todos os erros existentes previamente armazenados no estado
             [0]: prev[0] || {}, // Garante que o objeto de erros no índice `0` existe
         }));
-        
+
         // Validação do ibgecode
         if (fieldPath === "propriedade.codigoIbge") {
 
@@ -94,7 +86,20 @@ const FormPage = () => {
             }))
         }
 
-        
+        // Validação da area
+        if (fieldPath === "talhao.area") {
+
+            const error = validateArea(value); // Chama a validação externa
+            setErrors((prev) => ({
+                ...prev,
+                [0]: {
+                    ...prev[0],
+                    validateArea: error,
+                }
+            }))
+        }
+
+
         setFormData((prev) => {
             const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
             const updatedData = { ...prev };
@@ -154,6 +159,13 @@ const FormPage = () => {
         const isValidIBGECode = validateIBGECode(formData.propriedade.codigoIbge);
         if (isValidIBGECode != null) {
             alert(isValidIBGECode); //Mostra mensagem detalhada caso não.
+            return;
+        }
+
+        //verifica se a área está válida
+        const isValidIArea = validateArea(formData.talhao.area);
+        if (isValidIArea != null) {
+            alert(isValidIArea); //Mostra mensagem detalhada caso não.
             return;
         }
 
@@ -350,10 +362,10 @@ const FormPage = () => {
                                 onChange={(e) => handleChange(e, "propriedade.codigoIbge")}
                             />
                         </div>
-                        {errors[0]?.validateIBGECode
-                            && (
-                                <div className="text-danger mt-2">{errors[0].validateIBGECode}</div>
-                            )}
+                        {errors[0]?.validateIBGECode && (
+                            <div className="text-danger mt-2">{errors[0].validateIBGECode}</div>
+                        )
+                        }
                         <div className="mb-3">
                             <label className="form-label">Polígono (Formato WKT):</label>
                             <textarea
@@ -389,15 +401,18 @@ const FormPage = () => {
                                 Área (Em hectares)*:
                             </label>
                             <input
-                                type="number"
+                                type="text"
                                 name="area"
-                                min={0}
                                 className="form-control"
                                 required
                                 placeholder="EX: 25"
                                 value={formData.talhao?.area || ""}
                                 onChange={(e) => handleChange(e, "talhao.area")}
                             />
+                            {errors[0]?.validateArea && (
+                                <div className="text-danger mt-2">{errors[0].validateArea}</div>
+                            )
+                            }
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Tipo do produtor (Proprietário ou Arrendatário)*: </label>
