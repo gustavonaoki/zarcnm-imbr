@@ -2,7 +2,7 @@
  * Valida o campo Area.
  * Garante que o valor não seja negativo.
  * 
- * @param {number} area - Valor do código do IBGE.
+ * @param {number} area - Valor da área.
  * @returns {string | null} - Retorna mensagem de erro ou null se válido.
  */
 

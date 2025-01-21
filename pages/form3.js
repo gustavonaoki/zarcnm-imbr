@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { validateGroundCover } from "../utils/validateGroundCover";
+import { validateNDTI, validateNDVI } from "../utils/validateNDVI_NDTI";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
 import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
@@ -10,19 +12,14 @@ import { fillTestValues_NM3a } from "../teste_exemplos/NM3a";
 import { fillTestValues_NM3b } from "../teste_exemplos/NM3b";
 import { fillTestValues_NM4a } from "../teste_exemplos/NM4a";
 import { fillTestValues_NM4b } from "../teste_exemplos/NM4b";
-import { ToggleButton, ToggleButtonGroup } from "react-bootstrap"
+import { ToggleButton } from "react-bootstrap"
 
 const Form3 = () => {
 
-  const validateNDVI_NDTI = (value) => {
-    const cleanValue = Number(value);
-    if (isNaN(cleanValue) || cleanValue < -1 || cleanValue > 1) {
-      return false;
-    }
-    return true;
-  };
+  const [errors, setErrors] = useState({
+    0: {},
 
-
+  });
 
   const [formData, setFormData] = useState({
     dataInicial: "2021-01-17",
@@ -63,6 +60,46 @@ const Form3 = () => {
 
   const handleArrayChange = (e, index, arrayField, field) => {
     const { value } = e.target;
+
+    // Validação da ndvi
+    if (arrayField === "indices" && field === "ndvi") {
+
+      const error = validateNDVI(value); // Chama a validação externa
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateNDVI: error,
+        }
+      }))
+    }
+
+    // Validação da ndti
+    if (arrayField === "indices" && field === "ndti") {
+
+      const error = validateNDTI(value); // Chama a validação externa
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateNDTI: error,
+        }
+      }))
+    }
+
+    // Validação da coberturaSolo
+    if (field === "coberturaSolo") {
+
+      const error = validateGroundCover(value); // Chama a validação externa
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateGroundCover: error,
+        }
+      }))
+    }
+
     setFormData((prev) => {
       const updatedArray = [...prev[arrayField]];
       if (updatedArray[index]) {
@@ -83,21 +120,8 @@ const Form3 = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const isValidNDVI = formData.indices.every((indice) =>
-      validateNDVI_NDTI(indice.ndvi)
-    );
-    const isValidNDTI = formData.indices.every((indice) =>
-      validateNDVI_NDTI(indice.ndti)
-    );
 
-    if (!isValidNDVI) {
-      alert("Todos os NDVI devem ser valores entre -1 e 1");
-      return;
-    }
-    if (!isValidNDTI) {
-      alert("Todos os NDTI devem ser valores entre -1 e 1");
-      return;
-    }
+
     console.log(formData);
     try {
       const response = await fetch("/api/v1/status", {
@@ -296,6 +320,10 @@ const Form3 = () => {
                   name="ndvi"
                   onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
                 />
+                {errors[index]?.validateNDVI && (
+                  <div className="text-danger mt-2">{errors[index].validateNDVI}</div>
+                )
+                }
                 <label className="form-label">NDTI*:</label>
                 <input
                   type="text"
@@ -306,6 +334,10 @@ const Form3 = () => {
                   value={indice.ndti}
                   onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
                 />
+                {errors[index]?.validateNDTI && (
+                  <div className="text-danger mt-2">{errors[index].validateNDTI}</div>
+                )
+                }
               </div>
             ))}
             <button
@@ -363,15 +395,17 @@ const Form3 = () => {
                   Cobertura do solo (%):
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="coberturaSolo"
-                  min={0}
-                  max={100}
                   className="form-control"
                   value={cultura.coberturaSolo}
                   placeholder="EX: 12"
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
                 />
+                {errors[index]?.validateGroundCover && (
+                  <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
+                )
+                }
               </div>
             ))}
             <button
