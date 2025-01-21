@@ -1,6 +1,7 @@
 import { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
+import { validateIBGECode } from "../utils/validateIBGEcode";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
 import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
@@ -10,7 +11,7 @@ import { fillTestValues_NM3a } from "../teste_exemplos/NM3a";
 import { fillTestValues_NM3b } from "../teste_exemplos/NM3b";
 import { fillTestValues_NM4a } from "../teste_exemplos/NM4a";
 import { fillTestValues_NM4b } from "../teste_exemplos/NM4b";
-import { ToggleButton, ToggleButtonGroup } from "react-bootstrap"
+import { ToggleButton } from "react-bootstrap"
 
 
 const FormPage = () => {
@@ -24,17 +25,10 @@ const FormPage = () => {
         return true;
     };
 
+    const [errors, setErrors] = useState({
+        0: {},
 
-
-    // Validador de Código IBGE (7 dígitos)
-    const validateIBGECode = (ibgeCode) => {
-        if (!ibgeCode) return true; // Verifica se o ibgeCode está definido
-        const cleanIBGECode = ibgeCode.replace(/\D/g, ""); // Remove caracteres não numéricos
-        if (cleanIBGECode.length !== 7) {
-            return false;
-        }
-        return true;
-    }
+    });
 
 
     // Estado para armazenar os dados do formulário
@@ -82,6 +76,25 @@ const FormPage = () => {
     const handleChange = (e, fieldPath) => {
         const { value } = e.target;
 
+        setErrors((prev) => ({
+            ...prev, // Mantém todos os erros existentes previamente armazenados no estado
+            [0]: prev[0] || {}, // Garante que o objeto de erros no índice `0` existe
+        }));
+        
+        // Validação do ibgecode
+        if (fieldPath === "propriedade.codigoIbge") {
+
+            const error = validateIBGECode(value); // Chama a validação externa
+            setErrors((prev) => ({
+                ...prev,
+                [0]: {
+                    ...prev[0],
+                    validateIBGECode: error,
+                }
+            }))
+        }
+
+        
         setFormData((prev) => {
             const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
             const updatedData = { ...prev };
@@ -97,6 +110,8 @@ const FormPage = () => {
 
             return updatedData;
         });
+
+
     };
 
     // Função para atualizar o estado do formulário em campos de array
@@ -128,15 +143,17 @@ const FormPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        //verifica se o CPF está válido
         const isValidCPF = validateCPF(formData.produtor.cpf);
         if (!isValidCPF) {
-            alert("CPF inválido");
+            alert("CPF inválido"); //Mostra mensagem detalhada caso não.
             return;
         }
 
+        //verifica se o código do ibge está válido
         const isValidIBGECode = validateIBGECode(formData.propriedade.codigoIbge);
-        if (!isValidIBGECode) {
-            alert("Código IBGE inválido");
+        if (isValidIBGECode != null) {
+            alert(isValidIBGECode); //Mostra mensagem detalhada caso não.
             return;
         }
 
@@ -333,6 +350,10 @@ const FormPage = () => {
                                 onChange={(e) => handleChange(e, "propriedade.codigoIbge")}
                             />
                         </div>
+                        {errors[0]?.validateIBGECode
+                            && (
+                                <div className="text-danger mt-2">{errors[0].validateIBGECode}</div>
+                            )}
                         <div className="mb-3">
                             <label className="form-label">Polígono (Formato WKT):</label>
                             <textarea
