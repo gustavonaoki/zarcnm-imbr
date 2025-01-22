@@ -1,19 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { modeloAnaliseSolo } from "../modelos/modeloAnaliseSolo";
 import { validateCPF } from "../utils/validateCPF";
 import { validateSoilComponents } from "../utils/validateSoil";
-import NM1a from "../data/NM1a.json";
-import NM1b from "../data/NM1b.json";
-import NM2a from "../data/NM2a.json";
-import NM2b from "../data/NM2b.json";
-import NM3a from "../data/NM3a.json";
-import NM3b from "../data/NM3b.json";
-import NM4a from "../data/NM4a.json";
-import NM4b from "../data/NM4b.json";
+import InputMask from "react-input-mask";
 
-const Form2 = () => {
+
+export default function Form2({ initialData, onSubmit }) {
   const [analisesSolo, setAnalisesSolo] = useState([
     { ...modeloAnaliseSolo, camada: "20" }, // Primeiro formulário vazio com camada 20
     { ...modeloAnaliseSolo, camada: "40" }, // Segundo formulário vazio com camada 40
@@ -24,50 +18,39 @@ const Form2 = () => {
     1: {}, // Erros do segundo formulário
   });
 
-  const [opcaoSelecionada, setOpcaoSelecionada] = useState(""); // Estado do select
+  // Atualizar o estado apenas quando initialData estiver presente
+  useEffect(() => {
+    if (initialData && initialData.length > 0) {
+      setAnalisesSolo(initialData);
+    }
+  }, [initialData]);
 
-  // Map JSON options
-  const opcoesJson = {
-    "NM1a": NM1a,
-    "NM1b": NM1b,
-    "NM2a": NM2a,
-    "NM2b": NM2b,
-    "NM3a": NM3a,
-    "NM3b": NM3b,
-    "NM4a": NM4a,
-    "NM4b": NM4b,
-  };
-
-  // Função para atualizar os valores de um campo específico no estado
   const handleChange = (e, index, field) => {
     const { value } = e.target;
 
-    // Atualiza o valor do campo no estado
     setAnalisesSolo((prev) => {
       const updated = [...prev];
       updated[index][field] = value;
       return updated;
     });
 
-    // Inicializa os erros se necessário
     setErrors((prev) => ({
       ...prev,
       [index]: prev[index] || {}, // Garante que o objeto de erros para o índice existe
     }));
 
-    // Validação do CPF caso seja o campo correspondente
+    // Validação de CPF e componentes do solo
     if (field === "cpfResponsavelColeta") {
-      const error = validateCPF(value); // Valida o CPF
+      const isValid = validateCPF(value);
       setErrors((prev) => ({
         ...prev,
         [index]: {
           ...prev[index],
-          cpfResponsavelColeta: error,
+          cpfResponsavelColeta: isValid ? null : "CPF inválido!",
         },
       }));
     }
 
-    // Validação de argila, areia e silte
     if (["argila", "areia", "silte"].includes(field)) {
       const { argila, areia, silte } = {
         ...analisesSolo[index],
@@ -85,15 +68,15 @@ const Form2 = () => {
     }
   };
 
-  // Função para adicionar uma nova análise de solo
   const addAnalise = () => {
     setAnalisesSolo((prev) => [...prev, { ...modeloAnaliseSolo }]);
   };
 
-  // Função para remover uma análise adicionada (exceto a principal)
   const removeAnalise = (index) => {
     setAnalisesSolo((prev) => prev.filter((_, i) => i !== index));
   };
+
+
 
   // Função para validar campos obrigatórios
   const isFormValid = () => {
@@ -120,54 +103,6 @@ const Form2 = () => {
           "mos",
         ].every((field) => analise[field] !== null && analise[field] !== "")
       );
-    });
-  };
-
-  const handleAutoPreencher = (index) => {
-    // Extrair o JSON correto com base na opção selecionada
-    const jsonSelecionado = opcoesJson[opcaoSelecionada];
-  
-    if (!jsonSelecionado) {
-      alert("Por favor, selecione um JSON válido.");
-      return;
-    }
-  
-    // Navegar no JSON até o array de dados relevantes
-    let dadosSelecionados = [];
-    try {
-      dadosSelecionados = jsonSelecionado.item[1].item[0].request.body.raw; // Caminho para os dados de laboratório
-    } catch (error) {
-      alert("Erro ao acessar os dados no JSON selecionado.");
-      return;
-    }
-  
-    if (!Array.isArray(dadosSelecionados) || dadosSelecionados.length === 0) {
-      alert("Nenhum dado encontrado no JSON para autopreenchimento.");
-      return;
-    }
-  
-    // Atualizar o estado para preencher formulários existentes antes de criar novos
-    setAnalisesSolo((prevAnalises) => {
-      const novasAnalises = [...prevAnalises];
-  
-      // Iterar sobre os dados do JSON e preencher os formulários disponíveis
-      for (let i = 0; i < dadosSelecionados.length; i++) {
-        if (i < novasAnalises.length) {
-          // Preenche os formulários existentes
-          novasAnalises[i] = {
-            ...novasAnalises[i],
-            ...dadosSelecionados[i],
-          };
-        } else {
-          // Adiciona novos formulários para os dados restantes
-          novasAnalises.push({
-            ...modeloAnaliseSolo, // Base vazia
-            ...dadosSelecionados[i], // Dados do JSON
-          });
-        }
-      }
-  
-      return novasAnalises;
     });
   };
 
@@ -202,60 +137,19 @@ const Form2 = () => {
                   </p>
                 </div>
 
-                {/* Controles (Select + Autopreencher + Remover) */}
-                <div className="d-flex gap-2 align-items-center">
-                  {/* Select para selecionar JSON */}
-                  <select
-                    className="form-select form-select-sm w-auto"
-                    value={opcaoSelecionada}
-                    onChange={(e) => setOpcaoSelecionada(e.target.value)}
-                  >
-                    <option value="">Selecione</option>
-                    <option value="NM1a">NM1a</option>
-                    <option value="NM1b">NM1b</option>
-                    <option value="NM2a">NM2a</option>
-                    <option value="NM2b">NM2b</option>
-                    <option value="NM3a">NM3a</option>
-                    <option value="NM3b">NM3b</option>
-                    <option value="NM4a">NM4a</option>
-                    <option value="NM4b">NM4b</option>
-                  </select>
-
-                  {/* Botão de Autopreencher */}
-                  <button
-                    type="button"
-                    className="btn btn-light btn-sm"
-                    onClick={() => handleAutoPreencher(index)} // Passa o índice da análise atual
-                  >
-                    Autopreencher
-                  </button>
-
-                  {/* Botão de Remover Análise (se não for a primeira análise) */}
-                  {index > 1 && (
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => removeAnalise(index)}
-                      title="Remover esta análise"
-                    >
-                      <i className="bi bi-trash-fill"></i>
-                    </button>
-                  )}
-                </div>
-
               </div>
               <div className="card-body">
                 {/* Informações principais */}
                 <div className="row mb-6">
                   <div className="col-md-6">
                     <label className="form-label">CPF do Responsável:</label>
-                    <input
-                      type="text"
+                    <InputMask
+                      mask="999.999.999-99"
                       className="form-control"
                       value={analise.cpfResponsavelColeta || ""}
                       onChange={(e) => handleChange(e, index, "cpfResponsavelColeta")}
                     />
-                    {/* Exibe o erro se existir para o campo correspondente */}
+                    {/* Exibe o erro se houver */}
                     {errors[index]?.cpfResponsavelColeta && (
                       <div className="text-danger mt-1">
                         {errors[index]?.cpfResponsavelColeta}
@@ -572,18 +466,8 @@ const Form2 = () => {
           >
             Adicionar Nova Análise
           </button>
-          {/* Botão fica desativado até o preenchimento de todos os dados obrigatórios  */}
-          <button
-            type="submit"
-            className="btn btn-success"
-            disabled={!isFormValid()}
-          >
-            Enviar
-          </button>
         </div>
       </form>
     </div>
   );
 };
-
-export default Form2;
