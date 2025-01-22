@@ -4,6 +4,7 @@ import InputMask from "react-input-mask";
 import { validateIBGECode } from "../utils/validateIBGEcode";
 import { validateArea } from "../utils/validateArea";
 import { validateCPF } from "../utils/validateCPF_victor";
+import { validateGroundCover } from "../utils/validateGroundCover";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
 import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
@@ -21,6 +22,7 @@ const FormPage = () => {
         0: {},
 
     });
+
 
 
     // Estado para armazenar os dados do formulário
@@ -100,6 +102,8 @@ const FormPage = () => {
         }
 
 
+
+
         setFormData((prev) => {
             const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
             const updatedData = { ...prev };
@@ -122,6 +126,19 @@ const FormPage = () => {
     // Função para atualizar o estado do formulário em campos de array
     const handleArrayChange = (e, index, arrayField, fieldPath) => {
         const { value } = e.target;
+
+        // Validação da coberturaSolo
+        if (fieldPath === "coberturaSolo") {
+
+            const error = validateGroundCover(value); // Chama a validação externa
+            setErrors((prev) => ({
+                ...prev,
+                [index]: {
+                    ...prev[index],
+                    validateGroundCover: error,
+                }
+            }))
+        }
 
         setFormData((prev) => {
             const updatedArray = [...prev[arrayField]];
@@ -199,6 +216,8 @@ const FormPage = () => {
         }));
     };
 
+
+
     const [addOption, setAddOption] = useState("");
 
     const handleAddEntry = (option) => {
@@ -223,7 +242,6 @@ const FormPage = () => {
             });
         }
     };
-
 
     return (
         <div className="container-fluid my-4">
@@ -453,7 +471,6 @@ const FormPage = () => {
                                 <input
                                     type="text"
                                     name="nomeOperacao"
-                                    min={0}
                                     className="form-control"
                                     required
                                     placeholder="EX: REVOLVIMENTO DO SOLO"
@@ -620,22 +637,25 @@ const FormPage = () => {
 
                         {/* Select e Botão para Adicionar Histórico ou Próxima Cultura */}
                         <div className="d-flex col-md-2 gap-2">
-                            <select
+                            {/*<select
                                 className="form-select"
                                 value={addOption}
                                 onChange={(e) => setAddOption(e.target.value)}
                             >
                                 <option value="">Selecione uma opção</option>
-                                <option value="historical">Adicionar Histórico</option>
+                                
                                 <option value="next">Adicionar Próxima Cultura</option>
-                            </select>
+                            </select>*/}
                             <button
                                 type="button"
+                                //value={addOption}     
                                 className="btn btn-primary"
-                                onClick={() => {
-                                    handleAddEntry(addOption);
-                                }}
-                                disabled={!addOption}
+                                onClick={(e) => {
+                                    //setAddOption(e.target.value);
+                                    handleAddEntry("next")
+                                }
+                            }
+                                //disabled={!addOption}
                             >
                                 Adicionar
                             </button>
@@ -651,8 +671,8 @@ const FormPage = () => {
                     </button>
                 </div>
 
-            </form>
-        </div>
+            </form >
+        </div >
     );
 };
 
