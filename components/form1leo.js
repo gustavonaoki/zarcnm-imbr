@@ -1,309 +1,106 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
-import { validateIBGECode } from "../utils/validateIBGEcode";
-import { validateArea } from "../utils/validateArea";
-import { validateCPF } from "../utils/validateCPF_victor";
-import { validateGroundCover } from "../utils/validateGroundCover";
 import { culturaOptions } from "../optionsInputs/culturas";
-import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
-import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
-import { fillTestValues_NM2a } from "../teste_exemplos/NM2a";
-import { fillTestValues_NM2b } from "../teste_exemplos/NM2b";
-import { fillTestValues_NM3a } from "../teste_exemplos/NM3a";
-import { fillTestValues_NM3b } from "../teste_exemplos/NM3b";
-import { fillTestValues_NM4a } from "../teste_exemplos/NM4a";
-import { fillTestValues_NM4b } from "../teste_exemplos/NM4b";
-import { ToggleButton } from "react-bootstrap"
+import { validateCPF } from "../utils/validateCPF";
+import { validateIBGE } from "../utils/validateIBGECode";
+import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba"
 
 
-const FormPage = () => {
-    const [errors, setErrors] = useState({
-        0: {},
+export default function Form1({ initialData, onSubmit }) {
+    const [cadastroGleba, setCadastroGleba] = useState(modeloCadastroGleba());
+    const [errors, setErrors] = useState({});
 
-    });
+    // Atualiza o estado do formulário quando `initialData` mudar
+    useEffect(() => {
+        if (initialData) {
+            setCadastroGleba((prevData) => ({
+                ...prevData,
+                ...initialData,
+            }));
+        }
+    }, [initialData]);
 
-
-
-    // Estado para armazenar os dados do formulário
-    const [formData, setFormData] = useState({
-        produtor: {
-            nome: "João da Silva",
-            cpf: "12345678000",
-        },
-        propriedade: {
-            nome: "Fazenda Capim Macio",
-            codigoCar: "MT-5107248-1025F299474640148FE845C7A0B62635",
-            codigoIbge: "3509502",
-            poligono:
-                "POLYGON((-58.9144585643381 -13.5072128852218,...))",
-        },
-        talhao: {
-            poligono:
-                "POLYGON((-58.67396951647091186 -13.24646265710462245,...))",
-            area: 10,
-            tipoProdutor: "Proprietário",
-        },
-        manejos: [
-            {
-                data: "2021-01-28",
-                operacao: { nomeOperacao: "Revolvimento do solo" },
-                tipoOperacao: { tipo: "ARACAO" },
-            },
-        ],
-        producoes: [
-            {
-                dataPlantio: "2023-10-28",
-                dataColheita: "2024-02-28",
-                dataPrevisaoPlantio: "2023-10-28",
-                dataPrevisaoColheita: "2024-02-28",
-                coberturaSolo: 40,
-                ilp: "SIM",
-                cultura: { nome: "Soja (grão)" },
-                tipoOperacao: { tipo: "ARACAO" },
-                isHistorical: true,
-            },
-        ],
-    });
-
-    // Função para atualizar o estado do formulário
+    // Função para atualizar valores e validar
     const handleChange = (e, fieldPath) => {
         const { value } = e.target;
 
-        setErrors((prev) => ({
-            ...prev, // Mantém todos os erros existentes previamente armazenados no estado
-            [0]: prev[0] || {}, // Garante que o objeto de erros no índice `0` existe
-        }));
-
-        // Validação do ibgecode
-        if (fieldPath === "propriedade.codigoIbge") {
-
-            const error = validateIBGECode(value); // Chama a validação externa
-            setErrors((prev) => ({
-                ...prev,
-                [0]: {
-                    ...prev[0],
-                    validateIBGECode: error,
-                }
-            }))
-        }
-
-        // Validação da area
-        if (fieldPath === "talhao.area") {
-
-            const error = validateArea(value); // Chama a validação externa
-            setErrors((prev) => ({
-                ...prev,
-                [0]: {
-                    ...prev[0],
-                    validateArea: error,
-                }
-            }))
-        }
-
-
-
-
-        setFormData((prev) => {
-            const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
+        setCadastroGleba((prev) => {
             const updatedData = { ...prev };
-
+            const keys = fieldPath.split(".");
             let current = updatedData;
+
             for (let i = 0; i < keys.length - 1; i++) {
                 const key = keys[i];
-                current[key] = { ...current[key] }; // Cria cópias para evitar mutações diretas
+                current[key] = { ...current[key] };
                 current = current[key];
             }
 
-            current[keys[keys.length - 1]] = value; // Atualiza o valor final
-
+            current[keys[keys.length - 1]] = value;
             return updatedData;
         });
 
+        setErrors((prev) => {
+            const updatedErrors = { ...prev };
+            const keys = fieldPath.split(".");
+            let current = updatedErrors;
 
-    };
-
-    // Função para atualizar o estado do formulário em campos de array
-    const handleArrayChange = (e, index, arrayField, fieldPath) => {
-        const { value } = e.target;
-
-        // Validação da coberturaSolo
-        if (fieldPath === "coberturaSolo") {
-
-            const error = validateGroundCover(value); // Chama a validação externa
-            setErrors((prev) => ({
-                ...prev,
-                [index]: {
-                    ...prev[index],
-                    validateGroundCover: error,
-                }
-            }))
-        }
-
-        setFormData((prev) => {
-            const updatedArray = [...prev[arrayField]];
-
-            if (updatedArray[index]) {
-                const keys = fieldPath.split("."); // Divide o caminho aninhado em partes
-                let current = updatedArray[index];
-
-                for (let i = 0; i < keys.length - 1; i++) {
-                    const key = keys[i];
-                    current[key] = { ...current[key] }; // Cria uma cópia do objeto para evitar mutações diretas
-                    current = current[key];
-                }
-
-                current[keys[keys.length - 1]] = value; // Atualiza o valor final
+            for (let i = 0; i < keys.length - 1; i++) {
+                const key = keys[i];
+                current[key] = current[key] || {};
+                current = current[key];
             }
 
-            return { ...prev, [arrayField]: updatedArray };
+            const field = keys[keys.length - 1];
+            if (fieldPath === "produtor.cpf") {
+                const isValid = validateCPF(value);
+                current[field] = isValid ? null : "CPF inválido!";
+            } else if (fieldPath === "propriedade.codigoIbge") {
+                const validationResult = validateIBGE(value);
+                current[field] = validationResult === true ? null : validationResult; // Mensagem de erro da validação
+            } else {
+                current[field] = null; // Remove erros para outros campos
+            }
+
+            return updatedErrors;
         });
     };
 
-
-    // Função para enviar os dados do formulário
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        //verifica se o CPF está válido
-        const isValidCPF = validateCPF(formData.produtor.cpf);
-        if (!isValidCPF) {
-            alert("CPF inválido"); //Mostra mensagem detalhada caso não.
-            return;
-        }
-
-        //verifica se o código do ibge está válido
-        const isValidIBGECode = validateIBGECode(formData.propriedade.codigoIbge);
-        if (isValidIBGECode != null) {
-            alert(isValidIBGECode); //Mostra mensagem detalhada caso não.
-            return;
-        }
-
-        //verifica se a área está válida
-        const isValidIArea = validateArea(formData.talhao.area);
-        if (isValidIArea != null) {
-            alert(isValidIArea); //Mostra mensagem detalhada caso não.
-            return;
-        }
-
-        console.log(formData);
-
-        try {
-            const response = await fetch("/api/v1/status", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
-
-
-
-            if (response.ok) {
-                alert("Dados enviados com sucesso!");
-            } else {
-                alert("Erro ao enviar os dados.");
-            }
-        } catch (error) {
-            console.error("Erro na requisição:", error);
-        }
-    };
-
+    // Função para adicionar itens a arrays no formulário
     const addEntry = (arrayField, defaultValues) => {
-        setFormData((prev) => ({
+        setCadastroGleba((prev) => ({
             ...prev,
             [arrayField]: [...prev[arrayField], defaultValues],
         }));
     };
 
+    // Função para verificar se o formulário é válido
+    const isFormValid = () => {
+        // Todos os campos obrigatórios devem ser preenchidos e não podem haver erros
+        return (
+            !Object.values(errors).some((error) => error !== null) &&
+            Object.keys(modeloCadastroGleba).every((key) => {
+                const field = cadastroGleba[key];
+                if (Array.isArray(field)) {
+                    return field.length > 0;
+                }
+                return field !== null && field !== "";
+            })
+        );
+    };
 
 
-    const [addOption, setAddOption] = useState("");
-
-    const handleAddEntry = (option) => {
-        if (option === "historical") {
-            addEntry("producoes", {
-                dataPlantio: "",
-                dataColheita: "",
-                coberturaSolo: 0,
-                ilp: "",
-                cultura: { nome: "" },
-                //tipoOperacao: { tipo: "" },
-                isHistorical: true, // Define que é um Histórico
-            });
-        } else if (option === "next") {
-            addEntry("producoes", {
-                dataPrevisaoPlantio: "",
-                dataPrevisaoColheita: "",
-                ilp: "",
-                cultura: { nome: "" },
-
-                isHistorical: false, // Define que é uma Próxima Cultura
-            });
-        }
+    // Função para enviar os dados do formulário
+    const handleSubmit = async (e) => {
     };
 
     return (
-        <div className="container-fluid my-4">
+        <div className="container my-4">
             <h1 className="text-center mb-4">Formulário de Cadastro</h1>
             <h6 className="text-danger text-center">
                 Informações obrigatórias estão marcadas com *
             </h6>
             <form onSubmit={handleSubmit}>
-                <div className="card-body mb-4">
-                    <div className="card-header text-black" >
-                        <h4>Escolha um caso de teste rápido</h4>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-2">
-                            <ToggleButton id="tbg-radio-1" value={1} onClick={() => fillTestValues_NM1a(setFormData)}>
-                                TESTE NM1a
-                            </ToggleButton>
-                        </div>
-                        <div className="col-md-2">
-                            <ToggleButton id="tbg-radio-2" value={2} onClick={() => fillTestValues_NM1b(setFormData)}>
-                                TESTE NM1b
-                            </ToggleButton>
-                        </div>
-                        <div className="col-md-2">
-                            <ToggleButton id="tbg-radio-3" value={3} onClick={() => fillTestValues_NM2a(setFormData)}>
-                                TESTE NM2a
-                            </ToggleButton>
-                        </div>
-                        <div className="col-md-2">
-                            <ToggleButton id="tbg-radio-4" value={4} onClick={() => fillTestValues_NM2b(setFormData)}>
-                                TESTE NM2b
-                            </ToggleButton>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div className="card-body mb-4">
-                    <div className="row">
-                        <div className="col-md-2">
-                            <ToggleButton id="tbg-radio-5" value={5} onClick={() => fillTestValues_NM3a(setFormData)}>
-                                TESTE NM3a
-                            </ToggleButton>
-                        </div>
-                        <div className="col-md-2">
-                            <ToggleButton id="tbg-radio-6" value={6} onClick={() => fillTestValues_NM3b(setFormData)}>
-                                TESTE NM3b
-                            </ToggleButton>
-                        </div>
-                        <div className="col-md-2">
-                            <ToggleButton id="tbg-radio-7" value={7} onClick={() => fillTestValues_NM4a(setFormData)}>
-                                TESTE NM4a
-                            </ToggleButton>
-                        </div>
-                        <div className="col-md-2">
-                            <ToggleButton id="tbg-radio-8" value={8} onClick={() => fillTestValues_NM4b(setFormData)}>
-                                TESTE NM4b
-                            </ToggleButton>
-                        </div>
-                    </div >
-                </div>
-
                 {/* Dados do Produtor */}
                 <div className="mb-4 card border-0 shadow-sm">
                     <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
@@ -318,21 +115,24 @@ const FormPage = () => {
                                     name="nome"
                                     className="form-control"
                                     placeholder="Ex: José da Silva"
-                                    value={formData.produtor?.nome || ""} //Exibe o valor do campo nome do produtor
+                                    value={cadastroGleba.produtor?.nome || ""} //Exibe o valor do campo nome do produtor
                                     onChange={(e) => handleChange(e, "produtor.nome")}
                                 />
                             </div>
                             <div className="col-md-6">
                                 <label className="form-label">CPF:</label>
                                 <InputMask
-                                    mask={"999.999.999-99"} //Máscara para o campo de CPF
+                                    mask={"999.999.999-99"}
                                     type="text"
                                     name="cpf"
                                     className="form-control"
                                     placeholder="EX: 12345678900"
-                                    value={formData.produtor?.cpf || ""}
+                                    value={cadastroGleba.produtor?.cpf || ""}
                                     onChange={(e) => handleChange(e, "produtor.cpf")}
                                 />
+                                {errors.produtor?.cpf && (
+                                    <small className="text-danger">{errors.produtor.cpf}</small>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -351,7 +151,7 @@ const FormPage = () => {
                                 name="nome"
                                 className="form-control"
                                 placeholder="EX: Fazenda Santa Maria"
-                                value={formData.propriedade?.nome || ""}
+                                value={cadastroGleba.propriedade?.nome || ""}
                                 onChange={(e) => handleChange(e, "propriedade.nome")}
                             />
                         </div>
@@ -364,7 +164,7 @@ const FormPage = () => {
                                 name="codigoCar"
                                 className="form-control"
                                 required
-                                value={formData.propriedade?.codigoCar || ""}
+                                value={cadastroGleba.propriedade?.codigoCar || ""}
                                 placeholder="EX: MT-5107248-1025F299474640148FE845C7A0B62635"
                                 onChange={(e) => handleChange(e, "propriedade.codigoCar")}
                             />
@@ -375,10 +175,13 @@ const FormPage = () => {
                                 type="text"
                                 name="codigoIbge"
                                 className="form-control"
-                                value={formData.propriedade?.codigoIbge || ""}
+                                value={cadastroGleba.propriedade?.codigoIbge || ""}
                                 placeholder="EX: 3509502"
                                 onChange={(e) => handleChange(e, "propriedade.codigoIbge")}
                             />
+                            {errors.propriedade?.codigoIbge && (
+                                <small className="text-danger">{errors.propriedade.codigoIbge}</small>
+                            )}
                         </div>
                         {errors[0]?.validateIBGECode && (
                             <div className="text-danger mt-2">{errors[0].validateIBGECode}</div>
@@ -389,7 +192,7 @@ const FormPage = () => {
                             <textarea
                                 name="poligono"
                                 className="form-control"
-                                value={formData.propriedade?.poligono || ""}
+                                value={cadastroGleba.propriedade?.poligono || ""}
                                 placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
                                 onChange={(e) => handleChange(e, "propriedade.poligono")}
                             ></textarea>
@@ -409,7 +212,7 @@ const FormPage = () => {
                                 name="poligono"
                                 required
                                 className="form-control"
-                                value={formData.talhao?.poligono || ""}
+                                value={cadastroGleba.talhao?.poligono || ""}
                                 placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
                                 onChange={(e) => handleChange(e, "talhao.poligono")}
                             ></textarea>
@@ -424,7 +227,7 @@ const FormPage = () => {
                                 className="form-control"
                                 required
                                 placeholder="EX: 25"
-                                value={formData.talhao?.area || ""}
+                                value={cadastroGleba.talhao?.area || ""}
                                 onChange={(e) => handleChange(e, "talhao.area")}
                             />
                             {errors[0]?.validateArea && (
@@ -437,7 +240,7 @@ const FormPage = () => {
                             <select
                                 required
                                 name="tipoProdutor"
-                                value={formData.talhao?.tipoProdutor || ""}
+                                value={cadastroGleba.talhao?.tipoProdutor || ""}
                                 className="form-select"
                                 onChange={(e) => handleChange(e, "talhao.tipoProdutor")}
                             >
@@ -454,7 +257,7 @@ const FormPage = () => {
                         <h2 className="mb-0"> Operações mecanizadas realizadas na gleba:</h2>
                     </div>
                     <div className="card-body">
-                        {formData.manejos.map((manejo, index) => (
+                        {cadastroGleba.manejos.map((manejo, index) => (
                             <div key={index} className="mb-3">
                                 <label className="form-label">Data da operação*: </label>
                                 <input
@@ -508,7 +311,7 @@ const FormPage = () => {
                         <h2 className="mb-0">Histórico/Próxima culturas na gleba/talhão:</h2>
                     </div>
                     <div className="card-body">
-                        {formData.producoes.map((producao, index) => (
+                        {cadastroGleba.producoes.map((producao, index) => (
                             <div key={index} className="mb-3">
                                 <div className="card-header text-white" style={{ backgroundColor: "#006400" }}>
                                     {producao.isHistorical === true
@@ -652,28 +455,17 @@ const FormPage = () => {
                                 className="btn btn-primary"
                                 onClick={(e) => {
                                     //setAddOption(e.target.value);
-                                    handleAddEntry("next")
+                                    addEntry("next")
                                 }
-                            }
-                                //disabled={!addOption}
+                                }
+                            //disabled={!addOption}
                             >
                                 Adicionar
                             </button>
                         </div>
                     </div>
                 </div>
-
-
-                {/* Botões */}
-                <div className="d-flex justify-content-between">
-                    <button type="submit" className="btn btn-success">
-                        Enviar
-                    </button>
-                </div>
-
             </form >
         </div >
     );
 };
-
-export default FormPage;

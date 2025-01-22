@@ -28,4 +28,3 @@ export const validateSoilComponents = (argila, areia, silte) => {
   
     return null; // Tudo válido
   };
-  
