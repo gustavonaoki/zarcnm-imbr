@@ -8,6 +8,21 @@
           "request": {
             "body": {
               "raw": {
+                "produtor": {
+                  "nome": "João da Silva",
+                  "cpf": "12345678901"
+                },
+                "propriedade": {
+                  "nome": "Fazenda Boa Esperança",
+                  "codigoCar": "MT-5107248-1025F299474640148FE845C7A0B62635",
+                  "codigoIbge": "5103403",
+                  "poligono": "POLYGON((-58.9144585643381 -13.5072128852218, -58.9145000 -13.5072500))"
+                },
+                "talhao": {
+                  "poligono": "POLYGON((-58.9144585643381 -13.5072128852218, -58.9145000 -13.5072500))",
+                  "area": 45.5,
+                  "tipoProdutor": "Proprietário"
+                },
                 "manejos": [
                   {
                     "data": "2023-09-01",
@@ -27,7 +42,8 @@
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"
-                    }
+                    },
+                    "isHistorical": true
                   },
                   {
                     "dataPlantio": "2022-10-01",
@@ -35,25 +51,18 @@
                     "coberturaSolo": 30,
                     "ilp": "false",
                     "cultura": {
-                      "nome": "Soja (grão)"
-                    }
-                  },
-                  {
-                    "dataPlantio": "2023-10-01",
-                    "dataColheita": "2024-01-10",
-                    "coberturaSolo": 40,
-                    "ilp": "false",
-                    "cultura": {
-                      "nome": "Soja (grão)"
-                    }
+                      "nome": "Milho (grão)"
+                    },
+                    "isHistorical": true
                   },
                   {
                     "dataPrevisaoPlantio": "2024-10-01",
                     "dataPrevisaoColheita": "2025-01-10",
-                    "ilp": "false",
+                    "ilp": "true",
                     "cultura": {
-                      "nome": "Soja (grão)"
-                    }
+                      "nome": "Sorgo (grão)"
+                    },
+                    "isHistorical": false
                   }
                 ]
               }

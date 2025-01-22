@@ -1,75 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { culturaOptions } from "../optionsInputs/culturas";
-import { fillTestValues_NM1a } from "../teste_exemplos/NM1a";
-import { fillTestValues_NM1b } from "../teste_exemplos/NM1b";
-import { fillTestValues_NM2a } from "../teste_exemplos/NM2a";
-import { fillTestValues_NM2b } from "../teste_exemplos/NM2b";
-import { fillTestValues_NM3a } from "../teste_exemplos/NM3a";
-import { fillTestValues_NM3b } from "../teste_exemplos/NM3b";
-import { fillTestValues_NM4a } from "../teste_exemplos/NM4a";
-import { fillTestValues_NM4b } from "../teste_exemplos/NM4b";
-import { ToggleButton, ToggleButtonGroup } from "react-bootstrap"
+import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
 
-const Form3 = () => {
+export default function Form3({ initialData }) {
+  const [formData, setFormData] = useState(modeloSensoriamento());
 
-  const validateNDVI_NDTI = (value) => {
-    const cleanValue = Number(value);
-    if (isNaN(cleanValue) || cleanValue < -1 || cleanValue > 1) {
-      return false;
+  useEffect(() => {
+    if (initialData && initialData.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        ...initialData[0], // Usa o primeiro item do array
+        indices: initialData[0].indices || prev.indices,
+        interpretacoesCultura: initialData[0].interpretacoesCultura || prev.interpretacoesCultura,
+        interpretacoesManejo: initialData[0].interpretacoesManejo || prev.interpretacoesManejo,
+      }));
     }
-    return true;
-  };
-
-
-
-  const [formData, setFormData] = useState({
-    dataInicial: "2021-01-17",
-    dataFinal: "2024-05-14",
-    declividadeMedia: 60,
-    plantioContorno: 0,
-    terraceamento: 0,
-    indices: [
-      {
-        satelite: "Sentinel",
-        coordenada: "POINT(40.71727401 -74.00898606)",
-        data: "2022-08-29",
-        ndvi: 0.3342,
-        ndti: 0.1342,
-      },
-    ],
-    interpretacoesCultura: [
-      {
-        cultura: "Soja (grão)",
-        dataInicio: "2023-10-01",
-        dataFim: "2024-02-01",
-        coberturaSolo: 40,
-      },
-    ],
-    interpretacoesManejo: [
-      {
-        data: "2021-01-28",
-        operacao: "Revolvimento do solo",
-        tipoOperacao: "Aração",
-      },
-    ],
-  });
+  }, [initialData]);
 
   const handleChange = (e, field) => {
     const { value } = e.target;
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleArrayChange = (e, index, arrayField, field) => {
-    const { value } = e.target;
-    setFormData((prev) => {
-      const updatedArray = [...prev[arrayField]];
-      if (updatedArray[index]) {
-        updatedArray[index][field] = value;
-      }
-      return { ...prev, [arrayField]: updatedArray };
-    });
   };
 
 
@@ -81,103 +33,15 @@ const Form3 = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const isValidNDVI = formData.indices.every((indice) =>
-      validateNDVI_NDTI(indice.ndvi)
-    );
-    const isValidNDTI = formData.indices.every((indice) =>
-      validateNDVI_NDTI(indice.ndti)
-    );
-
-    if (!isValidNDVI) {
-      alert("Todos os NDVI devem ser valores entre -1 e 1");
-      return;
-    }
-    if (!isValidNDTI) {
-      alert("Todos os NDTI devem ser valores entre -1 e 1");
-      return;
-    }
-    console.log(formData);
-    try {
-      const response = await fetch("/api/v1/status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        alert("Dados enviados com sucesso!");
-      } else {
-        alert("Erro ao enviar os dados.");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar os dados:", error);
-    }
   };
 
   return (
-    <div className="container-fluid my-4">
+    <div className="container my-4">
       <h2 className="text-center mb-4">Dados de Monitoramento</h2>
       <h6 className="text-danger text-center">
         Informações obrigatórias estão marcadas com *
       </h6>
       <form onSubmit={handleSubmit}>
-
-        <div className="card-body mb-4">
-          <div className="card-header text-black" >
-            <h4>Escolha um caso de teste rápido</h4>
-          </div>
-          <div className="row">
-            <div className="col-md-2">
-              <ToggleButton id="tbg-radio-1" value={1} onClick={() => fillTestValues_NM1a(setFormData)}>
-                TESTE NM1a
-              </ToggleButton>
-            </div>
-            <div className="col-md-2">
-              <ToggleButton id="tbg-radio-2" value={2} onClick={() => fillTestValues_NM1b(setFormData)}>
-                TESTE NM1b
-              </ToggleButton>
-            </div>
-            <div className="col-md-2">
-              <ToggleButton id="tbg-radio-3" value={3} onClick={() => fillTestValues_NM2a(setFormData)}>
-                TESTE NM2a
-              </ToggleButton>
-            </div>
-            <div className="col-md-2">
-              <ToggleButton id="tbg-radio-4" value={4} onClick={() => fillTestValues_NM2b(setFormData)}>
-                TESTE NM2b
-              </ToggleButton>
-            </div>
-
-          </div>
-        </div>
-
-        <div className="card-body mb-4">
-          <div className="row">
-            <div className="col-md-2">
-              <ToggleButton id="tbg-radio-5" value={5} onClick={() => fillTestValues_NM3a(setFormData)}>
-                TESTE NM3a
-              </ToggleButton>
-            </div>
-            <div className="col-md-2">
-              <ToggleButton id="tbg-radio-6" value={6} onClick={() => fillTestValues_NM3b(setFormData)}>
-                TESTE NM3b
-              </ToggleButton>
-            </div>
-            <div className="col-md-2">
-              <ToggleButton id="tbg-radio-7" value={7} onClick={() => fillTestValues_NM4a(setFormData)}>
-                TESTE NM4a
-              </ToggleButton>
-            </div>
-            <div className="col-md-2">
-              <ToggleButton id="tbg-radio-8" value={8} onClick={() => fillTestValues_NM4b(setFormData)}>
-                TESTE NM4b
-              </ToggleButton>
-            </div>
-          </div >
-        </div>
-
         <div className="card mb-4 border-0">
           <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
             <h3>Dados de Sensoriamento Remoto</h3>
@@ -447,15 +311,7 @@ const Form3 = () => {
           </div>
         </div>
 
-        <div className="d-flex justify-content-between">
-          <button type="submit" className="btn btn-success">
-            Enviar Dados
-          </button>
-        </div>
-
       </form >
     </div >
   );
 };
-
-export default Form3;

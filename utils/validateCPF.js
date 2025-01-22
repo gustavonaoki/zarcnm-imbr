@@ -1,18 +1,10 @@
 /**
- * Valida se o CPF é válido, considerando pontos e traços.
- * @param {string} cpf - O CPF a ser validado.
- * @returns {string | null} - Retorna uma mensagem de erro ou null se for válido.
+ * Valida um CPF com base no número de caracteres.
+ * @param {string} cpf - CPF no formato "123.456.789-00" ou "12345678900".
+ * @returns {boolean} Retorna true se o CPF for válido ou vazio, false caso contrário.
  */
 export const validateCPF = (cpf) => {
-  // Remove pontos, traços e outros caracteres não numéricos
-  const cleanedCPF = cpf.replace(/[^\d]/g, "");
-
-  // Verifica se o CPF contém exatamente 11 dígitos numéricos
-  if (!/^\d{11}$/.test(cleanedCPF)) {
-    return "O CPF deve conter exatamente 11 dígitos numéricos.";
-  }
-
-  // Adicione aqui uma validação mais rigorosa para CPF se necessário (cálculo dos dígitos verificadores)
-
-  return null; // CPF válido
+  if (!cpf) return true; // CPF vazio ou não definido é considerado válido
+  const cleanCPF = cpf.replace(/\D/g, ""); // Remove caracteres não numéricos
+  return cleanCPF.length === 11; // Verifica se o CPF tem 11 caracteres
 };
