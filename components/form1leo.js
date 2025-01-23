@@ -28,19 +28,20 @@ export default function Form1({ initialData, onSubmit }) {
         const { value } = e.target;
 
         setCadastroGleba((prev) => {
+            const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
             const updatedData = { ...prev };
-            const keys = fieldPath.split(".");
+        
             let current = updatedData;
-
             for (let i = 0; i < keys.length - 1; i++) {
-                const key = keys[i];
-                current[key] = { ...current[key] };
-                current = current[key];
+              const key = keys[i];
+              current[key] = { ...current[key] }; // Cria cópias para evitar mutações diretas
+              current = current[key];
             }
-
-            current[keys[keys.length - 1]] = value;
+        
+            current[keys[keys.length - 1]] = value; // Atualiza o valor final
+        
             return updatedData;
-        });
+          });
 
         // Validação do ibgecode
         if (fieldPath === "propriedade.codigoIbge") {
@@ -111,7 +112,29 @@ export default function Form1({ initialData, onSubmit }) {
         setCadastroGleba((prev) => ({
             ...prev,
             [arrayField]: [...prev[arrayField], defaultValues],
-        }));
+          }));
+    };
+    const handleAddEntry = (option) => {
+        if (option === "historical") {
+            addEntry("producoes", {
+                dataPlantio: "",
+                dataColheita: "",
+                coberturaSolo: 0,
+                ilp: "",
+                cultura: { nome: "" },
+                //tipoOperacao: { tipo: "" },
+                isHistorical: true, // Define que é um Histórico
+            });
+        } else if (option === "next") {
+            addEntry("producoes", {
+                dataPrevisaoPlantio: "",
+                dataPrevisaoColheita: "",
+                ilp: "",
+                cultura: { nome: "" },
+
+                isHistorical: false, // Define que é uma Próxima Cultura
+            });
+        }
     };
 
     // Função para verificar se o formulário é válido
@@ -497,7 +520,7 @@ export default function Form1({ initialData, onSubmit }) {
                                 className="btn btn-primary"
                                 onClick={(e) => {
                                     //setAddOption(e.target.value);
-                                    addEntry("next")
+                                    handleAddEntry("next")
                                 }
                                 }
                             //disabled={!addOption}
