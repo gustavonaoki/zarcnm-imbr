@@ -3,10 +3,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
+import { errorsValidate } from "../errors/errorsValidators";
+import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
+
 
 export default function Form3({ initialData }) {
   const [formData, setFormData] = useState(modeloSensoriamento());
-
+  const [errors, setErrors] = useState({});
   useEffect(() => {
     if (initialData && initialData.length > 0) {
       setFormData((prev) => ({
@@ -21,8 +24,28 @@ export default function Form3({ initialData }) {
 
   const handleChange = (e, field) => {
     const { value } = e.target;
+    
+    //Validando os erros
+    errorsValidate(e, field, setErrors)
+
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  const handleArrayChange = (e, index, arrayField, field) => {
+    const { value } = e.target;
+    
+    //Validando erros
+    errorsValidateArray(e, index, arrayField, field, setErrors);
+
+    setFormData((prev) => {
+      const updatedArray = [...prev[arrayField]];
+      if (updatedArray[index]) {
+        updatedArray[index][field] = value;
+      }
+      return { ...prev, [arrayField]: updatedArray };
+    });
+  };
+
 
 
   const addEntry = (arrayField, defaultValues) => {
@@ -73,15 +96,17 @@ export default function Form3({ initialData }) {
                 Declividade média da gleba/talhão(%):
               </label>
               <input
-                type="number"
+                type="text"
                 name="declividadeMedia"
-                min={0}
-                max={100}
                 className="form-control"
                 placeholder="EX: 12"
                 value={formData.declividadeMedia}
                 onChange={(e) => handleChange(e, "declividadeMedia")}
               />
+              {errors[0]?.validateSlope && (
+                  <div className="text-danger mt-2">{errors[0].validateSlope}</div>
+                )
+                }
             </div>
             <div className="mb-3">
               <label className="form-label">
@@ -160,6 +185,10 @@ export default function Form3({ initialData }) {
                   name="ndvi"
                   onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
                 />
+                {errors[index]?.validateNDVI && (
+                  <div className="text-danger mt-2">{errors[index].validateNDVI}</div>
+                )
+                }
                 <label className="form-label">NDTI*:</label>
                 <input
                   type="text"
@@ -170,6 +199,10 @@ export default function Form3({ initialData }) {
                   value={indice.ndti}
                   onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
                 />
+                {errors[index]?.validateNDTI && (
+                  <div className="text-danger mt-2">{errors[index].validateNDTI}</div>
+                )
+                }
               </div>
             ))}
             <button
@@ -227,15 +260,17 @@ export default function Form3({ initialData }) {
                   Cobertura do solo (%):
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="coberturaSolo"
-                  min={0}
-                  max={100}
                   className="form-control"
                   value={cultura.coberturaSolo}
                   placeholder="EX: 12"
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
                 />
+                {errors[index]?.validateGroundCover && (
+                  <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
+                )
+                }
               </div>
             ))}
             <button

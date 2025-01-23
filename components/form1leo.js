@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 import { culturaOptions } from "../optionsInputs/culturas";
-import { validateCPF } from "../utils/validateCPF";
-import { validateIBGE } from "../utils/validateIBGECode";
-import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba"
+import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba";
+import { errorsValidate } from "../errors/errorsValidators";
+import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
+
 
 
 export default function Form1({ initialData, onSubmit }) {
@@ -26,43 +27,49 @@ export default function Form1({ initialData, onSubmit }) {
         const { value } = e.target;
 
         setCadastroGleba((prev) => {
+            const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
             const updatedData = { ...prev };
-            const keys = fieldPath.split(".");
-            let current = updatedData;
 
+            let current = updatedData;
             for (let i = 0; i < keys.length - 1; i++) {
                 const key = keys[i];
-                current[key] = { ...current[key] };
+                current[key] = { ...current[key] }; // Cria cópias para evitar mutações diretas
                 current = current[key];
             }
 
-            current[keys[keys.length - 1]] = value;
+            current[keys[keys.length - 1]] = value; // Atualiza o valor final
+
             return updatedData;
         });
 
-        setErrors((prev) => {
-            const updatedErrors = { ...prev };
-            const keys = fieldPath.split(".");
-            let current = updatedErrors;
+        //Validando os erros
+        errorsValidate(e, fieldPath, setErrors)
 
-            for (let i = 0; i < keys.length - 1; i++) {
-                const key = keys[i];
-                current[key] = current[key] || {};
-                current = current[key];
+    };
+    // Função para atualizar o estado do formulário em campos de array
+    const handleArrayChange = (e, index, arrayField, fieldPath) => {
+        const { value } = e.target;
+
+        //Validando os erros 
+        errorsValidateArray(e, index, arrayField, fieldPath, setErrors);
+
+        setCadastroGleba((prev) => {
+            const updatedArray = [...prev[arrayField]];
+
+            if (updatedArray[index]) {
+                const keys = fieldPath.split("."); // Divide o caminho aninhado em partes
+                let current = updatedArray[index];
+
+                for (let i = 0; i < keys.length - 1; i++) {
+                    const key = keys[i];
+                    current[key] = { ...current[key] }; // Cria uma cópia do objeto para evitar mutações diretas
+                    current = current[key];
+                }
+
+                current[keys[keys.length - 1]] = value; // Atualiza o valor final
             }
 
-            const field = keys[keys.length - 1];
-            if (fieldPath === "produtor.cpf") {
-                const isValid = validateCPF(value);
-                current[field] = isValid ? null : "CPF inválido!";
-            } else if (fieldPath === "propriedade.codigoIbge") {
-                const validationResult = validateIBGE(value);
-                current[field] = validationResult === true ? null : validationResult; // Mensagem de erro da validação
-            } else {
-                current[field] = null; // Remove erros para outros campos
-            }
-
-            return updatedErrors;
+            return { ...prev, [arrayField]: updatedArray };
         });
     };
 
@@ -72,6 +79,28 @@ export default function Form1({ initialData, onSubmit }) {
             ...prev,
             [arrayField]: [...prev[arrayField], defaultValues],
         }));
+    };
+    const handleAddEntry = (option) => {
+        if (option === "historical") {
+            addEntry("producoes", {
+                dataPlantio: "",
+                dataColheita: "",
+                coberturaSolo: 0,
+                ilp: "",
+                cultura: { nome: "" },
+                //tipoOperacao: { tipo: "" },
+                isHistorical: true, // Define que é um Histórico
+            });
+        } else if (option === "next") {
+            addEntry("producoes", {
+                dataPrevisaoPlantio: "",
+                dataPrevisaoColheita: "",
+                ilp: "",
+                cultura: { nome: "" },
+
+                isHistorical: false, // Define que é uma Próxima Cultura
+            });
+        }
     };
 
     // Função para verificar se o formulário é válido
@@ -385,15 +414,17 @@ export default function Form1({ initialData, onSubmit }) {
                                     <>
                                         <label className="form-label">Cobertura do solo (%)*:</label>
                                         <input
-                                            type="number"
+                                            type="text"
                                             name="coberturaSolo"
-                                            min={0}
-                                            max={100}
                                             className="form-control"
                                             required
                                             value={producao?.coberturaSolo || ""}
                                             onChange={(e) => handleArrayChange(e, index, "producoes", "coberturaSolo")}
                                         />
+                                        {errors[index]?.validateGroundCover && (
+                                            <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
+                                        )
+                                        }
                                     </>
                                 )}
 
@@ -455,7 +486,7 @@ export default function Form1({ initialData, onSubmit }) {
                                 className="btn btn-primary"
                                 onClick={(e) => {
                                     //setAddOption(e.target.value);
-                                    addEntry("next")
+                                    handleAddEntry("next")
                                 }
                                 }
                             //disabled={!addOption}
