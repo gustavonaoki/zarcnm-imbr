@@ -4,7 +4,9 @@ import InputMask from "react-input-mask";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { validateCPF } from "../utils/validateCPF";
 import { validateIBGE } from "../utils/validateIBGECode";
-import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba"
+import { validateGroundCover } from "../utils/validateGroundCover";
+import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba";
+import {validateArea} from "../utils/validateArea";
 
 
 export default function Form1({ initialData, onSubmit }) {
@@ -40,30 +42,32 @@ export default function Form1({ initialData, onSubmit }) {
             return updatedData;
         });
 
-        setErrors((prev) => {
-            const updatedErrors = { ...prev };
-            const keys = fieldPath.split(".");
-            let current = updatedErrors;
+        // Validação do ibgecode
+        if (fieldPath === "propriedade.codigoIbge") {
 
-            for (let i = 0; i < keys.length - 1; i++) {
-                const key = keys[i];
-                current[key] = current[key] || {};
-                current = current[key];
-            }
+            const error = validateIBGE(value); // Chama a validação externa
+            setErrors((prev) => ({
+                ...prev,
+                [0]: {
+                    ...prev[0],
+                    validateIBGECode: error,
+                }
+            }))
+        }
 
-            const field = keys[keys.length - 1];
-            if (fieldPath === "produtor.cpf") {
-                const isValid = validateCPF(value);
-                current[field] = isValid ? null : "CPF inválido!";
-            } else if (fieldPath === "propriedade.codigoIbge") {
-                const validationResult = validateIBGE(value);
-                current[field] = validationResult === true ? null : validationResult; // Mensagem de erro da validação
-            } else {
-                current[field] = null; // Remove erros para outros campos
-            }
+        // Validação da area
+        if (fieldPath === "talhao.area") {
 
-            return updatedErrors;
-        });
+            const error = validateArea(value); // Chama a validação externa
+            setErrors((prev) => ({
+                ...prev,
+                [0]: {
+                    ...prev[0],
+                    validateArea: error,
+                }
+            }))
+        }
+
     };
     // Função para atualizar o estado do formulário em campos de array
     const handleArrayChange = (e, index, arrayField, fieldPath) => {
@@ -421,15 +425,17 @@ export default function Form1({ initialData, onSubmit }) {
                                     <>
                                         <label className="form-label">Cobertura do solo (%)*:</label>
                                         <input
-                                            type="number"
+                                            type="text"
                                             name="coberturaSolo"
-                                            min={0}
-                                            max={100}
                                             className="form-control"
                                             required
                                             value={producao?.coberturaSolo || ""}
                                             onChange={(e) => handleArrayChange(e, index, "producoes", "coberturaSolo")}
                                         />
+                                        {errors[index]?.validateGroundCover && (
+                                            <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
+                                        )
+                                        }
                                     </>
                                 )}
 
