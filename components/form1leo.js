@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 import { culturaOptions } from "../optionsInputs/culturas";
-import { validateCPF } from "../utils/validateCPF";
-import { validateIBGE } from "../utils/validateIBGECode";
-import { validateGroundCover } from "../utils/validateGroundCover";
 import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba";
-import {validateArea} from "../utils/validateArea";
+import { errorsValidate } from "../errors/errorsValidators";
+import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
+
 
 
 export default function Form1({ initialData, onSubmit }) {
@@ -30,62 +29,29 @@ export default function Form1({ initialData, onSubmit }) {
         setCadastroGleba((prev) => {
             const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
             const updatedData = { ...prev };
-        
+
             let current = updatedData;
             for (let i = 0; i < keys.length - 1; i++) {
-              const key = keys[i];
-              current[key] = { ...current[key] }; // Cria cópias para evitar mutações diretas
-              current = current[key];
+                const key = keys[i];
+                current[key] = { ...current[key] }; // Cria cópias para evitar mutações diretas
+                current = current[key];
             }
-        
+
             current[keys[keys.length - 1]] = value; // Atualiza o valor final
-        
+
             return updatedData;
-          });
+        });
 
-        // Validação do ibgecode
-        if (fieldPath === "propriedade.codigoIbge") {
-
-            const error = validateIBGE(value); // Chama a validação externa
-            setErrors((prev) => ({
-                ...prev,
-                [0]: {
-                    ...prev[0],
-                    validateIBGECode: error,
-                }
-            }))
-        }
-
-        // Validação da area
-        if (fieldPath === "talhao.area") {
-
-            const error = validateArea(value); // Chama a validação externa
-            setErrors((prev) => ({
-                ...prev,
-                [0]: {
-                    ...prev[0],
-                    validateArea: error,
-                }
-            }))
-        }
+        //Validando os erros
+        errorsValidate(e, fieldPath, setErrors)
 
     };
     // Função para atualizar o estado do formulário em campos de array
     const handleArrayChange = (e, index, arrayField, fieldPath) => {
         const { value } = e.target;
 
-        // Validação da coberturaSolo
-        if (fieldPath === "coberturaSolo") {
-
-            const error = validateGroundCover(value); // Chama a validação externa
-            setErrors((prev) => ({
-                ...prev,
-                [index]: {
-                    ...prev[index],
-                    validateGroundCover: error,
-                }
-            }))
-        }
+        //Validando os erros 
+        errorsValidateArray(e, index, arrayField, fieldPath, setErrors);
 
         setCadastroGleba((prev) => {
             const updatedArray = [...prev[arrayField]];
@@ -112,7 +78,7 @@ export default function Form1({ initialData, onSubmit }) {
         setCadastroGleba((prev) => ({
             ...prev,
             [arrayField]: [...prev[arrayField], defaultValues],
-          }));
+        }));
     };
     const handleAddEntry = (option) => {
         if (option === "historical") {

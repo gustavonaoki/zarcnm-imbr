@@ -3,9 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
-import { validateGroundCover } from "../utils/validateGroundCover";
-import { validateNDTI, validateNDVI } from "../utils/validateNDVI_NDTI";
-import { validateSlope } from "../utils/validateSlop";
+import { errorsValidate } from "../errors/errorsValidators";
+import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 
 
 export default function Form3({ initialData }) {
@@ -25,62 +24,18 @@ export default function Form3({ initialData }) {
 
   const handleChange = (e, field) => {
     const { value } = e.target;
+    
+    //Validando os erros
+    errorsValidate(e, field, setErrors)
 
-    // Validação da declividade média
-    if (field === "declividadeMedia") {
-      const error = validateSlope(value); // Chama a validação externa
-      setErrors((prev) => ({
-        ...prev,
-        [0]: {
-          ...prev[0],
-          validateSlope: error,
-        }
-      }))
-    }    
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleArrayChange = (e, index, arrayField, field) => {
     const { value } = e.target;
-
-    // Validação da ndvi
-    if (arrayField === "indices" && field === "ndvi") {
-
-      const error = validateNDVI(value); // Chama a validação externa
-      setErrors((prev) => ({
-        ...prev,
-        [index]: {
-          ...prev[index],
-          validateNDVI: error,
-        }
-      }))
-    }
-
-    // Validação da ndti
-    if (arrayField === "indices" && field === "ndti") {
-
-      const error = validateNDTI(value); // Chama a validação externa
-      setErrors((prev) => ({
-        ...prev,
-        [index]: {
-          ...prev[index],
-          validateNDTI: error,
-        }
-      }))
-    }
-
-    // Validação da coberturaSolo
-    if (arrayField === "interpretacoesCultura" && field === "coberturaSolo") {
-
-      const error = validateGroundCover(value); // Chama a validação externa
-      setErrors((prev) => ({
-        ...prev,
-        [index]: {
-          ...prev[index],
-          validateGroundCover: error,
-        }
-      }))
-    }
+    
+    //Validando erros
+    errorsValidateArray(e, index, arrayField, field, setErrors);
 
     setFormData((prev) => {
       const updatedArray = [...prev[arrayField]];
