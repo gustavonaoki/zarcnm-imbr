@@ -65,6 +65,42 @@ export default function Form1({ initialData, onSubmit }) {
             return updatedErrors;
         });
     };
+    // Função para atualizar o estado do formulário em campos de array
+    const handleArrayChange = (e, index, arrayField, fieldPath) => {
+        const { value } = e.target;
+
+        // Validação da coberturaSolo
+        if (fieldPath === "coberturaSolo") {
+
+            const error = validateGroundCover(value); // Chama a validação externa
+            setErrors((prev) => ({
+                ...prev,
+                [index]: {
+                    ...prev[index],
+                    validateGroundCover: error,
+                }
+            }))
+        }
+
+        setCadastroGleba((prev) => {
+            const updatedArray = [...prev[arrayField]];
+
+            if (updatedArray[index]) {
+                const keys = fieldPath.split("."); // Divide o caminho aninhado em partes
+                let current = updatedArray[index];
+
+                for (let i = 0; i < keys.length - 1; i++) {
+                    const key = keys[i];
+                    current[key] = { ...current[key] }; // Cria uma cópia do objeto para evitar mutações diretas
+                    current = current[key];
+                }
+
+                current[keys[keys.length - 1]] = value; // Atualiza o valor final
+            }
+
+            return { ...prev, [arrayField]: updatedArray };
+        });
+    };
 
     // Função para adicionar itens a arrays no formulário
     const addEntry = (arrayField, defaultValues) => {

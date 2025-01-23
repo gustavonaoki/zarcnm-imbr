@@ -24,6 +24,58 @@ export default function Form3({ initialData }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleArrayChange = (e, index, arrayField, field) => {
+    const { value } = e.target;
+
+    // Validação da ndvi
+    if (arrayField === "indices" && field === "ndvi") {
+
+      const error = validateNDVI(value); // Chama a validação externa
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateNDVI: error,
+        }
+      }))
+    }
+
+    // Validação da ndti
+    if (arrayField === "indices" && field === "ndti") {
+
+      const error = validateNDTI(value); // Chama a validação externa
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateNDTI: error,
+        }
+      }))
+    }
+
+    // Validação da coberturaSolo
+    if (field === "coberturaSolo") {
+
+      const error = validateGroundCover(value); // Chama a validação externa
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateGroundCover: error,
+        }
+      }))
+    }
+
+    setFormData((prev) => {
+      const updatedArray = [...prev[arrayField]];
+      if (updatedArray[index]) {
+        updatedArray[index][field] = value;
+      }
+      return { ...prev, [arrayField]: updatedArray };
+    });
+  };
+
+
 
   const addEntry = (arrayField, defaultValues) => {
     setFormData((prev) => ({
