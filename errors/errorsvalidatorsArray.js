@@ -1,7 +1,7 @@
 import { validateGroundCover } from "../utils/validateGroundCover";
 import { validateNDTI, validateNDVI } from "../utils/validateNDVI_NDTI";
 
-//Função para retornar erros em um array nos formulários.
+//Função para retornar erros em um campo, passado em 'fieldPath' de um array, passado em 'arrayFiedl'.
 export const errorsValidateArray = (e, index, arrayField, fieldPath, setErrors) => {
     const { value } = e.target;
 

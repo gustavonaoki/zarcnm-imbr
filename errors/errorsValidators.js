@@ -3,7 +3,7 @@ import { validateIBGE } from "../utils/validateIBGECode";
 import { validateSlope } from "../utils/validateSlop";
 
 
-//Função para retornar erros nos formulários.
+//Função para retornar erros no campo passado em 'fieldPath'.
 export const errorsValidate = (e, fieldPath, setErrors) => {
     const { value } = e.target;
     // Validação do ibgecode
