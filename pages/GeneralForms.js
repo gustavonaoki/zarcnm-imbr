@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Dropdown } from "react-bootstrap";
 import FormPage from "../components/form1leo";
 import Form2 from "../components/form2leo";
 import Form3 from "../components/form3";
@@ -78,10 +79,11 @@ export default function GeneralForms() {
   return (
     <div>
       {/* Select para selecionar JSON */}
-      <div className="mb-3 col-md-2">
-        <label className="form-label">Selecione o JSON:</label>
+      <div className="mb-4 text-center w-100">
+        <label className="form-label fs-4">Selecione o JSON:</label>
         <select
-          className="form-select"
+          className="form-select w-auto mx-auto"
+          style={{ minWidth: "200px" }}
           value={opcaoSelecionada}
           onChange={(e) => setOpcaoSelecionada(e.target.value)}
         >
@@ -93,7 +95,7 @@ export default function GeneralForms() {
           ))}
         </select>
         <button
-          className="btn btn-primary mt-2"
+          className="btn btn-primary btn-lg mt-3"
           onClick={handleAutoPreencher}
           disabled={!opcaoSelecionada}
         >
@@ -102,15 +104,65 @@ export default function GeneralForms() {
       </div>
 
       {/* Renderizar os formulários */}
-      <FormPage  onSubmit={(data) => setForm1Data(data)} initialData={form1Data} />
-      <Form2 onSubmit={(data) => setForm2Data(data)} initialData={form2Data} />
-      <Form3 onSubmit={(data) => setForm3Data(data)} initialData={form3Data} />
+      <div  className="d-flex flex-column gap-3 w-100">
+      <Dropdown autoClose="outside" className="w-100">
+        <Dropdown.Toggle variant="success" id="dropdown-basic" className="btn-lg w-100">
+          Form1
+        </Dropdown.Toggle>
+        <Dropdown.Menu className="w-100 position-relative" style={{ padding: "10px", maxWidth: "600px", margin: "0 auto" }}>
+          <div>
+            <FormPage
+              onSubmit={(data) => setForm1Data(data)}
+              initialData={form1Data}
+            />
+          </div>
+        </Dropdown.Menu>
+      </Dropdown>
+
+      <Dropdown autoClose="outside" className="w-100">
+        <Dropdown.Toggle variant="success" id="dropdown-basic" className="btn-lg w-100">
+          Form2
+        </Dropdown.Toggle>
+        <Dropdown.Menu
+          className="w-100 position-relative"
+          style={{ padding: "10px", maxWidth: "600px", margin: "0 auto" }}
+        >
+          <div>
+            <Form2
+              onSubmit={(data) => setForm2Data(data)}
+              initialData={form2Data}
+            />
+          </div>
+        </Dropdown.Menu>
+      </Dropdown>
+
+      <Dropdown autoClose="outside" className="w-100">
+        <Dropdown.Toggle variant="success" id="dropdown-basic" className="btn-lg w-100">
+          Form3
+        </Dropdown.Toggle>
+        <Dropdown.Menu
+          className="w-100 position-relative"
+          style={{ padding: "10px", maxWidth: "600px", margin: "0 auto" }}
+        >
+          <div>
+            <Form3
+              onSubmit={(data) => setForm3Data(data)}
+              initialData={form3Data}
+            />
+          </div>
+        </Dropdown.Menu>
+      </Dropdown>
+
+
+      </div>
+      
+
 
       {/* Botão de envio */}
       <div className="d-flex justify-content-between mt-3">
         <button
           type="button"
-          className="btn btn-success"
+          className="btn btn-success btn-lg mt-3"
           onClick={handleSubmit}
           disabled={!form1Data || form2Data.length === 0 || form3Data.length === 0}
         >
