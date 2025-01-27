@@ -11,7 +11,7 @@ import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 export default function Form1({ initialData, onSubmit }) {
     const [cadastroGleba, setCadastroGleba] = useState(modeloCadastroGleba());
     const [errors, setErrors] = useState({});
-    const [countNextCulture, setCountNextCulture] = useState(0)
+    const [countNextCulture, setCountNextCulture] = useState(0) 
 
     // Atualiza o estado do formulário quando `initialData` mudar
     useEffect(() => {

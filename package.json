@@ -16,6 +16,7 @@
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "express": "^4.21.2",
     "next": "^15.1.4",
     "node.js": "^0.0.1-security",
     "react": "^18.2.0",
