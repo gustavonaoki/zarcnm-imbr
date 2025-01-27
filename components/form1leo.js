@@ -11,6 +11,7 @@ import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 export default function Form1({ initialData, onSubmit }) {
     const [cadastroGleba, setCadastroGleba] = useState(modeloCadastroGleba());
     const [errors, setErrors] = useState({});
+    const [countNextCulture, setCountNextCulture] = useState(0)
 
     // Atualiza o estado do formulário quando `initialData` mudar
     useEffect(() => {
@@ -81,6 +82,8 @@ export default function Form1({ initialData, onSubmit }) {
         }));
     };
     const handleAddEntry = (option) => {
+
+
         if (option === "historical") {
             addEntry("producoes", {
                 dataPlantio: "",
@@ -91,7 +94,9 @@ export default function Form1({ initialData, onSubmit }) {
                 //tipoOperacao: { tipo: "" },
                 isHistorical: true, // Define que é um Histórico
             });
-        } else if (option === "next") {
+        } else if (option === "next" && countNextCulture == 0) {
+            setCountNextCulture((prevCount) => prevCount + 1)
+            console.log(countNextCulture);
             addEntry("producoes", {
                 dataPrevisaoPlantio: "",
                 dataPrevisaoColheita: "",
@@ -100,6 +105,8 @@ export default function Form1({ initialData, onSubmit }) {
 
                 isHistorical: false, // Define que é uma Próxima Cultura
             });
+
+
         }
     };
 
@@ -428,17 +435,6 @@ export default function Form1({ initialData, onSubmit }) {
                                     </>
                                 )}
 
-                                {/*<label className="form-label">Tipo da Operação*: </label>
-                                <input
-                                    type="text"
-                                    required
-                                    name="tipoOperacao"
-                                    className="form-control"
-                                    placeholder="EX: ARACAO"
-                                    value={producao.tipoOperacao?.tipo || ""}
-                                    onChange={(e) => handleArrayChange(e, index, "producoes", "tipoOperacao.tipo")}
-                                />*/}
-
                                 <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
                                 <select
                                     required
@@ -447,8 +443,8 @@ export default function Form1({ initialData, onSubmit }) {
                                     value={producao?.ilp || ""}
                                     onChange={(e) => handleArrayChange(e, index, "producoes", "ilp")}
                                 >
-                                    <option value="1">SIM</option>
-                                    <option value="0">NÃO</option>
+                                    <option value="true">SIM</option>
+                                    <option value="false">NÃO</option>
                                 </select>
 
                                 <label className="form-label">Cultura*: </label>
@@ -466,7 +462,21 @@ export default function Form1({ initialData, onSubmit }) {
                                         </option>
                                     ))}
                                 </select>
+                                <div className="d-flex col-md-2 gap-2">
+                                    <button
+                                        type="button"
+                                        //value={addOption}     
+                                        className="btn btn-primary"
+                                        onClick={(e) => {
+                                            //setAddOption(e.target.value);
+                                            handleAddEntry("historical")
+                                        }
+                                        }
+                                    //disabled={!addOption}
+                                    > Adicionar Histórico</button>
+                                </div>
                             </div>
+
                         ))}
 
                         {/* Select e Botão para Adicionar Histórico ou Próxima Cultura */}
@@ -480,19 +490,24 @@ export default function Form1({ initialData, onSubmit }) {
                                 
                                 <option value="next">Adicionar Próxima Cultura</option>
                             </select>*/}
-                            <button
-                                type="button"
-                                //value={addOption}     
-                                className="btn btn-primary"
-                                onClick={(e) => {
-                                    //setAddOption(e.target.value);
-                                    handleAddEntry("next")
-                                }
-                                }
-                            //disabled={!addOption}
-                            >
-                                Adicionar
-                            </button>
+                            {countNextCulture === 0 && (
+                                <>
+                                    <button
+                                        type="button"
+                                        //value={addOption}     
+                                        className="btn btn-primary"
+                                        onClick={(e) => {
+                                            //setAddOption(e.target.value);
+                                            handleAddEntry("next")
+                                        }
+                                        }
+                                    //disabled={!addOption}
+                                    >
+                                        Adicionar próxima cultura
+                                    </button>
+                                </>
+                            )}
+                            
                         </div>
                     </div>
                 </div>

@@ -25,6 +25,7 @@
                     "dataColheita": "2022-01-10",
                     "coberturaSolo": 95,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Soja (grão)"
                     }
@@ -34,6 +35,7 @@
                     "dataColheita": "2022-08-01",
                     "coberturaSolo": 20,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Aveia preta (silagem/feno)"
                     }
@@ -43,6 +45,7 @@
                     "dataColheita": "2022-12-10",
                     "coberturaSolo": 10,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Milho (silagem/feno)"
                     }
@@ -52,6 +55,7 @@
                     "dataColheita": "2023-02-20",
                     "coberturaSolo": 10,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Milho (silagem/feno)"
                     }
@@ -61,6 +65,7 @@
                     "dataColheita": "2023-08-01",
                     "coberturaSolo": 10,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Aveia preta (silagem/feno)"
                     }
@@ -70,6 +75,7 @@
                     "dataColheita": "2024-01-10",
                     "coberturaSolo": 10,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Soja (grão)"
                     }
@@ -79,6 +85,7 @@
                     "dataColheita": "2024-07-31",
                     "coberturaSolo": 10,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Aveia preta (cobertura do solo)"
                     }
@@ -87,6 +94,7 @@
                     "dataPrevisaoPlantio": "2024-10-01",
                     "dataPrevisaoColheita": "2025-01-10",
                     "ilp": "false",
+                    "isHistorical": false,
                     "cultura": {
                       "nome": "Soja (grão)"
                     }

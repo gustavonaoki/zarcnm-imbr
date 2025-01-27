@@ -105,11 +105,11 @@ export default function GeneralForms() {
 
       {/* Renderizar os formulários */}
       <div  className="d-flex flex-column gap-3 w-100">
-      <Dropdown autoClose="outside" className="w-100">
+      <Dropdown className="w-100" autoClose={false}>
         <Dropdown.Toggle variant="success" id="dropdown-basic" className="btn-lg w-100">
           Form1
         </Dropdown.Toggle>
-        <Dropdown.Menu className="w-100 position-relative" style={{ padding: "10px", maxWidth: "600px", margin: "0 auto" }}>
+        <Dropdown.Menu className="w-100 position-relative" style={{ padding: "10px", maxWidth: "1000px", margin: "auto auto 100px auto" }}>
           <div>
             <FormPage
               onSubmit={(data) => setForm1Data(data)}
@@ -119,13 +119,13 @@ export default function GeneralForms() {
         </Dropdown.Menu>
       </Dropdown>
 
-      <Dropdown autoClose="outside" className="w-100">
+      <Dropdown className="w-100"  autoClose={false}>
         <Dropdown.Toggle variant="success" id="dropdown-basic" className="btn-lg w-100">
           Form2
         </Dropdown.Toggle>
         <Dropdown.Menu
           className="w-100 position-relative"
-          style={{ padding: "10px", maxWidth: "600px", margin: "0 auto" }}
+          style={{ padding: "10px", maxWidth: "1000px", margin: "auto auto 100px auto" }}
         >
           <div>
             <Form2
@@ -136,13 +136,13 @@ export default function GeneralForms() {
         </Dropdown.Menu>
       </Dropdown>
 
-      <Dropdown autoClose="outside" className="w-100">
+      <Dropdown className="w-100"  autoClose={false}>
         <Dropdown.Toggle variant="success" id="dropdown-basic" className="btn-lg w-100">
           Form3
         </Dropdown.Toggle>
         <Dropdown.Menu
           className="w-100 position-relative"
-          style={{ padding: "10px", maxWidth: "600px", margin: "0 auto" }}
+          style={{ padding: "10px", maxWidth: "1000px",margin: "auto auto 100px auto" }}
         >
           <div>
             <Form3
