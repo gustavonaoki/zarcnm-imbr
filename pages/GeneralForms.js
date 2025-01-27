@@ -11,6 +11,10 @@ import NM3a from "../data/NM3a.json";
 import NM3b from "../data/NM3b.json";
 import NM4a from "../data/NM4a.json";
 import NM4b from "../data/NM4b.json";
+import { createToken } from "./api/models/createToken";
+import { generateAuthToken } from "./api/auth/generateAuthToken";
+
+
 
 export default function GeneralForms() {
   const [form1Data, setForm1Data] = useState(null);
@@ -61,10 +65,15 @@ export default function GeneralForms() {
   // Função para envio dos dados
   const handleSubmit = async () => {
     try {
-      console.log("Enviando dados dos formulários...");
-      console.log("Dados do Form1 (Gleba/Talhão):", form1Data);
-      console.log("Dados do Form2 (Laboratório):", form2Data);
-      console.log("Dados do Form3 (Sensoriamento):", form3Data);
+      //console.log("Enviando dados dos formulários...");
+
+      const createdToken = await createToken(form1Data) 
+      console.log(createdToken);
+      
+      
+      //console.log("Dados do Form1 (Gleba/Talhão):", form1Data);
+      //console.log("Dados do Form2 (Laboratório):", form2Data);
+      //console.log("Dados do Form3 (Sensoriamento):", form3Data);
 
       // Adicione a lógica para envio de dados para os endpoints
       alert("Dados enviados com sucesso!");
@@ -73,8 +82,6 @@ export default function GeneralForms() {
       alert("Erro ao enviar os dados.");
     }
   };
-
-  console.log(form3Data)
 
   return (
     <div>
