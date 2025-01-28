@@ -11,7 +11,8 @@ import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 export default function Form1({ initialData, onSubmit }) {
     const [cadastroGleba, setCadastroGleba] = useState(modeloCadastroGleba());
     const [errors, setErrors] = useState({});
-    const [countNextCulture, setCountNextCulture] = useState(0) 
+    const [countNextCulture, setCountNextCulture] = useState(0) //Contador de campos proxima cultura, maximo 1
+    const nextCulture =  cadastroGleba.producoes.find((elemento) => elemento.isHistorical === false) //Procura proxima cultura no cadastro da gleba, validação necessária pra o preenchimento automatico.
 
     // Atualiza o estado do formulário quando `initialData` mudar
     useEffect(() => {
@@ -83,7 +84,6 @@ export default function Form1({ initialData, onSubmit }) {
     };
     const handleAddEntry = (option) => {
 
-
         if (option === "historical") {
             addEntry("producoes", {
                 dataPlantio: "",
@@ -94,7 +94,7 @@ export default function Form1({ initialData, onSubmit }) {
                 //tipoOperacao: { tipo: "" },
                 isHistorical: true, // Define que é um Histórico
             });
-        } else if (option === "next" && countNextCulture == 0) {
+        } else if ((option === "next") && (countNextCulture == 0) && (!nextCulture)) {
             setCountNextCulture((prevCount) => prevCount + 1)
             console.log(countNextCulture);
             addEntry("producoes", {
@@ -490,7 +490,7 @@ export default function Form1({ initialData, onSubmit }) {
                                 
                                 <option value="next">Adicionar Próxima Cultura</option>
                             </select>*/}
-                            {countNextCulture === 0 && (
+                            {(countNextCulture === 0) && (!nextCulture) && (
                                 <>
                                     <button
                                         type="button"
