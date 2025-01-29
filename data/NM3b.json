@@ -25,6 +25,7 @@
                     "dataColheita": "2022-01-29",
                     "coberturaSolo": 75,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Soja (grão)"
                     }
@@ -34,6 +35,7 @@
                     "dataColheita": "2022-07-18",
                     "coberturaSolo": 75,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Brachiaria ruziziensis (pastagem)"
                     }
@@ -43,6 +45,7 @@
                     "dataColheita": "2023-01-29",
                     "coberturaSolo": 100,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Soja (grão)"
                     }
@@ -52,6 +55,7 @@
                     "dataColheita": "2023-06-28",
                     "coberturaSolo": 75,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Milho (grão)"
                     }
@@ -61,6 +65,7 @@
                     "dataColheita": "2024-01-29",
                     "coberturaSolo": 75,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Soja (grão)"
                     }
@@ -70,6 +75,7 @@
                     "dataColheita": "2024-06-27",
                     "coberturaSolo": 75,
                     "ilp": "false",
+                    "isHistorical": true,
                     "cultura": {
                       "nome": "Milho (grão)"
                     }
@@ -78,6 +84,7 @@
                     "dataPrevisaoPlantio": "2024-10-01",
                     "dataPrevisaoColheita": "2025-01-10",
                     "ilp": "false",
+                    "isHistorical": false,
                     "cultura": {
                       "nome": "Soja (grão)"
                     }
@@ -1349,3 +1356,4 @@
     }
   ]
 }
+  

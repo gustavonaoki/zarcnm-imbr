@@ -24,6 +24,7 @@
                     "dataPlantio": "2021-10-05",
                     "dataColheita": "2022-02-02",
                     "coberturaSolo": 100,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"
@@ -33,6 +34,7 @@
                     "dataPlantio": "2022-02-22",
                     "dataColheita": "2022-07-02",
                     "coberturaSolo": 75,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Milho (grão)"
@@ -42,6 +44,7 @@
                     "dataPlantio": "2022-07-02",
                     "dataColheita": "2022-10-05",
                     "coberturaSolo": 75,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Brachiaria ruziziensis (pastagem)"
@@ -51,6 +54,7 @@
                     "dataPlantio": "2022-10-05",
                     "dataColheita": "2023-02-02",
                     "coberturaSolo": 100,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"
@@ -60,6 +64,7 @@
                     "dataPlantio": "2023-02-22",
                     "dataColheita": "2023-07-02",
                     "coberturaSolo": 75,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Milho (grão)"
@@ -69,6 +74,7 @@
                     "dataPlantio": "2023-07-02",
                     "dataColheita": "2023-10-05",
                     "coberturaSolo": 75,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Brachiaria ruziziensis (pastagem)"
@@ -78,6 +84,7 @@
                     "dataPlantio": "2023-10-05",
                     "dataColheita": "2024-02-02",
                     "coberturaSolo": 100,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"
@@ -87,6 +94,7 @@
                     "dataPlantio": "2024-02-22",
                     "dataColheita": "2024-07-01",
                     "coberturaSolo": 75,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Milho (grão)"
@@ -96,6 +104,7 @@
                     "dataPlantio": "2024-07-01",
                     "dataColheita": "2024-10-04",
                     "coberturaSolo": 75,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Brachiaria ruziziensis (pastagem)"
@@ -104,6 +113,7 @@
                   {
                     "dataPrevisaoPlantio": "2024-10-01",
                     "dataPrevisaoColheita": "2025-01-10",
+                    "isHistorical": false,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"

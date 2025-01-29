@@ -24,6 +24,7 @@
                     "dataPlantio": "2021-10-01",
                     "dataColheita": "2022-01-10",
                     "coberturaSolo": 50,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"
@@ -33,6 +34,7 @@
                     "dataPlantio": "2022-04-21",
                     "dataColheita": "2022-09-18",
                     "coberturaSolo": 55,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Trigo (grão)"
@@ -42,6 +44,7 @@
                     "dataPlantio": "2022-10-01",
                     "dataColheita": "2023-01-10",
                     "coberturaSolo": 49,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"
@@ -51,6 +54,7 @@
                     "dataPlantio": "2023-04-21",
                     "dataColheita": "2023-09-18",
                     "coberturaSolo": 52,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Trigo (grão)"
@@ -60,6 +64,7 @@
                     "dataPlantio": "2023-10-01",
                     "dataColheita": "2024-01-10",
                     "coberturaSolo": 55,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"
@@ -69,6 +74,7 @@
                     "dataPlantio": "2024-04-20",
                     "dataColheita": "2024-09-17",
                     "coberturaSolo": 56,
+                    "isHistorical": true,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Trigo (grão)"
@@ -77,6 +83,7 @@
                   {
                     "dataPrevisaoPlantio": "2024-10-01",
                     "dataPrevisaoColheita": "2025-01-10",
+                    "isHistorical": false,
                     "ilp": "false",
                     "cultura": {
                       "nome": "Soja (grão)"

@@ -1,0 +1,19 @@
+/* Garante que cada dropdown empurre os outros para baixo */
+.dropdownContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Expande corretamente e mantém o conteúdo dentro do fluxo */
+.dropdownExpand {
+  width: 100%;
+  margin-top: 5px;
+  display: block;
+  position: relative; /* Importante para permitir que o espaço seja ocupado */
+}
+
+/* Mantém o botão de envio sempre no final da tela */
+.mt-4 {
+  margin-top: 20px;
+}
