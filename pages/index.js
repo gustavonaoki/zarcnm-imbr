@@ -12,6 +12,7 @@ import NM3b from "../data/NM3b.json";
 import NM4a from "../data/NM4a.json";
 import NM4b from "../data/NM4b.json";
 import styles from "../styles/GeneralForms.module.css";
+import {createToken} from "./api/models/createToken"
 
 export default function GeneralForms() {
   const [form1Data, setForm1Data] = useState(null);
@@ -63,12 +64,14 @@ export default function GeneralForms() {
 
   const handleSubmit = async () => {
     try {
+      const tokenGerated = createToken(form1Data) //gera o token apartir do form 1
       console.log("Enviando dados dos formulários...");
       console.log("Dados do Form1:", form1Data);
       console.log("Dados do Form2:", form2Data);
       console.log("Dados do Form3:", form3Data);
 
-      alert("Dados enviados com sucesso!");
+     
+      //("Dados enviados com sucesso!");
     } catch (error) {
       console.error("Erro ao enviar dados:", error);
       alert("Erro ao enviar os dados.");
