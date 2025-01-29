@@ -12,7 +12,7 @@ export default function Form1({ initialData, onSubmit }) {
     const [cadastroGleba, setCadastroGleba] = useState(modeloCadastroGleba());
     const [errors, setErrors] = useState({});
     const [countNextCulture, setCountNextCulture] = useState(0) //Contador de campos proxima cultura, maximo 1
-    const nextCulture =  cadastroGleba.producoes.find((elemento) => elemento.isHistorical === false) //Procura proxima cultura no cadastro da gleba, validação necessária pra o preenchimento automatico.
+    const nextCulture = cadastroGleba.producoes.find((elemento) => elemento.isHistorical === false) //Procura proxima cultura no cadastro da gleba, validação necessária pra o preenchimento automatico.
 
     // Atualiza o estado do formulário quando `initialData` mudar
     useEffect(() => {
@@ -462,23 +462,23 @@ export default function Form1({ initialData, onSubmit }) {
                                         </option>
                                     ))}
                                 </select>
-                                <div className="d-flex col-md-2 gap-2">
-                                    <button
-                                        type="button"
-                                        //value={addOption}     
-                                        className="btn btn-primary"
-                                        onClick={(e) => {
-                                            //setAddOption(e.target.value);
-                                            handleAddEntry("historical")
-                                        }
-                                        }
-                                    //disabled={!addOption}
-                                    > Adicionar Histórico</button>
-                                </div>
+
                             </div>
 
                         ))}
-
+                        <div className="d-flex col-md-2 gap-2">
+                            <button
+                                type="button"
+                                //value={addOption}     
+                                className="btn btn-primary"
+                                onClick={(e) => {
+                                    //setAddOption(e.target.value);
+                                    handleAddEntry("historical")
+                                }
+                                }
+                            //disabled={!addOption}
+                            > Adicionar Histórico</button>
+                        </div>
                         {/* Select e Botão para Adicionar Histórico ou Próxima Cultura */}
                         <div className="d-flex col-md-2 gap-2">
                             {/*<select
@@ -507,7 +507,7 @@ export default function Form1({ initialData, onSubmit }) {
                                     </button>
                                 </>
                             )}
-                            
+
                         </div>
                     </div>
                 </div>
