@@ -6,15 +6,30 @@ import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba";
 import { errorsValidate } from "../errors/errorsValidators";
 import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 
-
-
 export default function Form1({ initialData, onSubmit }) {
-    const [cadastroGleba, setCadastroGleba] = useState(modeloCadastroGleba());
+    // 🔹 Inicializa o estado corretamente sem `useEffect` dentro
+    const [cadastroGleba, setCadastroGleba] = useState(() => {
+        const modelo = modeloCadastroGleba();
+
+        // Se não houver "Próxima Cultura", adicionamos automaticamente
+        if (!modelo.producoes.some(p => !p.isHistorical)) {
+            modelo.producoes.push({
+                dataPrevisaoPlantio: "",
+                dataPrevisaoColheita: "",
+                ilp: "",
+                cultura: { nome: "" },
+                isHistorical: false, // Próxima Cultura sempre presente
+            });
+        }
+
+        return modelo;
+    });
+
     const [errors, setErrors] = useState({});
     const [countNextCulture, setCountNextCulture] = useState(0) //Contador de campos proxima cultura, maximo 1
     const nextCulture = cadastroGleba.producoes.find((elemento) => elemento.isHistorical === false) //Procura proxima cultura no cadastro da gleba, validação necessária pra o preenchimento automatico.
 
-    // Atualiza o estado do formulário quando `initialData` mudar
+    // 🔹 Atualiza o estado quando `initialData` mudar
     useEffect(() => {
         if (initialData) {
             setCadastroGleba((prevData) => ({
@@ -24,106 +39,81 @@ export default function Form1({ initialData, onSubmit }) {
         }
     }, [initialData]);
 
-    // Função para atualizar valores e validar
+    // 🔹 Atualiza os campos do formulário
     const handleChange = (e, fieldPath) => {
         const { value } = e.target;
 
         setCadastroGleba((prev) => {
-            const keys = fieldPath.split("."); // Divide 'propriedade.nome' em ['propriedade', 'nome']
+            const keys = fieldPath.split(".");
             const updatedData = { ...prev };
-
             let current = updatedData;
+
             for (let i = 0; i < keys.length - 1; i++) {
                 const key = keys[i];
-                current[key] = { ...current[key] }; // Cria cópias para evitar mutações diretas
+                current[key] = { ...current[key] };
                 current = current[key];
             }
 
-            current[keys[keys.length - 1]] = value; // Atualiza o valor final
-
+            current[keys[keys.length - 1]] = value;
             return updatedData;
         });
 
-        //Validando os erros
-        errorsValidate(e, fieldPath, setErrors)
-
+        // Valida erros
+        errorsValidate(e, fieldPath, setErrors);
     };
-    // Função para atualizar o estado do formulário em campos de array
+
+    // 🔹 Atualiza os campos dentro dos arrays (Histórico de Culturas)
     const handleArrayChange = (e, index, arrayField, fieldPath) => {
         const { value } = e.target;
-
-        //Validando os erros 
-        errorsValidateArray(e, index, arrayField, fieldPath, setErrors);
-
+    
         setCadastroGleba((prev) => {
+            // Clona o array de produções para evitar mutação direta no estado
             const updatedArray = [...prev[arrayField]];
-
+    
             if (updatedArray[index]) {
-                const keys = fieldPath.split("."); // Divide o caminho aninhado em partes
-                let current = updatedArray[index];
-
+                const keys = fieldPath.split("."); // Divide a string em chaves
+                let current = updatedArray[index]; // Obtém o objeto correspondente
+    
+                // Percorre todas as chaves exceto a última
                 for (let i = 0; i < keys.length - 1; i++) {
                     const key = keys[i];
-                    current[key] = { ...current[key] }; // Cria uma cópia do objeto para evitar mutações diretas
+                    current[key] = { ...current[key] }; // Garante que não mutamos o estado diretamente
                     current = current[key];
                 }
-
-                current[keys[keys.length - 1]] = value; // Atualiza o valor final
+    
+                // Atualiza o valor do campo final
+                current[keys[keys.length - 1]] = value;
             }
-
+    
             return { ...prev, [arrayField]: updatedArray };
         });
+    
+        // Valida erros
+        errorsValidateArray(e, index, arrayField, fieldPath, setErrors);
     };
 
-    // Função para adicionar itens a arrays no formulário
-    const addEntry = (arrayField, defaultValues) => {
+    // 🔹 Adiciona um novo histórico de cultura
+    const handleAddEntry = () => {
         setCadastroGleba((prev) => ({
             ...prev,
-            [arrayField]: [...prev[arrayField], defaultValues],
+            producoes: [
+                ...prev.producoes,
+                {
+                    dataPlantio: "",
+                    dataColheita: "",
+                    coberturaSolo: 0,
+                    ilp: "",
+                    cultura: { nome: "" },
+                    isHistorical: true, // Sempre um histórico de cultura
+                },
+            ],
         }));
     };
-    const handleAddEntry = (option) => {
 
-        if (option === "historical") {
-            addEntry("producoes", {
-                dataPlantio: "",
-                dataColheita: "",
-                coberturaSolo: 0,
-                ilp: "",
-                cultura: { nome: "" },
-                //tipoOperacao: { tipo: "" },
-                isHistorical: true, // Define que é um Histórico
-            });
-        } else if ((option === "next") && (countNextCulture == 0) && (!nextCulture)) {
-            setCountNextCulture((prevCount) => prevCount + 1)
-            console.log(countNextCulture);
-            addEntry("producoes", {
-                dataPrevisaoPlantio: "",
-                dataPrevisaoColheita: "",
-                ilp: "",
-                cultura: { nome: "" },
-
-                isHistorical: false, // Define que é uma Próxima Cultura
-            });
-
-
-        }
-    };
-
-    // Função para verificar se o formulário é válido
-    const isFormValid = () => {
-        // Todos os campos obrigatórios devem ser preenchidos e não podem haver erros
-        return (
-            !Object.values(errors).some((error) => error !== null) &&
-            Object.keys(modeloCadastroGleba).every((key) => {
-                const field = cadastroGleba[key];
-                if (Array.isArray(field)) {
-                    return field.length > 0;
-                }
-                return field !== null && field !== "";
-            })
-        );
-    };
+    const producoesOrdenadas = [
+        ...cadastroGleba.producoes.filter(p => p.isHistorical), // Históricos primeiro
+        ...cadastroGleba.producoes.filter(p => !p.isHistorical) // Próxima cultura sempre no final
+    ];
 
 
     // Função para enviar os dados do formulário
@@ -132,9 +122,9 @@ export default function Form1({ initialData, onSubmit }) {
 
     return (
         <div className="container my-4">
-            <h1 className="text-center mb-4">Formulário de Cadastro</h1>
+            <h1 className="text-center">Formulário de Cadastro</h1>
             <h6 className="text-danger text-center">
-                Informações obrigatórias estão marcadas com *
+                Todos os campos com ( * ) são obrigatórios
             </h6>
             <form onSubmit={handleSubmit}>
                 {/* Dados do Produtor */}
@@ -219,8 +209,8 @@ export default function Form1({ initialData, onSubmit }) {
                                 <small className="text-danger">{errors.propriedade.codigoIbge}</small>
                             )}
                         </div>
-                        {errors[0]?.validateIBGECode && (
-                            <div className="text-danger mt-2">{errors[0].validateIBGECode}</div>
+                        {errors[0]?.validateIBGE && (
+                            <div className="text-danger mt-2">{errors[0].validateIBGE}</div>
                         )
                         }
                         <div className="mb-3">
@@ -341,176 +331,137 @@ export default function Form1({ initialData, onSubmit }) {
                     </div>
                 </div>
 
-                {/* Histórico de culturas na gleba/talhão: */}
+                {/* Histórico de culturas na gleba/talhão */}
                 <div className="mb-4 card border-0 shadow-sm">
                     <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
-                        <h2 className="mb-0">Histórico/Próxima culturas na gleba/talhão:</h2>
+                        <h2 className="mb-0">Histórico/Próxima cultura:</h2>
                     </div>
                     <div className="card-body">
-                        {cadastroGleba.producoes.map((producao, index) => (
-                            <div key={index} className="mb-3">
-                                <div className="card-header text-white" style={{ backgroundColor: "#006400" }}>
-                                    {producao.isHistorical === true
-                                        ? <h4 className="mb-0">Histórico de culturas</h4>
-                                        : <h4 className="mb-0">Próxima culturas</h4>
-                                    }
-                                </div>
-                                {index > 0 && <hr className="my-4" />} {/* Adiciona um <hr> a partir do segundo item */}
-
-                                {/* Campo de Data do plantio e colheita(historico) */}
-                                {producao.isHistorical === true && (
-                                    <>
-                                        <label className="form-label">
-                                            Data do plantio*: (real ao aproximada)
-                                        </label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
-                                            value={producao?.dataPlantio || ""}
-                                            name="dataPlantio"
-                                            onChange={(e) => handleArrayChange(e, index, "producoes", "dataPlantio")}
-                                            required
-                                        />
-
-                                        <label className="form-label">
-                                            Data previsão da colheita*: (real ao aproximada)
-                                        </label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
-                                            value={producao?.dataColheita || ""}
-                                            name="dataColheita"
-                                            onChange={(e) => handleArrayChange(e, index, "producoes", "dataColheita")}
-                                            required
-                                        />
-                                    </>
-                                )}
-
-                                {/* Campo de Data da previsao do plantio e colheita (proxima cultura)*/}
-                                {producao.isHistorical === false && (
-                                    <>
-                                        <label className="form-label">
-                                            Data previsão do plantio*:
-                                        </label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
-                                            value={producao?.dataPrevisaoPlantio || ""}
-                                            name="dataPlantio"
-                                            onChange={(e) => handleArrayChange(e, index, "producoes", "dataPrevisaoPlantio")}
-                                            required
-                                        />
-
-                                        <label className="form-label">
-                                            Data previsão da colheita*:
-                                        </label>
-                                        <input
-                                            type="date"
-                                            className="form-control"
-                                            value={producao?.dataPrevisaoColheita || ""}
-                                            name="dataColheita"
-                                            onChange={(e) => handleArrayChange(e, index, "producoes", "dataPrevisaoColheita")}
-                                            required
-                                        />
-                                    </>
-                                )}
-
-
-                                {/* Exibir Cobertura do Solo apenas para Histórico */}
-                                {producao.isHistorical && (
-                                    <>
-                                        <label className="form-label">Cobertura do solo (%)*:</label>
-                                        <input
-                                            type="text"
-                                            name="coberturaSolo"
-                                            className="form-control"
-                                            required
-                                            value={producao?.coberturaSolo || ""}
-                                            onChange={(e) => handleArrayChange(e, index, "producoes", "coberturaSolo")}
-                                        />
-                                        {errors[index]?.validateGroundCover && (
-                                            <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
-                                        )
-                                        }
-                                    </>
-                                )}
-
-                                <label className="form-label">Integração Lavoura Pecuária - ILP (SIM/NÃO)*: </label>
-                                <select
-                                    required
-                                    name="ILP"
-                                    className="form-select"
-                                    value={producao?.ilp || ""}
-                                    onChange={(e) => handleArrayChange(e, index, "producoes", "ilp")}
-                                >
-                                    <option value="true">SIM</option>
-                                    <option value="false">NÃO</option>
-                                </select>
-
-                                <label className="form-label">Cultura*: </label>
-                                <select
-                                    required
-                                    name="cultura"
-                                    className="form-control"
-                                    value={producao.cultura?.nome || ""}
-                                    onChange={(e) => handleArrayChange(e, index, "producoes", "cultura.nome")}
-                                >
-                                    <option value="">Selecione uma cultura</option>
-                                    {culturaOptions.map((cultura, idx) => (
-                                        <option key={idx} value={cultura}>
-                                            {cultura}
-                                        </option>
-                                    ))}
-                                </select>
-
-                            </div>
-
-                        ))}
-                        <div className="d-flex col-md-2 gap-2">
-                            <button
-                                type="button"
-                                //value={addOption}     
-                                className="btn btn-primary"
-                                onClick={(e) => {
-                                    //setAddOption(e.target.value);
-                                    handleAddEntry("historical")
-                                }
-                                }
-                            //disabled={!addOption}
-                            > Adicionar Histórico</button>
-                        </div>
-                        {/* Select e Botão para Adicionar Histórico ou Próxima Cultura */}
-                        <div className="d-flex col-md-2 gap-2">
-                            {/*<select
-                                className="form-select"
-                                value={addOption}
-                                onChange={(e) => setAddOption(e.target.value)}
+                        {/* 🔹 Renderiza as culturas ordenadas corretamente */}
+                        {producoesOrdenadas.map((producao, index) => (
+                            <div key={index}
+                                className="mb-4 p-3 border rounded"
+                                style={{
+                                    borderLeft: "5px solid " + (producao.isHistorical ? "#006400" : "#228B22"), // 💡 Adiciona apenas borda lateral
+                                }}
                             >
-                                <option value="">Selecione uma opção</option>
-                                
-                                <option value="next">Adicionar Próxima Cultura</option>
-                            </select>*/}
-                            {(countNextCulture === 0) && (!nextCulture) && (
-                                <>
-                                    <button
-                                        type="button"
-                                        //value={addOption}     
-                                        className="btn btn-primary"
-                                        onClick={(e) => {
-                                            //setAddOption(e.target.value);
-                                            handleAddEntry("next")
-                                        }
-                                        }
-                                    //disabled={!addOption}
-                                    >
-                                        Adicionar próxima cultura
-                                    </button>
-                                </>
-                            )}
+                                <div className="card-header text-white fw-bold"
+                                    style={{ backgroundColor: producao.isHistorical ? "#006400" : "#228B22" }}>
+                                    <h4 className="mb-0">
+                                        {producao.isHistorical ? "Histórico de culturas" : "Próxima cultura"}
+                                    </h4>
+                                </div>
 
-                        </div>
+                                {/* Campos do Histórico de Cultura */}
+                                {producao.isHistorical ? (
+                                    <>
+                                        <div className="row mt-3">
+                                            <div className="col-md-6">
+                                                <label className="form-label">Data do plantio*:</label>
+                                                <input type="date" className="form-control"
+                                                    value={producao?.dataPlantio || ""}
+                                                    onChange={(e) => handleArrayChange(e, index, "producoes", "dataPlantio")}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Data previsão da colheita*:</label>
+                                                <input type="date" className="form-control"
+                                                    value={producao?.dataColheita || ""}
+                                                    onChange={(e) => handleArrayChange(e, index, "producoes", "dataColheita")}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="row mt-3">
+                                            <div className="col-md-6">
+                                                <label className="form-label">Cobertura do solo (%)*:</label>
+                                                <input type="text" className="form-control"
+                                                    value={producao?.coberturaSolo || ""}
+                                                    onChange={(e) => handleArrayChange(e, index, "producoes", "coberturaSolo")}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Integração Lavoura Pecuária - ILP*:</label>
+                                                <select className="form-select"
+                                                    value={producao?.ilp || ""}
+                                                    onChange={(e) => handleArrayChange(e, index, "producoes", "ilp")}
+                                                    required
+                                                >
+                                                    <option value="true">SIM</option>
+                                                    <option value="false">NÃO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    // Campos da Próxima Cultura
+                                    <>
+                                        <div className="row mt-3">
+                                            <div className="col-md-6">
+                                                <label className="form-label">Data previsão do plantio*:</label>
+                                                <input type="date" className="form-control"
+                                                    value={producao?.dataPrevisaoPlantio || ""}
+                                                    onChange={(e) => handleArrayChange(e, index, "producoes", "dataPrevisaoPlantio")}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="form-label">Data previsão da colheita*:</label>
+                                                <input type="date" className="form-control"
+                                                    value={producao?.dataPrevisaoColheita || ""}
+                                                    onChange={(e) => handleArrayChange(e, index, "producoes", "dataPrevisaoColheita")}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="row mt-3">
+                                            <div className="col-md-6">
+                                                <label className="form-label">Integração Lavoura Pecuária - ILP*:</label>
+                                                <select className="form-select"
+                                                    value={producao?.ilp || ""}
+                                                    onChange={(e) => handleArrayChange(e, index, "producoes", "ilp")}
+                                                    required
+                                                >
+                                                    <option value="true">SIM</option>
+                                                    <option value="false">NÃO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {/* 🔹 Seleção de Cultura para ambos */}
+                                <div className="row mt-3">
+                                    <div className="col-md-12">
+                                        <label className="form-label">Cultura*:</label>
+                                        <select className="form-control"
+                                            value={producao.cultura?.nome || ""}
+                                            onChange={(e) => handleArrayChange(e, index, "producoes", "cultura.nome")}
+                                            required
+                                        >
+                                            <option value="">Selecione uma cultura</option>
+                                            {culturaOptions.map((cultura, idx) => (
+                                                <option key={idx} value={cultura}>
+                                                    {cultura}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* 🔹 Botão para adicionar novo Histórico */}
+                        <button className="btn btn-primary mt-3" onClick={handleAddEntry}>
+                            Adicionar Histórico
+                        </button>
                     </div>
                 </div>
+
             </form >
         </div >
     );

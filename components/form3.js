@@ -10,6 +10,7 @@ import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 export default function Form3({ initialData }) {
   const [formData, setFormData] = useState(modeloSensoriamento());
   const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (initialData && initialData.length > 0) {
       setFormData((prev) => ({
@@ -25,8 +26,8 @@ export default function Form3({ initialData }) {
   const handleChange = (e, field) => {
     const { value } = e.target;
     
-    //Validando os erros
-    errorsValidate(e, field, setErrors)
+    // Validando os erros
+    errorsValidate(e, field, setErrors);
 
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -34,7 +35,7 @@ export default function Form3({ initialData }) {
   const handleArrayChange = (e, index, arrayField, field) => {
     const { value } = e.target;
     
-    //Validando erros
+    // Validando erros
     errorsValidateArray(e, index, arrayField, field, setErrors);
 
     setFormData((prev) => {
@@ -46,13 +47,37 @@ export default function Form3({ initialData }) {
     });
   };
 
-
-
   const addEntry = (arrayField, defaultValues) => {
     setFormData((prev) => ({
       ...prev,
       [arrayField]: [...prev[arrayField], defaultValues],
     }));
+  };
+
+  // Função para verificar se o formulário é válido
+  const isFormValid = () => {
+    return (
+      formData.dataInicial &&
+      formData.dataFinal &&
+      formData.indices.every(
+        (indice, index) =>
+          indice.data &&
+          indice.satelite &&
+          indice.coordenada &&
+          indice.ndvi &&
+          indice.ndti &&
+          !errors[index]?.validateNDVI &&
+          !errors[index]?.validateNDTI
+      ) &&
+      formData.interpretacoesCultura.every(
+        (cultura, index) =>
+          cultura.cultura &&
+          cultura.dataInicio &&
+          cultura.dataFim &&
+          cultura.coberturaSolo &&
+          !errors[index]?.validateGroundCover
+      )
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -61,9 +86,6 @@ export default function Form3({ initialData }) {
   return (
     <div className="container my-4">
       <h2 className="text-center mb-4">Dados de Monitoramento</h2>
-      <h6 className="text-danger text-center">
-        Informações obrigatórias estão marcadas com *
-      </h6>
       <form onSubmit={handleSubmit}>
         <div className="card mb-4 border-0">
           <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
