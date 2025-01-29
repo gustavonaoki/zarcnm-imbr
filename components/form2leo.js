@@ -117,7 +117,6 @@ export default function Form2({ initialData, onSubmit }) {
           <div
             className="card mb-4 border-0"
             key={index}
-            style={{ backgroundColor: "#DBDBDB" }}
           >
             {/* Cabeçalho do card com título, mensagem, select e botões */}
             <div className="border-2">
@@ -133,7 +132,6 @@ export default function Form2({ initialData, onSubmit }) {
                     className="mb-0 mt-2"
                     style={{ fontSize: "0.9rem", color: "#f8f9fa" }}
                   >
-                    Campos com ( * ) são obrigatórios
                   </p>
                 </div>
 
@@ -202,7 +200,7 @@ export default function Form2({ initialData, onSubmit }) {
               <div className="col-md-6">
                 <div
                   className="card mb-3 border-3"
-                  style={{ borderColor: "#20691a", backgroundColor: "#DBDBDB" }}
+                  style={{ borderColor: "#20691a" }}
                 >
                   <div
                     className="card-header text-white"
@@ -250,11 +248,11 @@ export default function Form2({ initialData, onSubmit }) {
                     )}
                   </div>
                 </div>
-              </div>
+              </div> 
               <div className="col-md-6">
                 <div
                   className="card mb-3 border-3"
-                  style={{ borderColor: "#20691a", backgroundColor: "#DBDBDB" }}
+                  style={{ borderColor: "#20691a" }}
                 >
                   <div
                     className="card-header text-white"

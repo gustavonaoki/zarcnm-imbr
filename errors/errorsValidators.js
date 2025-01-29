@@ -1,5 +1,5 @@
 import {validateArea} from "../utils/validateArea";
-import { validateIBGE } from "../utils/validateIBGECode";
+import { validateIBGE } from "../utils/validateIBGE";
 import { validateSlope } from "../utils/validateSlop";
 
 
@@ -14,7 +14,7 @@ export const errorsValidate = (e, fieldPath, setErrors) => {
             ...prev,
             [0]: {
                 ...prev[0],
-                validateIBGECode: error,
+                validateIBGE: error,
             }
         }))
     }
