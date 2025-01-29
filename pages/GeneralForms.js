@@ -23,13 +23,13 @@ export default function GeneralForms() {
   const [openDropdowns, setOpenDropdowns] = useState({
     form1: false,
     form2: false,
-    form3: false
+    form3: false,
   });
 
   const toggleDropdown = (dropdown) => {
     setOpenDropdowns((prev) => ({
       ...prev,
-      [dropdown]: !prev[dropdown] // Alterna apenas o dropdown clicado
+      [dropdown]: !prev[dropdown], // Alterna apenas o dropdown clicado
     }));
   };
 
@@ -77,7 +77,6 @@ export default function GeneralForms() {
 
   return (
     <div className="container-fluid min-vh-100 d-flex flex-column align-items-center bg-light">
-      
       <div className="w-100 p-3 d-flex justify-content-end align-items-center bg-light shadow">
         <label className="form-label fs-4 mb-0 me-3">Selecione o JSON:</label>
         <select
@@ -108,9 +107,12 @@ export default function GeneralForms() {
       {/* Formulários organizados corretamente */}
       <div className="d-flex flex-column gap-3 w-50">
         <div className={styles.dropdownContainer}>
-          <Dropdown show={openDropdowns.form1} onToggle={() => toggleDropdown("form1")}>
+          <Dropdown
+            show={openDropdowns.form1}
+            onToggle={() => toggleDropdown("form1")}
+          >
             <Dropdown.Toggle variant="success" className="btn-lg w-100">
-              Operador de contrato
+              Operador de Contratos
             </Dropdown.Toggle>
             {openDropdowns.form1 && (
               <div className={styles.dropdownExpand}>
@@ -121,9 +123,12 @@ export default function GeneralForms() {
         </div>
 
         <div className={styles.dropdownContainer}>
-          <Dropdown show={openDropdowns.form2} onToggle={() => toggleDropdown("form2")}>
+          <Dropdown
+            show={openDropdowns.form2}
+            onToggle={() => toggleDropdown("form2")}
+          >
             <Dropdown.Toggle variant="success" className="btn-lg w-100">
-              Operador de analise de solo
+              Operador de Análise de Solo
             </Dropdown.Toggle>
             {openDropdowns.form2 && (
               <div className={styles.dropdownExpand}>
@@ -134,9 +139,12 @@ export default function GeneralForms() {
         </div>
 
         <div className={styles.dropdownContainer}>
-          <Dropdown show={openDropdowns.form3} onToggle={() => toggleDropdown("form3")}>
+          <Dropdown
+            show={openDropdowns.form3}
+            onToggle={() => toggleDropdown("form3")}
+          >
             <Dropdown.Toggle variant="success" className="btn-lg w-100">
-             Operador de sensoriamento remoto 
+              Operador de Sensoriamento Remoto
             </Dropdown.Toggle>
             {openDropdowns.form3 && (
               <div className={styles.dropdownExpand}>
@@ -153,7 +161,9 @@ export default function GeneralForms() {
           type="button"
           className="btn btn-success "
           onClick={handleSubmit}
-          disabled={!form1Data || form2Data.length === 0 || form3Data.length === 0}
+          disabled={
+            !form1Data || form2Data.length === 0 || form3Data.length === 0
+          }
         >
           Enviar
         </button>
