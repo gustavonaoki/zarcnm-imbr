@@ -26,6 +26,8 @@ export default function Form1({ initialData, onSubmit }) {
     });
 
     const [errors, setErrors] = useState({});
+    const [countNextCulture, setCountNextCulture] = useState(0) //Contador de campos proxima cultura, maximo 1
+    const nextCulture = cadastroGleba.producoes.find((elemento) => elemento.isHistorical === false) //Procura proxima cultura no cadastro da gleba, validação necessária pra o preenchimento automatico.
 
     // 🔹 Atualiza o estado quando `initialData` mudar
     useEffect(() => {
