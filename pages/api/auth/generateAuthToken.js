@@ -7,15 +7,37 @@ const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET;
 const USERNAME = process.env.NEXT_PUBLIC_USERNAME;
 const PASSWORD = process.env.NEXT_PUBLIC_PASSWORD;
-
+const USERNAME_IMBR = process.env.NEXT_PUBLIC_USERNAME_IMBR
+const PASSWORD_IMBR = process.env.NEXT_PUBLIC_PASSWORD_IMBR
 const validateEnvVariables = () => {
-  if (!AUTH_URL || !CLIENT_ID || !CLIENT_SECRET || !USERNAME || !PASSWORD) {
+  if (!AUTH_URL || !CLIENT_ID || !CLIENT_SECRET || !USERNAME || !PASSWORD || !PASSWORD_IMBR || !USERNAME_IMBR ) {
     throw new Error('Erro: Variáveis de ambiente ausentes. Verifique o arquivo .env.local');
   }
 };
 
 // Função para gerar o token de autenticação
+//função nova
 export const generateAuthToken = async () => {
+  try {
+    validateEnvVariables()
+    const response = await axios.post("/api/proxy", {
+      username: USERNAME_IMBR,
+      password: PASSWORD_IMBR,
+    });
+
+    //console.log("Token recebido:", response.data.token);
+    return response.data.token;
+  } catch (error) {
+    console.error("Erro ao obter token:", error);
+    return null;
+  }
+};
+
+
+// Função para gerar o token de autenticação
+
+// FUNÇÃO ANTIGA
+/*export const generateAuthToken = async () => {
   try {
     validateEnvVariables();
 
@@ -52,4 +74,4 @@ export const generateAuthToken = async () => {
     }
     throw error; // Relança o erro para que ele possa ser tratado na chamada
   }
-};
+};*/
