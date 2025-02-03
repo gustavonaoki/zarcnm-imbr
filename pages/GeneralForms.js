@@ -93,7 +93,11 @@ export default function GeneralForms() {
           ))}
         </select>
         <button
-          className="btn btn-primary ms-3"
+          className="btn ms-3"
+          style={{ 
+            backgroundColor: "#25526d",
+            color: "white"
+         }}
           onClick={handleAutoPreencher}
           disabled={!opcaoSelecionada}
         >
