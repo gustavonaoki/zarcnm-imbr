@@ -367,7 +367,7 @@ export default function Form1({ initialData, onSubmit }) {
                                 }}
                             >
                                 <div className="card-header text-white fw-bold"
-                                    style={{ backgroundColor: producao.isHistorical ? "#006400" : "#228B22" }}>
+                                    style={{ backgroundColor: producao.isHistorical ? "#006400" : "#0d6efd" }}>
                                     <h4 className="mb-0">
                                         {producao.isHistorical ? "Histórico de culturas" : "Próxima cultura"}
                                     </h4>
