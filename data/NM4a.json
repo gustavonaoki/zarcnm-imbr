@@ -8,6 +8,21 @@
           "request": {
             "body": {
               "raw": {
+                "produtor": {
+                  "nome": "Livia Fernandes",
+                  "cpf": "12345678901"
+                },
+                "propriedade": {
+                  "nome": "Fazenda Boa Esperança",
+                  "codigoCar": "MT-5107248-1025F299474640148FE845C7A0B62635",
+                  "codigoIbge": "5103403",
+                  "poligono": "POLYGON((-58.9144585643381 -13.5072128852218, -58.9145000 -13.5072500))"
+                },
+                "talhao": {
+                  "poligono": "POLYGON((-58.9144585643381 -13.5072128852218, -58.9145000 -13.5072500))",
+                  "area": 45.5,
+                  "tipoProdutor": "Proprietário"
+                },
                 "manejos": [
                   {
                     "data": "2010-11-01",

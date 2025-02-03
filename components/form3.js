@@ -5,6 +5,8 @@ import { culturaOptions } from "../optionsInputs/culturas";
 import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
 import { errorsValidate } from "../errors/errorsValidators";
 import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
+import { validateNDTI } from "../utils/validateNDVI_NDTI";
+import { validateNDVI } from "../utils/validateNDVI_NDTI";
 
 
 export default function Form3({ initialData }) {
@@ -25,7 +27,7 @@ export default function Form3({ initialData }) {
 
   const handleChange = (e, field) => {
     const { value } = e.target;
-    
+
     // Validando os erros
     errorsValidate(e, field, setErrors);
 
@@ -34,18 +36,35 @@ export default function Form3({ initialData }) {
 
   const handleArrayChange = (e, index, arrayField, field) => {
     const { value } = e.target;
-    
-    // Validando erros
-    errorsValidateArray(e, index, arrayField, field, setErrors);
+    let validationError = null;
 
+    // Verifica se estamos lidando com NDVI ou NDTI e valida
+    if (field === "ndvi") {
+      validationError = validateNDVI(value);
+    } else if (field === "ndti") {
+      validationError = validateNDTI(value);
+    }
+
+    // Atualiza o estado de erros dinamicamente
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [arrayField]: {
+        ...(prevErrors[arrayField] || {}),
+        [index]: {
+          ...(prevErrors[arrayField]?.[index] || {}),
+          [field]: validationError, // Armazena o erro para NDVI ou NDTI
+        },
+      },
+    }));
+
+    // Atualiza o valor no formulário
     setFormData((prev) => {
       const updatedArray = [...prev[arrayField]];
-      if (updatedArray[index]) {
-        updatedArray[index][field] = value;
-      }
+      updatedArray[index][field] = value;
       return { ...prev, [arrayField]: updatedArray };
     });
   };
+
 
   const addEntry = (arrayField, defaultValues) => {
     setFormData((prev) => ({
@@ -80,6 +99,13 @@ export default function Form3({ initialData }) {
     );
   };
 
+  const removeEntry = (arrayField, index) => {
+    setFormData((prev) => ({
+      ...prev,
+      [arrayField]: prev[arrayField].filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = async (e) => {
   };
 
@@ -87,13 +113,14 @@ export default function Form3({ initialData }) {
     <div className="container my-4">
       <h2 className="text-center mb-4">Dados de Monitoramento</h2>
       <form onSubmit={handleSubmit}>
+        {/* Dados de Sensoriamento Remoto */}
         <div className="card mb-4 border-0">
           <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
             <h3>Dados de Sensoriamento Remoto</h3>
           </div>
           <div className="card-body">
-
-            <div className="md-3" style={{ marginBottom: "1rem" }}>
+            {/* Campos principais */}
+            <div className="mb-3">
               <label className="form-label">Data Início do Monitoramento *</label>
               <input
                 type="date"
@@ -103,7 +130,7 @@ export default function Form3({ initialData }) {
                 required
               />
             </div>
-            <div className="md-3" style={{ marginBottom: "1rem" }}>
+            <div className="mb-3">
               <label className="form-label">Data Término do Monitoramento *</label>
               <input
                 type="date"
@@ -114,28 +141,17 @@ export default function Form3({ initialData }) {
               />
             </div>
             <div className="mb-3">
-              <label className="form-label">
-                Declividade média da gleba/talhão(%):
-              </label>
+              <label className="form-label">Declividade média da gleba/talhão (%):</label>
               <input
                 type="text"
-                name="declividadeMedia"
                 className="form-control"
-                placeholder="EX: 12"
                 value={formData.declividadeMedia}
                 onChange={(e) => handleChange(e, "declividadeMedia")}
               />
-              {errors[0]?.validateSlope && (
-                  <div className="text-danger mt-2">{errors[0].validateSlope}</div>
-                )
-                }
             </div>
             <div className="mb-3">
-              <label className="form-label">
-                Plantio em contorno:
-              </label>
+              <label className="form-label">Plantio em contorno:</label>
               <select
-                name="plantioContorno"
                 className="form-select"
                 value={formData.plantioContorno}
                 onChange={(e) => handleChange(e, "plantioContorno")}
@@ -145,12 +161,9 @@ export default function Form3({ initialData }) {
               </select>
             </div>
             <div className="mb-3">
-              <label className="form-label">
-                Terraceamento:
-              </label>
+              <label className="form-label">Terraceamento:</label>
               <select
-                name="terraceamento"
-                className="form-control"
+                className="form-select"
                 value={formData.terraceamento}
                 onChange={(e) => handleChange(e, "terraceamento")}
               >
@@ -160,215 +173,217 @@ export default function Form3({ initialData }) {
             </div>
           </div>
         </div>
-
+  
         {/* Índices */}
         <div className="card mb-4 border-0">
-          <div className="card-header text-white" style={{ backgroundColor: "#2a7a22" }}>
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
             <h3>Índices</h3>
           </div>
           <div className="card-body">
             {formData.indices.map((indice, index) => (
-              <div key={index} className="mb-3">
-                <label className="form-label">Data da imagem do pixel*: </label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={indice.data}
-                  onChange={(e) => handleArrayChange(e, index, "indices", "data")}
-                  required
-                />
-                <label className="form-label">Satélite*:</label>
-                <input
-                  name="satelite"
-                  type="text"
-                  required
-                  placeholder="EX: Sentinel"
-                  className="form-control mb-2"
-                  value={indice.satelite}
-                  onChange={(e) => handleArrayChange(e, index, "indices", "satelite")}
-                />
-                <label className="form-label">Coordenada (WKT)*:</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="EX: POINT(40.71727401 -74.00898606)"
-                  className="form-control mb-2"
-                  name="coordenada"
-                  value={indice.coordenada}
-                  onChange={(e) => handleArrayChange(e, index, "indices", "coordenada")}
-                />
-                <label className="form-label">NDVI*:</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="EX: 0.3342"
-                  className="form-control mb-2"
-                  value={indice.ndvi || ""}
-                  name="ndvi"
-                  onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
-                />
-                {errors[index]?.validateNDVI && (
-                  <div className="text-danger mt-2">{errors[index].validateNDVI}</div>
-                )
-                }
-                <label className="form-label">NDTI*:</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="EX: 0.1342"
-                  className="form-control mb-2"
-                  name="ndti"
-                  value={indice.ndti}
-                  onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
-                />
-                {errors[index]?.validateNDTI && (
-                  <div className="text-danger mt-2">{errors[index].validateNDTI}</div>
-                )
-                }
+              <div key={index} className="mb-3 border p-3 rounded">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0">Índice {index + 1}</h5>
+                  {formData.indices.length > 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeEntry("indices", index)}
+                    >
+                      <i className="bi bi-trash-fill"></i> Remover
+                    </button>
+                  )}
+                </div>
+                <div className="mb-2">
+                  <label className="form-label">Data da imagem do pixel*:</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={indice.data}
+                    onChange={(e) => handleArrayChange(e, index, "indices", "data")}
+                    required
+                  />
+                </div>
+                <div className="mb-2">
+                  <label className="form-label">Satélite*:</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={indice.satelite}
+                    onChange={(e) => handleArrayChange(e, index, "indices", "satelite")}
+                    required
+                  />
+                </div>
+                <div className="mb-2">
+                  <label className="form-label">Coordenada (WKT)*:</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={indice.coordenada}
+                    onChange={(e) => handleArrayChange(e, index, "indices", "coordenada")}
+                    required
+                  />
+                </div>
+                <div className="mb-2">
+                  <label className="form-label">NDVI*:</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={indice.ndvi}
+                    onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
+                    required
+                  />
+                  {errors.indices?.[index]?.ndvi && (
+                    <div className="text-danger mt-2">{errors.indices[index].ndvi}</div>
+                  )}
+                </div>
+                <div className="mb-2">
+                  <label className="form-label">NDTI*:</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={indice.ndti}
+                    onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
+                    required
+                  />
+                  {errors.indices?.[index]?.ndti && (
+                    <div className="text-danger mt-2">{errors.indices[index].ndti}</div>
+                  )}
+                </div>
               </div>
             ))}
             <button
               type="button"
-              className="btn btn-primary"
-              onClick={() =>
-                addEntry("indices", { satelite: "", coordenada: "", data: "", ndvi: 0, ndti: 0 })
-              }
+              className="btn"
+              style={{ backgroundColor: "#25526d", color: "white" }}
+              onClick={() => addEntry("indices", { satelite: "", coordenada: "", data: "", ndvi: 0, ndti: 0 })}
             >
               Adicionar Índice
             </button>
           </div>
         </div>
-
+  
         {/* Interpretações de Cultura */}
         <div className="card mb-4 border-0">
-          <div className="card-header text-white" style={{ backgroundColor: "#2a7a22" }}>
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
             <h3>Interpretações de Cultura</h3>
           </div>
           <div className="card-body">
             {formData.interpretacoesCultura.map((cultura, index) => (
-              <div key={index} className="mb-3">
+              <div key={index} className="mb-3 border p-3 rounded">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0">Cultura {index + 1}</h5>
+                  {formData.interpretacoesCultura.length > 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeEntry("interpretacoesCultura", index)}
+                    >
+                      <i className="bi bi-trash-fill"></i> Remover
+                    </button>
+                  )}
+                </div>
                 <label className="form-label">Cultura:</label>
                 <select
-                  name="cultura"
                   className="form-control"
-                  value={cultura.cultura || ""}
+                  value={cultura.cultura}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "cultura")}
                 >
-                  {/*Mapeia as opções de culturas disponíveis*/}
                   <option value="">Selecione uma cultura</option>
-                  {culturaOptions.map((cultura, index) => (
-                    <option key={index} value={cultura}>
-                      {cultura}
+                  {culturaOptions.map((option, i) => (
+                    <option key={i} value={option}>
+                      {option}
                     </option>
                   ))}
                 </select>
                 <label className="form-label">Data de Emergência:</label>
                 <input
                   type="date"
-                  name="dataInicio"
-                  className="form-control mb-2"
+                  className="form-control"
                   value={cultura.dataInicio}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "dataInicio")}
                 />
                 <label className="form-label">Data da Colheita:</label>
                 <input
                   type="date"
-                  className="form-control mb-2"
-                  name="dataFim"
+                  className="form-control"
                   value={cultura.dataFim}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "dataFim")}
                 />
-                <label className="form-label">
-                  Cobertura do solo (%):
-                </label>
+                <label className="form-label">Cobertura do solo (%):</label>
                 <input
                   type="text"
-                  name="coberturaSolo"
                   className="form-control"
                   value={cultura.coberturaSolo}
-                  placeholder="EX: 12"
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
                 />
-                {errors[index]?.validateGroundCover && (
-                  <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
-                )
-                }
               </div>
             ))}
             <button
               type="button"
-              className="btn btn-primary"
-              onClick={() =>
-                addEntry("interpretacoesCultura", {
-                  cultura: "",
-                  dataInicio: "",
-                  dataFim: "",
-                  coberturaSolo: 0,
-                })
-              }
+              className="btn"
+              style={{ backgroundColor: "#25526d", color: "white" }}
+              onClick={() => addEntry("interpretacoesCultura", { cultura: "", dataInicio: "", dataFim: "", coberturaSolo: 0 })}
             >
               Adicionar Cultura
             </button>
           </div>
         </div>
-
+  
         {/* Interpretações de Manejo */}
         <div className="card mb-4 border-0">
-          <div className="card-header text-white" style={{ backgroundColor: "#2a7a22" }}>
+          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
             <h3>Interpretações de Manejo</h3>
           </div>
           <div className="card-body">
             {formData.interpretacoesManejo.map((manejo, index) => (
-              <div key={index} className="mb-3">
+              <div key={index} className="mb-3 border p-3 rounded">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0">Manejo {index + 1}</h5>
+                  {formData.interpretacoesManejo.length > 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeEntry("interpretacoesManejo", index)}
+                    >
+                      <i className="bi bi-trash-fill"></i> Remover
+                    </button>
+                  )}
+                </div>
                 <label className="form-label">Data:</label>
                 <input
                   type="date"
-                  className="form-control mb-2"
+                  className="form-control"
                   value={manejo.data}
-                  name="data"
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "data")}
                 />
-                <label className="form-label">Operação: </label>
+                <label className="form-label">Operação:</label>
                 <input
                   type="text"
-                  placeholder="EX: Revolvimento do solo"
-                  className="form-control mb-2"
-                  name="operacao"
+                  className="form-control"
                   value={manejo.operacao}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "operacao")}
                 />
                 <label className="form-label">Tipo de Operação:</label>
                 <input
                   type="text"
-                  className="form-control mb-2"
-                  placeholder="EX: Aração"
-                  name="tipoOperacao"
+                  className="form-control"
                   value={manejo.tipoOperacao}
-                  onChange={(e) =>
-                    handleArrayChange(e, index, "interpretacoesManejo", "tipoOperacao")
-                  }
+                  onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "tipoOperacao")}
                 />
-
-
               </div>
             ))}
             <button
               type="button"
-              className="btn btn-primary"
-              onClick={() =>
-                addEntry("interpretacoesManejo", {
-                  data: "",
-                  operacao: "",
-                  tipoOperacao: "",
-                })
-              }
+              className="btn"
+              style={{ backgroundColor: "#25526d", color: "white" }}
+              onClick={() => addEntry("interpretacoesManejo", { data: "", operacao: "", tipoOperacao: "" })}
             >
               Adicionar Manejo
             </button>
           </div>
         </div>
-
-      </form >
-    </div >
+      </form>
+    </div>
   );
-};
+}

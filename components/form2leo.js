@@ -124,18 +124,19 @@ export default function Form2({ initialData, onSubmit }) {
                 className="card-header text-white d-flex justify-content-between align-items-center"
                 style={{ backgroundColor: "#0b4809" }}
               >
-                {/* Título da análise */}
-                <div>
-                  <h3 className="mb-0">Análise {index + 1}</h3>
-                  {/* Mensagem de campos obrigatórios */}
-                  <p
-                    className="mb-0 mt-2"
-                    style={{ fontSize: "0.9rem", color: "#f8f9fa" }}
-                  >
-                  </p>
-                </div>
+                <h3 className="mb-0">Análise {index + 1}</h3>
 
+                {index >= 2 && (
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm d-flex align-items-center"
+                    onClick={() => removeAnalise(index)}
+                  >
+                    <i className="bi bi-trash-fill me-2"></i> Remover
+                  </button>
+                )}
               </div>
+
               <div className="card-body">
                 {/* Informações principais */}
                 <div className="row mb-6">
@@ -248,7 +249,7 @@ export default function Form2({ initialData, onSubmit }) {
                     )}
                   </div>
                 </div>
-              </div> 
+              </div>
               <div className="col-md-6">
                 <div
                   className="card mb-3 border-3"
@@ -459,8 +460,11 @@ export default function Form2({ initialData, onSubmit }) {
           <button
             type="button"
             onClick={addAnalise}
-            className="btn btn-primary"
-            style={{ backgroundColor: "#25526d" }}
+            className="btn"
+            style={{
+              backgroundColor: "#25526d",
+              color: "white"
+            }}
           >
             Adicionar Nova Análise
           </button>
