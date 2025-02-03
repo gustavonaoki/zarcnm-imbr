@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InputMask from "react-input-mask";
 import { culturaOptions } from "../optionsInputs/culturas";
@@ -92,29 +92,52 @@ export default function Form1({ initialData, onSubmit }) {
         errorsValidateArray(e, index, arrayField, fieldPath, setErrors);
     };
 
-    // 🔹 Adiciona um novo histórico de cultura
-    const handleAddEntry = () => {
-        setCadastroGleba((prev) => ({
-            ...prev,
-            producoes: [
-                ...prev.producoes,
-                {
-                    dataPlantio: "",
-                    dataColheita: "",
-                    coberturaSolo: 0,
-                    ilp: "",
-                    cultura: { nome: "" },
-                    isHistorical: true, // Sempre um histórico de cultura
-                },
-            ],
-        }));
+    const handleAddEntry = (option) => {
+
+        if(option === "manejos"){
+            setCadastroGleba((prev) => ({
+                ...prev,
+                manejos: [
+                    ...prev.manejos,
+                    {
+                        "data": "",
+                        "operacao": {
+                            "nomeOperacao": ""
+                        },
+                        "tipoOperacao": {
+                            "tipo": ""
+                        }
+
+                    }
+                ]
+            }));
+    
+        }
+        if(option === "historico"){
+            setCadastroGleba((prev) => ({
+                ...prev,
+                producoes: [
+                    ...prev.producoes,
+                    {
+                        "dataPlantio": "",
+                        "dataColheita": "",
+                        "coberturaSolo": 0,
+                        "ilp": "",
+                        "cultura": { "nome": "" },
+                        "isHistorical": true, // Sempre um histórico de cultura
+                    },
+                ],
+            }));
+        }
+        
     };
 
-    const producoesOrdenadas = [
-        ...cadastroGleba.producoes.filter(p => p.isHistorical), // Históricos primeiro
-        ...cadastroGleba.producoes.filter(p => !p.isHistorical) // Próxima cultura sempre no final
-    ];
+    const producoesOrdenadas = () => {
+        return cadastroGleba.producoes.sort((a, b) => Number(b.isHistorical) - Number(a.isHistorical));
 
+    } // 🔹 Garante que re-renderiza quando necessário
+
+    
 
     // Função para enviar os dados do formulário
     const handleSubmit = async (e) => {
@@ -323,9 +346,7 @@ export default function Form1({ initialData, onSubmit }) {
                         <button
                             type="button"
                             className="btn btn-primary"
-                            onClick={() =>
-                                addEntry("manejos", { dataOperacao: "", operacao: "", tipoOperacao: "" })
-                            }>
+                            onClick={()=> handleAddEntry("manejos")}>
                             Adicionar Operação
                         </button>
                     </div>
@@ -338,7 +359,7 @@ export default function Form1({ initialData, onSubmit }) {
                     </div>
                     <div className="card-body">
                         {/* 🔹 Renderiza as culturas ordenadas corretamente */}
-                        {producoesOrdenadas.map((producao, index) => (
+                        {producoesOrdenadas().map((producao, index) => (
                             <div key={index}
                                 className="mb-4 p-3 border rounded"
                                 style={{
@@ -456,7 +477,7 @@ export default function Form1({ initialData, onSubmit }) {
                         ))}
 
                         {/* 🔹 Botão para adicionar novo Histórico */}
-                        <button className="btn btn-primary mt-3" onClick={handleAddEntry}>
+                        <button className="btn btn-primary mt-3" onClick={()=> handleAddEntry("historico")}>
                             Adicionar Histórico
                         </button>
                     </div>
