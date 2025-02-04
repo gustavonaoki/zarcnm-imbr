@@ -7,7 +7,7 @@ import { errorsValidate } from "../errors/errorsValidators";
 import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 
 export default function Form1({ initialData, onSubmit }) {
-    // 🔹 Inicializa o estado corretamente sem `useEffect` dentro
+    // Inicializa o estado corretamente sem `useEffect` dentro
     const [cadastroGleba, setCadastroGleba] = useState(() => {
         const modelo = modeloCadastroGleba();
 
@@ -92,6 +92,7 @@ export default function Form1({ initialData, onSubmit }) {
         errorsValidateArray(e, index, arrayField, fieldPath, setErrors);
     };
 
+    // Adiciona um novo histórico de cultura
     const handleAddEntry = (option) => {
 
         if(option === "manejos"){
@@ -134,10 +135,9 @@ export default function Form1({ initialData, onSubmit }) {
 
     const producoesOrdenadas = () => {
         return cadastroGleba.producoes.sort((a, b) => Number(b.isHistorical) - Number(a.isHistorical));
+    } 
 
-    } // 🔹 Garante que re-renderiza quando necessário
 
-    
 
     // Função para enviar os dados do formulário
     const handleSubmit = async (e) => {
@@ -163,7 +163,6 @@ export default function Form1({ initialData, onSubmit }) {
                                     type="text"
                                     name="nome"
                                     className="form-control"
-                                    placeholder="Ex: José da Silva"
                                     value={cadastroGleba.produtor?.nome || ""} //Exibe o valor do campo nome do produtor
                                     onChange={(e) => handleChange(e, "produtor.nome")}
                                 />
@@ -175,7 +174,6 @@ export default function Form1({ initialData, onSubmit }) {
                                     type="text"
                                     name="cpf"
                                     className="form-control"
-                                    placeholder="EX: 12345678900"
                                     value={cadastroGleba.produtor?.cpf || ""}
                                     onChange={(e) => handleChange(e, "produtor.cpf")}
                                 />
@@ -199,7 +197,6 @@ export default function Form1({ initialData, onSubmit }) {
                                 type="text"
                                 name="nome"
                                 className="form-control"
-                                placeholder="EX: Fazenda Santa Maria"
                                 value={cadastroGleba.propriedade?.nome || ""}
                                 onChange={(e) => handleChange(e, "propriedade.nome")}
                             />
@@ -214,7 +211,6 @@ export default function Form1({ initialData, onSubmit }) {
                                 className="form-control"
                                 required
                                 value={cadastroGleba.propriedade?.codigoCar || ""}
-                                placeholder="EX: MT-5107248-1025F299474640148FE845C7A0B62635"
                                 onChange={(e) => handleChange(e, "propriedade.codigoCar")}
                             />
                         </div>
@@ -225,7 +221,6 @@ export default function Form1({ initialData, onSubmit }) {
                                 name="codigoIbge"
                                 className="form-control"
                                 value={cadastroGleba.propriedade?.codigoIbge || ""}
-                                placeholder="EX: 3509502"
                                 onChange={(e) => handleChange(e, "propriedade.codigoIbge")}
                             />
                             {errors.propriedade?.codigoIbge && (
@@ -242,7 +237,6 @@ export default function Form1({ initialData, onSubmit }) {
                                 name="poligono"
                                 className="form-control"
                                 value={cadastroGleba.propriedade?.poligono || ""}
-                                placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
                                 onChange={(e) => handleChange(e, "propriedade.poligono")}
                             ></textarea>
                         </div>
@@ -262,7 +256,6 @@ export default function Form1({ initialData, onSubmit }) {
                                 required
                                 className="form-control"
                                 value={cadastroGleba.talhao?.poligono || ""}
-                                placeholder="EX: POLYGON((-58.9144585643381 -13.5072128852218,...))"
                                 onChange={(e) => handleChange(e, "talhao.poligono")}
                             ></textarea>
                         </div>
@@ -275,7 +268,6 @@ export default function Form1({ initialData, onSubmit }) {
                                 name="area"
                                 className="form-control"
                                 required
-                                placeholder="EX: 25"
                                 value={cadastroGleba.talhao?.area || ""}
                                 onChange={(e) => handleChange(e, "talhao.area")}
                             />
@@ -325,7 +317,6 @@ export default function Form1({ initialData, onSubmit }) {
                                     name="nomeOperacao"
                                     className="form-control"
                                     required
-                                    placeholder="EX: REVOLVIMENTO DO SOLO"
                                     value={manejo.operacao?.nomeOperacao || ""}
                                     onChange={(e) => handleArrayChange(e, index, "manejos", "operacao.nomeOperacao")}
                                 />
@@ -336,7 +327,6 @@ export default function Form1({ initialData, onSubmit }) {
                                     required
                                     name="tipoOperacao"
                                     className="form-control"
-                                    placeholder="EX: ARACAO"
                                     value={manejo.tipoOperacao?.tipo || ""}
                                     onChange={(e) => handleArrayChange(e, index, "manejos", "tipoOperacao.tipo")}
                                 />
@@ -345,8 +335,14 @@ export default function Form1({ initialData, onSubmit }) {
                         ))}
                         <button
                             type="button"
-                            className="btn btn-primary"
-                            onClick={()=> handleAddEntry("manejos")}>
+                            className="btn"
+                            style={{ 
+                                backgroundColor: "#25526d",
+                                color: "white"
+                             }}                           
+                            onClick={() =>
+                                addEntry("manejos", { dataOperacao: "", operacao: "", tipoOperacao: "" })
+                            }>
                             Adicionar Operação
                         </button>
                     </div>
@@ -363,7 +359,7 @@ export default function Form1({ initialData, onSubmit }) {
                             <div key={index}
                                 className="mb-4 p-3 border rounded"
                                 style={{
-                                    borderLeft: "5px solid " + (producao.isHistorical ? "#006400" : "#228B22"), // 💡 Adiciona apenas borda lateral
+                                    borderLeft: "5px solid " + (producao.isHistorical ? "#006400" : "#228B22"), 
                                 }}
                             >
                                 <div className="card-header text-white fw-bold"
@@ -476,8 +472,15 @@ export default function Form1({ initialData, onSubmit }) {
                             </div>
                         ))}
 
-                        {/* 🔹 Botão para adicionar novo Histórico */}
-                        <button className="btn btn-primary mt-3" onClick={()=> handleAddEntry("historico")}>
+                        {/* Botão para adicionar novo Histórico */}
+                        <button 
+                        className="btn btn-primary mt-3" 
+                        onClick={()=> handleAddEntry("historico")}
+                        style={{ 
+                            backgroundColor: "#25526d",
+                            color: "white"
+                         }}
+                        >
                             Adicionar Histórico
                         </button>
                     </div>
