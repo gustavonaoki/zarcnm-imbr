@@ -26,8 +26,6 @@ export default function Form1({ initialData, onSubmit }) {
     });
 
     const [errors, setErrors] = useState({});
-    const [countNextCulture, setCountNextCulture] = useState(0) //Contador de campos proxima cultura, maximo 1
-    const nextCulture = cadastroGleba.producoes.find((elemento) => elemento.isHistorical === false) //Procura proxima cultura no cadastro da gleba, validação necessária pra o preenchimento automatico.
 
     // 🔹 Atualiza o estado quando `initialData` mudar
     useEffect(() => {
@@ -65,29 +63,29 @@ export default function Form1({ initialData, onSubmit }) {
     // 🔹 Atualiza os campos dentro dos arrays (Histórico de Culturas)
     const handleArrayChange = (e, index, arrayField, fieldPath) => {
         const { value } = e.target;
-    
+
         setCadastroGleba((prev) => {
             // Clona o array de produções para evitar mutação direta no estado
             const updatedArray = [...prev[arrayField]];
-    
+
             if (updatedArray[index]) {
                 const keys = fieldPath.split("."); // Divide a string em chaves
                 let current = updatedArray[index]; // Obtém o objeto correspondente
-    
+
                 // Percorre todas as chaves exceto a última
                 for (let i = 0; i < keys.length - 1; i++) {
                     const key = keys[i];
                     current[key] = { ...current[key] }; // Garante que não mutamos o estado diretamente
                     current = current[key];
                 }
-    
+
                 // Atualiza o valor do campo final
                 current[keys[keys.length - 1]] = value;
             }
-    
+
             return { ...prev, [arrayField]: updatedArray };
         });
-    
+
         // Valida erros
         errorsValidateArray(e, index, arrayField, fieldPath, setErrors);
     };
@@ -95,7 +93,7 @@ export default function Form1({ initialData, onSubmit }) {
     // Adiciona um novo histórico de cultura
     const handleAddEntry = (option) => {
 
-        if(option === "manejos"){
+        if (option === "manejos") {
             setCadastroGleba((prev) => ({
                 ...prev,
                 manejos: [
@@ -112,9 +110,9 @@ export default function Form1({ initialData, onSubmit }) {
                     }
                 ]
             }));
-    
+
         }
-        if(option === "historico"){
+        if (option === "historico") {
             setCadastroGleba((prev) => ({
                 ...prev,
                 producoes: [
@@ -130,12 +128,12 @@ export default function Form1({ initialData, onSubmit }) {
                 ],
             }));
         }
-        
+
     };
 
     const producoesOrdenadas = () => {
         return cadastroGleba.producoes.sort((a, b) => Number(b.isHistorical) - Number(a.isHistorical));
-    } 
+    }
 
 
 
@@ -299,7 +297,9 @@ export default function Form1({ initialData, onSubmit }) {
                     </div>
                     <div className="card-body">
                         {cadastroGleba.manejos.map((manejo, index) => (
-                            <div key={index} className="mb-3">
+                            <div key={index} className="mb-3 border p-3 rounded">
+
+
                                 <label className="form-label">Data da operação*: </label>
                                 <input
                                     type="date"
@@ -336,12 +336,13 @@ export default function Form1({ initialData, onSubmit }) {
                         <button
                             type="button"
                             className="btn"
-                            style={{ 
+                            style={{
                                 backgroundColor: "#25526d",
                                 color: "white"
-                             }}                           
+                            }}
                             onClick={() =>
-                                addEntry("manejos", { dataOperacao: "", operacao: "", tipoOperacao: "" })
+                                handleAddEntry("manejos")
+
                             }>
                             Adicionar Operação
                         </button>
@@ -359,7 +360,7 @@ export default function Form1({ initialData, onSubmit }) {
                             <div key={index}
                                 className="mb-4 p-3 border rounded"
                                 style={{
-                                    borderLeft: "5px solid " + (producao.isHistorical ? "#006400" : "#228B22"), 
+                                    borderLeft: "5px solid " + (producao.isHistorical ? "#006400" : "#228B22"),
                                 }}
                             >
                                 <div className="card-header text-white fw-bold"
@@ -473,13 +474,13 @@ export default function Form1({ initialData, onSubmit }) {
                         ))}
 
                         {/* Botão para adicionar novo Histórico */}
-                        <button 
-                        className="btn btn-primary mt-3" 
-                        onClick={()=> handleAddEntry("historico")}
-                        style={{ 
-                            backgroundColor: "#25526d",
-                            color: "white"
-                         }}
+                        <button
+                            className="btn btn-primary mt-3"
+                            onClick={() => handleAddEntry("historico")}
+                            style={{
+                                backgroundColor: "#25526d",
+                                color: "white"
+                            }}
                         >
                             Adicionar Histórico
                         </button>
