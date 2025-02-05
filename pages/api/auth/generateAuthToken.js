@@ -2,17 +2,17 @@ import axios from 'axios';
 
 // Configuração de autenticação
 
-const AUTH_URL = process.env.AUTH_URL;
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const USERNAME = process.env.USERNAME;
-const PASSWORD = process.env.PASSWORD;
-const USERNAME_IMBR = process.env.USERNAME_IMBR
-const PASSWORD_IMBR = process.env.PASSWORD_IMBR
+const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL;
+const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
+const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET;
+const USERNAME = process.env.NEXT_PUBLIC_USERNAME;
+const PASSWORD = process.env.NEXT_PUBLIC_PASSWORD;
+const USERNAME_IMBR = process.env.NEXT_PUBLIC_USERNAME_IMBR
+const PASSWORD_IMBR = process.env.NEXT_PUBLIC_PASSWORD_IMBR
 const validateEnvVariables = () => {
   if (!AUTH_URL || !CLIENT_ID || !CLIENT_SECRET || !USERNAME || !PASSWORD || !PASSWORD_IMBR || !USERNAME_IMBR ) {
     console.log
-    ('Erro: Variáveis de ambiente ausentes. Verifique o arquivo .env.local', {
+    ('Erro: Variáveis de ambiente ausentes. ', {
       AUTH_URL: process.env.AUTH_URL,
       CLIENT_ID: process.env.CLIENT_ID,
       CLIENT_SECRET: process.env.CLIENT_SECRET,
