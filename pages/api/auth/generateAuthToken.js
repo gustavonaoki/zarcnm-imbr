@@ -9,6 +9,7 @@ const USERNAME = process.env.NEXT_PUBLIC_USERNAME;
 const PASSWORD = process.env.NEXT_PUBLIC_PASSWORD;
 const USERNAME_IMBR = process.env.NEXT_PUBLIC_USERNAME_IMBR
 const PASSWORD_IMBR = process.env.NEXT_PUBLIC_PASSWORD_IMBR
+
 const validateEnvVariables = () => {
   if (!AUTH_URL || !CLIENT_ID || !CLIENT_SECRET || !USERNAME || !PASSWORD || !PASSWORD_IMBR || !USERNAME_IMBR ) {
     console.log
@@ -21,6 +22,8 @@ const validateEnvVariables = () => {
       USERNAME_IMBR: process.env.NEXT_PUBLIC_USERNAME_IMBR,
       PASSWORD_IMBR: process.env.NEXT_PUBLIC_PASSWORD_IMBR,
     });
+
+    console.log('Ambiente Vercel:', process.env.VERCEL_ENV);
   }
 };
 
