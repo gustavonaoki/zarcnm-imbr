@@ -9,9 +9,21 @@ const USERNAME = process.env.NEXT_PUBLIC_USERNAME;
 const PASSWORD = process.env.NEXT_PUBLIC_PASSWORD;
 const USERNAME_IMBR = process.env.NEXT_PUBLIC_USERNAME_IMBR
 const PASSWORD_IMBR = process.env.NEXT_PUBLIC_PASSWORD_IMBR
+
 const validateEnvVariables = () => {
   if (!AUTH_URL || !CLIENT_ID || !CLIENT_SECRET || !USERNAME || !PASSWORD || !PASSWORD_IMBR || !USERNAME_IMBR ) {
-    throw new Error('Erro: Variáveis de ambiente ausentes. Verifique o arquivo .env.local');
+    console.log
+    ('Erro: Variáveis de ambiente ausentes. ', {
+      AUTH_URL: process.env.NEXT_PUBLIC_AUTH_URL,
+      CLIENT_ID: process.env.NEXT_PUBLIC_CLIENT_ID,
+      CLIENT_SECRET: process.env.NEXT_PUBLIC_CLIENT_SECRET,
+      USERNAME: process.env.NEXT_PUBLIC_USERNAME,
+      PASSWORD: process.env.NEXT_PUBLIC_PASSWORD,
+      USERNAME_IMBR: process.env.NEXT_PUBLIC_USERNAME_IMBR,
+      PASSWORD_IMBR: process.env.NEXT_PUBLIC_PASSWORD_IMBR,
+    });
+
+    console.log('Ambiente Vercel:', process.env.VERCEL_ENV);
   }
 };
 

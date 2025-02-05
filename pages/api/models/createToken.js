@@ -5,8 +5,7 @@ export const createToken = async (data) => {
   //console.log(data);
   
   try {
-    const token = await generateAuthToken(); // Obtém o token de autenticação
-    console.log(token);//exibe o token
+    
     
     const response = await api.post('/api/v1/glebas', data, {
       headers: {
