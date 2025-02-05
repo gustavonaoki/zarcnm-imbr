@@ -5,6 +5,7 @@
  * @param {number|string} area - Valor da cobertura do solo.
  * @returns {string | null} - Retorna mensagem de erro ou null se válido.
  */
+
 export const validateGroundCover = (area) => {
     if (area === null || area === undefined || area === "") {
         return "O valor da cobertura do solo é obrigatório.";

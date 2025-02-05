@@ -36,33 +36,15 @@ export default function Form3({ initialData }) {
 
   const handleArrayChange = (e, index, arrayField, field) => {
     const { value } = e.target;
-    let validationError = null;
-
-    // Verifica se estamos lidando com NDVI ou NDTI e valida
-    if (field === "ndvi") {
-      validationError = validateNDVI(value);
-    } else if (field === "ndti") {
-      validationError = validateNDTI(value);
-    }
-
-    // Atualiza o estado de erros dinamicamente
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [arrayField]: {
-        ...(prevErrors[arrayField] || {}),
-        [index]: {
-          ...(prevErrors[arrayField]?.[index] || {}),
-          [field]: validationError, // Armazena o erro para NDVI ou NDTI
-        },
-      },
-    }));
-
+    
     // Atualiza o valor no formulário
     setFormData((prev) => {
       const updatedArray = [...prev[arrayField]];
       updatedArray[index][field] = value;
       return { ...prev, [arrayField]: updatedArray };
     });
+
+    errorsValidateArray(e, index, arrayField, field, setErrors);
   };
 
 
@@ -148,6 +130,10 @@ export default function Form3({ initialData }) {
                 value={formData.declividadeMedia}
                 onChange={(e) => handleChange(e, "declividadeMedia")}
               />
+              {errors[0]?.validateSlope && (
+                <div className="text-danger mt-2">{errors[0].validateSlope}</div>
+              )
+              }
             </div>
             <div className="mb-3">
               <label className="form-label">Plantio em contorno:</label>
@@ -173,7 +159,7 @@ export default function Form3({ initialData }) {
             </div>
           </div>
         </div>
-  
+
         {/* Índices */}
         <div className="card mb-4 border-0">
           <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
@@ -262,7 +248,7 @@ export default function Form3({ initialData }) {
             </button>
           </div>
         </div>
-  
+
         {/* Interpretações de Cultura */}
         <div className="card mb-4 border-0">
           <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
@@ -310,13 +296,20 @@ export default function Form3({ initialData }) {
                   value={cultura.dataFim}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "dataFim")}
                 />
-                <label className="form-label">Cobertura do solo (%):</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={cultura.coberturaSolo}
-                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
-                />
+                <div>
+                  <label className="form-label">Cobertura do solo (%):</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={cultura.coberturaSolo}
+                    onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
+                  />
+                  
+                </div>
+                {errors[index]?.validateGroundCover && (
+                    <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
+                  )
+                  }
               </div>
             ))}
             <button
@@ -329,7 +322,7 @@ export default function Form3({ initialData }) {
             </button>
           </div>
         </div>
-  
+
         {/* Interpretações de Manejo */}
         <div className="card mb-4 border-0">
           <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>

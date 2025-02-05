@@ -8,6 +8,9 @@
 
 export const validateArea = (area) => {
 
+    if (area === null || area === undefined  || area.trim() === '') {
+        return "A área é obrigatória.";
+    }
     
     const areaValue = parseFloat(area)
 
