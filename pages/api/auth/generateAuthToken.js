@@ -11,7 +11,8 @@ const USERNAME_IMBR = process.env.USERNAME_IMBR
 const PASSWORD_IMBR = process.env.PASSWORD_IMBR
 const validateEnvVariables = () => {
   if (!AUTH_URL || !CLIENT_ID || !CLIENT_SECRET || !USERNAME || !PASSWORD || !PASSWORD_IMBR || !USERNAME_IMBR ) {
-    throw new Error('Erro: Variáveis de ambiente ausentes. Verifique o arquivo .env.local', {
+    console.log
+    ('Erro: Variáveis de ambiente ausentes. Verifique o arquivo .env.local', {
       AUTH_URL: process.env.AUTH_URL,
       CLIENT_ID: process.env.CLIENT_ID,
       CLIENT_SECRET: process.env.CLIENT_SECRET,
