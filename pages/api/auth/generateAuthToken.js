@@ -13,13 +13,13 @@ const validateEnvVariables = () => {
   if (!AUTH_URL || !CLIENT_ID || !CLIENT_SECRET || !USERNAME || !PASSWORD || !PASSWORD_IMBR || !USERNAME_IMBR ) {
     console.log
     ('Erro: Variáveis de ambiente ausentes. ', {
-      AUTH_URL: process.env.AUTH_URL,
-      CLIENT_ID: process.env.CLIENT_ID,
-      CLIENT_SECRET: process.env.CLIENT_SECRET,
-      USERNAME: process.env.USERNAME,
-      PASSWORD: process.env.PASSWORD,
-      USERNAME_IMBR: process.env.USERNAME_IMBR,
-      PASSWORD_IMBR: process.env.PASSWORD_IMBR,
+      AUTH_URL: process.env.NEXT_PUBLIC_AUTH_URL,
+      CLIENT_ID: process.env.NEXT_PUBLIC_CLIENT_ID,
+      CLIENT_SECRET: process.env.NEXT_PUBLIC_CLIENT_SECRET,
+      USERNAME: process.env.NEXT_PUBLIC_USERNAME,
+      PASSWORD: process.env.NEXT_PUBLIC_PASSWORD,
+      USERNAME_IMBR: process.env.NEXT_PUBLIC_USERNAME_IMBR,
+      PASSWORD_IMBR: process.env.NEXT_PUBLIC_PASSWORD_IMBR,
     });
   }
 };
