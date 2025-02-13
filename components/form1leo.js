@@ -166,6 +166,10 @@ export default function Form1({ initialData, onSubmit }) {
                                     value={cadastroGleba.produtor?.nome || ""} //Exibe o valor do campo nome do produtor
                                     onChange={(e) => handleChange(e, "produtor.nome")}
                                 />
+                                {errors[0]?.validateName && (
+                                    <div className="text-danger mt-2">{errors[0].validateName}</div>
+                                )
+                                }
                             </div>
                             <div className="col-md-6">
                                 <label className="form-label">CPF:</label>
@@ -177,9 +181,7 @@ export default function Form1({ initialData, onSubmit }) {
                                     value={cadastroGleba.produtor?.cpf || ""}
                                     onChange={(e) => handleChange(e, "produtor.cpf")}
                                 />
-                                {errors.produtor?.cpf && (
-                                    <small className="text-danger">{errors.produtor.cpf}</small>
-                                )}
+
                             </div>
                         </div>
                     </div>
@@ -212,12 +214,11 @@ export default function Form1({ initialData, onSubmit }) {
                                 value={cadastroGleba.propriedade?.codigoCar || ""}
                                 onChange={(e) => handleChange(e, "propriedade.codigoCar")}
                             />
-
+                            {errors[0]?.validateCarCode && (
+                                <div className="text-danger mt-2">{errors[0].validateCarCode}</div>
+                            )
+                            }
                         </div>
-                        {errors[0]?.validateCarCode && (
-                            <div className="text-danger mt-2">{errors[0].validateCarCode}</div>
-                        )
-                        }
                         <div className="mb-3">
                             <label className="form-label">Código IBGE:</label>
                             <input
@@ -275,8 +276,9 @@ export default function Form1({ initialData, onSubmit }) {
                                 Área (Em hectares)*:
                             </label>
                             <input
-                                type="text"
+                                type="number"
                                 name="area"
+                                min={0}
                                 className="form-control"
                                 value={cadastroGleba.talhao?.area || ""}
                                 onChange={(e) => handleChange(e, "talhao.area")}
@@ -308,9 +310,7 @@ export default function Form1({ initialData, onSubmit }) {
                     </div>
                     <div className="card-body">
                         {cadastroGleba.manejos.map((manejo, index) => (
-                            <div key={index} className="mb-3 border p-3 rounded">
-
-
+                            <div key={index} className="mb-3 ">
                                 <label className="form-label">Data da operação*: </label>
                                 <input
                                     type="date"
@@ -318,9 +318,11 @@ export default function Form1({ initialData, onSubmit }) {
                                     name="dataOperacao"
                                     value={manejo?.data || ""}
                                     onChange={(e) => handleArrayChange(e, index, "manejos", "data")}
-                                    required
                                 />
-
+                                {errors[index]?.validateDate && (
+                                    <div className="text-danger mt-2">{errors[index].validateDate}</div>
+                                )
+                                }
                                 <label className="form-label">Nome da Operação*: </label>
                                 <input
                                     type="text"
@@ -330,7 +332,10 @@ export default function Form1({ initialData, onSubmit }) {
                                     value={manejo.operacao?.nomeOperacao || ""}
                                     onChange={(e) => handleArrayChange(e, index, "manejos", "operacao.nomeOperacao")}
                                 />
-
+                                {errors[index]?.validateOperationName && (
+                                    <div className="text-danger mt-2">{errors[index].validateOperationName}</div>
+                                )
+                                }
                                 <label className="form-label">Tipo da Operação*: </label>
                                 <input
                                     type="text"
@@ -340,22 +345,13 @@ export default function Form1({ initialData, onSubmit }) {
                                     value={manejo.tipoOperacao?.tipo || ""}
                                     onChange={(e) => handleArrayChange(e, index, "manejos", "tipoOperacao.tipo")}
                                 />
+                                {errors[index]?.validateOperationType && (
+                                    <div className="text-danger mt-2">{errors[index].validateOperationType}</div>
+                                )
+                                }
                             </div>
 
                         ))}
-                        <button
-                            type="button"
-                            className="btn"
-                            style={{
-                                backgroundColor: "#25526d",
-                                color: "white"
-                            }}
-                            onClick={() =>
-                                handleAddEntry("manejos")
-
-                            }>
-                            Adicionar Operação
-                        </button>
                     </div>
                 </div>
 
@@ -389,23 +385,30 @@ export default function Form1({ initialData, onSubmit }) {
                                                 <input type="date" className="form-control"
                                                     value={producao?.dataPlantio || ""}
                                                     onChange={(e) => handleArrayChange(e, index, "producoes", "dataPlantio")}
-                                                    required
+
                                                 />
+                                                {errors[index]?.validateDatePlanting && (
+                                                    <div className="text-danger mt-2">{errors[index].validateDatePlanting}</div>
+                                                )
+                                                }
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label">Data previsão da colheita*:</label>
                                                 <input type="date" className="form-control"
                                                     value={producao?.dataColheita || ""}
                                                     onChange={(e) => handleArrayChange(e, index, "producoes", "dataColheita")}
-                                                    required
                                                 />
+                                                {errors[index]?.validateDateHarvest && (
+                                                    <div className="text-danger mt-2">{errors[index].validateDateHarvest}</div>
+                                                )
+                                                }
                                             </div>
                                         </div>
 
                                         <div className="row mt-3">
                                             <div className="col-md-6">
                                                 <label className="form-label">Cobertura do solo (%)*:</label>
-                                                <input type="text" className="form-control"
+                                                <input type="number" min={0} max={100} className="form-control"
                                                     value={producao?.coberturaSolo || ""}
                                                     onChange={(e) => handleArrayChange(e, index, "producoes", "coberturaSolo")}
 
@@ -439,6 +442,10 @@ export default function Form1({ initialData, onSubmit }) {
                                                     onChange={(e) => handleArrayChange(e, index, "producoes", "dataPrevisaoPlantio")}
                                                     required
                                                 />
+                                                {errors[index]?.validateDateNextPlanting && (
+                                                    <div className="text-danger mt-2">{errors[index].validateDateNextPlanting}</div>
+                                                )
+                                                }
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label">Data previsão da colheita*:</label>
@@ -447,6 +454,10 @@ export default function Form1({ initialData, onSubmit }) {
                                                     onChange={(e) => handleArrayChange(e, index, "producoes", "dataPrevisaoColheita")}
                                                     required
                                                 />
+                                                {errors[index]?.validateDateNextHarvest && (
+                                                    <div className="text-danger mt-2">{errors[index].validateDateNextHarvest}</div>
+                                                )
+                                                }
                                             </div>
                                         </div>
 
