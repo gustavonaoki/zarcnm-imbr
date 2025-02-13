@@ -137,7 +137,12 @@ export default function Form1({ initialData, onSubmit }) {
         return cadastroGleba.producoes.sort((a, b) => Number(b.isHistorical) - Number(a.isHistorical));
     }
 
-
+    const handleRemoveEntry = (arrayField, index) => {
+        setCadastroGleba((prev) => ({
+            ...prev,
+            [arrayField]: prev[arrayField].filter((_, i) => i !== index), // Remove o elemento pelo índice
+        }));
+    };
 
     // Função para enviar os dados do formulário
     const handleSubmit = async (e) => {
@@ -365,15 +370,25 @@ export default function Form1({ initialData, onSubmit }) {
                         {producoesOrdenadas().map((producao, index) => (
                             <div key={index}
                                 className="mb-4 p-3 border rounded"
-                                style={{
-                                    borderLeft: "5px solid " + (producao.isHistorical ? "#006400" : "#228B22"),
-                                }}
+                                style={{ borderLeft: `5px solid ${producao.isHistorical ? "#006400" : "#228B22"}` }}
                             >
-                                <div className="card-header text-white fw-bold"
-                                    style={{ backgroundColor: producao.isHistorical ? "#006400" : "#0d6efd" }}>
-                                    <h4 className="mb-0">
-                                        {producao.isHistorical ? "Histórico de culturas" : "Próxima cultura"}
-                                    </h4>
+                                <div
+                                    className="card-header d-flex justify-content-between align-items-center"
+                                    style={{ backgroundColor: producao.isHistorical ? "#006400" : "#0d6efd", color: "white" }}
+                                >
+                                    <h5 className="mb-0">
+                                        {producao.isHistorical ? `Histórico de cultura ${index + 1}` : "Próxima cultura"}
+                                    </h5>
+                                    {/* Botão "Remover" apenas para histórico de culturas */}
+                                    {producao.isHistorical && cadastroGleba.producoes.filter(p => p.isHistorical).length > 1 && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => handleRemoveEntry("producoes", index)}
+                                        >
+                                            <i className="bi bi-trash-fill"></i> Remover
+                                        </button>
+                                    )}
                                 </div>
 
                                 {/* Campos do Histórico de Cultura */}
