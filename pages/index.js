@@ -20,9 +20,7 @@ export default function GeneralForms() {
   const [form3Data, setForm3Data] = useState([]);
   const [opcaoSelecionada, setOpcaoSelecionada] = useState("");
 
-  const [hasErrorsForm1, setHasErrorsForm1] = useState(false);
-  const [hasErrorsForm2, setHasErrorsForm2] = useState(false);
-  const [hasErrorsForm3, setHasErrorsForm3] = useState(false);
+
 
   const [openDropdowns, setOpenDropdowns] = useState({
     form1: false,
@@ -116,11 +114,7 @@ export default function GeneralForms() {
             {openDropdowns.form1 && (
               <div className={styles.dropdownExpand}>
                 <FormPage
-                  onSubmit={(data, hasErrors) => {
-                    console.log("Form1 hasErrors:", hasErrors);
-                    setForm1Data(data);
-                    setHasErrorsForm1(hasErrors);
-                  }}
+                  onSubmit={setForm1Data}
                   initialData={form1Data}
                 />
               </div>
@@ -136,11 +130,7 @@ export default function GeneralForms() {
             {openDropdowns.form2 && (
               <div className={styles.dropdownExpand}>
                 <Form2
-                  onSubmit={(data, hasErrors) => {
-                    console.log("Form2 hasErrors:", hasErrors);
-                    setForm2Data(data);
-                    setHasErrorsForm2(hasErrors);
-                  }}
+                  onSubmit={setForm2Data}
                   initialData={form2Data}
                 />
               </div>
@@ -156,11 +146,7 @@ export default function GeneralForms() {
             {openDropdowns.form3 && (
               <div className={styles.dropdownExpand}>
                 <Form3
-                  onSubmit={(data, hasErrors) => {
-                    console.log("Form3 hasErrors:", hasErrors);
-                    setForm3Data(data);
-                    setHasErrorsForm3(hasErrors);
-                  }}
+                  onSubmit={setForm3Data}
                   initialData={form3Data}
                 />
               </div>
@@ -175,7 +161,7 @@ export default function GeneralForms() {
           className="btn btn-success"
           onClick={handleSubmit}
           disabled={
-            !form1Data || form2Data.length === 0 || form3Data.length === 0 || hasErrorsForm1 || hasErrorsForm2 || hasErrorsForm3
+            !form1Data || form2Data.length === 0 || form3Data.length === 0
           }
         >
           Enviar
