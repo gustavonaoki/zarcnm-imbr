@@ -14,6 +14,6 @@ export const validateEmptyField = (value) => {
         return "Este campo é obrigatório.";
     }
 
-    return true; // Código válido
+    return false; // Código válido
 
 }

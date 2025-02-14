@@ -2,16 +2,16 @@ export const modeloSensoriamento = () => {
     return {
         dataInicial: "",
         dataFinal: "",
-        declividadeMedia: 0,
-        plantioContorno: 0,
-        terraceamento: 0,
+        declividadeMedia:"",
+        plantioContorno:"",
+        terraceamento:"",
         indices: [
             {
                 satelite: "",
                 coordenada: "",
                 data: "",
-                ndvi: 0,
-                ndti: 0,
+                ndvi:"",
+                ndti:"",
             },
         ],
         interpretacoesCultura: [
@@ -19,7 +19,7 @@ export const modeloSensoriamento = () => {
                 cultura: "",
                 dataInicio: "",
                 dataFim: "",
-                coberturaSolo: 0,
+                coberturaSolo: "",
             },
         ],
         interpretacoesManejo: [

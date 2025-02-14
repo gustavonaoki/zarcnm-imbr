@@ -6,8 +6,11 @@
  * @returns {string | null} - Retorna mensagem de erro ou null se válido.
  */
 export const validateSlope = (slope) => {
-    const slopeValue = parseFloat(slope);
 
+    if (!slope && slope !== 0) { 
+        return null; // Permite valor vazio
+    }
+    const slopeValue = parseFloat(slope);
     if (isNaN(slopeValue)) {
         return "O valor da declividade média deve ser um número.";
     }

@@ -6,6 +6,7 @@ import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba";
 import { errorsValidate } from "../errors/errorsValidators";
 import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 
+
 export default function Form1({ initialData, onSubmit }) {
     // Inicializa o estado corretamente sem `useEffect` dentro
     const [cadastroGleba, setCadastroGleba] = useState(() => {
@@ -26,6 +27,7 @@ export default function Form1({ initialData, onSubmit }) {
     });
 
     const [errors, setErrors] = useState({});
+
 
     // 🔹 Atualiza o estado quando `initialData` mudar
     useEffect(() => {
@@ -167,6 +169,7 @@ export default function Form1({ initialData, onSubmit }) {
                                 <input
                                     type="text"
                                     name="nome"
+                                    placeholder="EX: José da Silva"
                                     className="form-control"
                                     value={cadastroGleba.produtor?.nome || ""} //Exibe o valor do campo nome do produtor
                                     onChange={(e) => handleChange(e, "produtor.nome")}
@@ -182,6 +185,7 @@ export default function Form1({ initialData, onSubmit }) {
                                     mask={"999.999.999-99"}
                                     type="text"
                                     name="cpf"
+                                    placeholder="EX: 123.456.789-00"
                                     className="form-control"
                                     value={cadastroGleba.produtor?.cpf || ""}
                                     onChange={(e) => handleChange(e, "produtor.cpf")}
@@ -203,6 +207,7 @@ export default function Form1({ initialData, onSubmit }) {
                             <input
                                 type="text"
                                 name="nome"
+                                placeholder="EX: Fazenda Bela Vista"
                                 className="form-control"
                                 value={cadastroGleba.propriedade?.nome || ""}
                                 onChange={(e) => handleChange(e, "propriedade.nome")}
@@ -216,6 +221,7 @@ export default function Form1({ initialData, onSubmit }) {
                                 type="text"
                                 name="codigoCar"
                                 className="form-control"
+                                placeholder="EX: MT-1234567-1111A111111111111AA111A1A1A11111"
                                 value={cadastroGleba.propriedade?.codigoCar || ""}
                                 onChange={(e) => handleChange(e, "propriedade.codigoCar")}
                             />
@@ -230,6 +236,7 @@ export default function Form1({ initialData, onSubmit }) {
                                 type="text"
                                 name="codigoIbge"
                                 className="form-control"
+                                placeholder="EX: 1234567"
                                 value={cadastroGleba.propriedade?.codigoIbge || ""}
                                 onChange={(e) => handleChange(e, "propriedade.codigoIbge")}
                             />
@@ -244,13 +251,10 @@ export default function Form1({ initialData, onSubmit }) {
                             <textarea
                                 name="poligono"
                                 className="form-control"
+                                placeholder="POLYGON((x y, x y, ...))"
                                 value={cadastroGleba.propriedade?.poligono || ""}
                                 onChange={(e) => handleChange(e, "propriedade.poligono")}
                             ></textarea>
-                            {errors[0]?.validateWKTPolygon && (
-                                <div className="text-danger mt-2">{errors[0].validateWKTPolygon}</div>
-                            )
-                            }
                         </div>
 
                     </div>
@@ -266,13 +270,13 @@ export default function Form1({ initialData, onSubmit }) {
                             <label className="form-label">Polígono (Formato WKT)*:</label>
                             <textarea
                                 name="poligono"
-
+                                placeholder="POLYGON((x y, x y, ...))"
                                 className="form-control"
                                 value={cadastroGleba.talhao?.poligono || ""}
                                 onChange={(e) => handleChange(e, "talhao.poligono")}
                             ></textarea>
-                            {errors[0]?.validateWKTPolygonTalhao && (
-                                <div className="text-danger mt-2">{errors[0].validateWKTPolygonTalhao}</div>
+                            {errors[0]?.validatePolygon && (
+                                <div className="text-danger mt-2">{errors[0].validatePolygon}</div>
                             )
                             }
                         </div>
@@ -284,6 +288,7 @@ export default function Form1({ initialData, onSubmit }) {
                                 type="number"
                                 name="area"
                                 min={0}
+                                placeholder="EX: 40"
                                 className="form-control"
                                 value={cadastroGleba.talhao?.area || ""}
                                 onChange={(e) => handleChange(e, "talhao.area")}
@@ -333,7 +338,7 @@ export default function Form1({ initialData, onSubmit }) {
                                     type="text"
                                     name="nomeOperacao"
                                     className="form-control"
-                                    required
+                                    placeholder="EX: Revolvimento do solo"
                                     value={manejo.operacao?.nomeOperacao || ""}
                                     onChange={(e) => handleArrayChange(e, index, "manejos", "operacao.nomeOperacao")}
                                 />
@@ -346,6 +351,7 @@ export default function Form1({ initialData, onSubmit }) {
                                     type="text"
                                     required
                                     name="tipoOperacao"
+                                    placeholder="EX: Aração"
                                     className="form-control"
                                     value={manejo.tipoOperacao?.tipo || ""}
                                     onChange={(e) => handleArrayChange(e, index, "manejos", "tipoOperacao.tipo")}
@@ -424,6 +430,7 @@ export default function Form1({ initialData, onSubmit }) {
                                             <div className="col-md-6">
                                                 <label className="form-label">Cobertura do solo (%)*:</label>
                                                 <input type="number" min={0} max={100} className="form-control"
+                                                placeholder="EX: 78"
                                                     value={producao?.coberturaSolo || ""}
                                                     onChange={(e) => handleArrayChange(e, index, "producoes", "coberturaSolo")}
 
@@ -530,4 +537,5 @@ export default function Form1({ initialData, onSubmit }) {
             </form >
         </div >
     );
+
 };

@@ -9,7 +9,7 @@
 export const validateNDVI = (NDVI) => {
 
     if (NDVI === null || NDVI === undefined || NDVI.trim() === '') {
-        return "NDVI precisa ser um número.";
+        return "NDVI é obrigatório.";
     }
     if ( NDVI < -1 || NDVI > 1) {
         return "NDVI precisa estar entre -1 e 1."
@@ -21,7 +21,7 @@ export const validateNDTI = (NDTI) => {
 
     
     if (NDTI === null || NDTI === undefined || NDTI.trim() === '') {
-        return "NDTI precisa ser um número.";
+        return "NDTI é obrigatório.";
     }
     if ( NDTI < -1 || NDTI > 1) {
         return "NDTI precisa estar entre -1 e 1."

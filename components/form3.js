@@ -5,13 +5,13 @@ import { culturaOptions } from "../optionsInputs/culturas";
 import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
 import { errorsValidate } from "../errors/errorsValidators";
 import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
-import { validateNDTI } from "../utils/validateNDVI_NDTI";
-import { validateNDVI } from "../utils/validateNDVI_NDTI";
 
 
 export default function Form3({ initialData }) {
   const [formData, setFormData] = useState(modeloSensoriamento());
   const [errors, setErrors] = useState({});
+
+  
 
   useEffect(() => {
     if (initialData && initialData.length > 0) {
@@ -89,6 +89,7 @@ export default function Form3({ initialData }) {
   };
 
   const handleSubmit = async (e) => {
+
   };
 
   return (
@@ -134,6 +135,7 @@ export default function Form3({ initialData }) {
                 type="number"
                 min={0}
                 max={100}
+                placeholder="EX: 10"
                 className="form-control"
                 value={formData.declividadeMedia}
                 onChange={(e) => handleChange(e, "declividadeMedia")}
@@ -206,6 +208,7 @@ export default function Form3({ initialData }) {
                   <input
                     type="text"
                     className="form-control"
+                    placeholder="Sentinel"
                     value={indice.satelite}
                     onChange={(e) => handleArrayChange(e, index, "indices", "satelite")}
                   />
@@ -219,6 +222,7 @@ export default function Form3({ initialData }) {
                   <input
                     type="text"
                     className="form-control"
+                    placeholder="EX: POINT(11.11111111 -11.11111111)"
                     value={indice.coordenada}
                     onChange={(e) => handleArrayChange(e, index, "indices", "coordenada")}
                   />
@@ -233,6 +237,7 @@ export default function Form3({ initialData }) {
                     type="number"
                     min={0}
                     max={1}
+                    placeholder="EX: 0.111"
                     className="form-control"
                     value={indice.ndvi}
                     onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
@@ -246,7 +251,8 @@ export default function Form3({ initialData }) {
                   <input
                     type="number"
                     min={0}
-                    max={1}
+                    max={1}                 
+                    placeholder="EX: -0.111"
                     className="form-control"
                     value={indice.ndti}
                     onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
@@ -320,15 +326,12 @@ export default function Form3({ initialData }) {
                   <input
                     type="text"
                     className="form-control"
+                    placeholder="EX: 10"
                     value={cultura.coberturaSolo}
                     onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
                   />
 
                 </div>
-                {errors[index]?.validateGroundCover && (
-                  <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
-                )
-                }
               </div>
             ))}
             <button
@@ -373,6 +376,7 @@ export default function Form3({ initialData }) {
                 <input
                   type="text"
                   className="form-control"
+                  placeholder="EX: Revolvimento do solo"
                   value={manejo.operacao}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "operacao")}
                 />
@@ -380,6 +384,7 @@ export default function Form3({ initialData }) {
                 <input
                   type="text"
                   className="form-control"
+                  placeholder="EX: Aração"
                   value={manejo.tipoOperacao}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "tipoOperacao")}
                 />

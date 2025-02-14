@@ -28,7 +28,7 @@ export const modeloCadastroGleba = () => {
                 dataColheita: "",
                 dataPrevisaoPlantio: "",
                 dataPrevisaoColheita: "",
-                coberturaSolo: 0,
+                coberturaSolo: "",
                 ilp: "",
                 cultura: { nome: "" },
                 tipoOperacao: { tipo: "" },
