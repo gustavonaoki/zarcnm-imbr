@@ -12,7 +12,6 @@ import NM3b from "../data/NM3b.json";
 import NM4a from "../data/NM4a.json";
 import NM4b from "../data/NM4b.json";
 import styles from "../styles/GeneralForms.module.css";
-import { createToken } from "./api/models/createToken"
 import { generateAuthToken } from "./api/auth/generateAuthToken";
 
 export default function GeneralForms() {
@@ -21,7 +20,8 @@ export default function GeneralForms() {
   const [form3Data, setForm3Data] = useState([]);
   const [opcaoSelecionada, setOpcaoSelecionada] = useState("");
 
-  // Estado para controlar múltiplos dropdowns abertos
+
+
   const [openDropdowns, setOpenDropdowns] = useState({
     form1: false,
     form2: false,
@@ -31,7 +31,7 @@ export default function GeneralForms() {
   const toggleDropdown = (dropdown) => {
     setOpenDropdowns((prev) => ({
       ...prev,
-      [dropdown]: !prev[dropdown], // Alterna apenas o dropdown clicado
+      [dropdown]: !prev[dropdown],
     }));
   };
 
@@ -65,15 +65,12 @@ export default function GeneralForms() {
 
   const handleSubmit = async () => {
     try {
-      const token = await generateAuthToken(); // Obtém o token de autenticação
-      console.log(token);//exibe o token
+      const token = await generateAuthToken();
+      console.log(token);
       console.log("Enviando dados dos formulários...");
       console.log("Dados do Form1:", form1Data);
       console.log("Dados do Form2:", form2Data);
       console.log("Dados do Form3:", form3Data);
-
-
-      //("Dados enviados com sucesso!");
     } catch (error) {
       console.error("Erro ao enviar dados:", error);
       alert("Erro ao enviar os dados.");
@@ -106,65 +103,62 @@ export default function GeneralForms() {
         </button>
       </div>
 
-      {/* Espaçamento entre o seletor e os formulários */}
       <div className="mt-5"></div>
 
-      {/* Formulários organizados corretamente */}
       <div className="d-flex flex-column gap-3 w-50">
         <div className={styles.dropdownContainer}>
-          <Dropdown
-            show={openDropdowns.form1}
-            onToggle={() => toggleDropdown("form1")}
-          >
+          <Dropdown show={openDropdowns.form1} onToggle={() => toggleDropdown("form1")}>
             <Dropdown.Toggle variant="success" className="btn-lg w-100">
               Operador de Contratos
             </Dropdown.Toggle>
             {openDropdowns.form1 && (
               <div className={styles.dropdownExpand}>
-                <FormPage onSubmit={setForm1Data} initialData={form1Data} />
+                <FormPage
+                  onSubmit={setForm1Data}
+                  initialData={form1Data}
+                />
               </div>
             )}
           </Dropdown>
         </div>
 
         <div className={styles.dropdownContainer}>
-          <Dropdown
-            show={openDropdowns.form2}
-            onToggle={() => toggleDropdown("form2")}
-          >
+          <Dropdown show={openDropdowns.form2} onToggle={() => toggleDropdown("form2")}>
             <Dropdown.Toggle variant="success" className="btn-lg w-100">
               Operador de Análise de Solo
             </Dropdown.Toggle>
             {openDropdowns.form2 && (
               <div className={styles.dropdownExpand}>
-                <Form2 onSubmit={setForm2Data} initialData={form2Data} />
+                <Form2
+                  onSubmit={setForm2Data}
+                  initialData={form2Data}
+                />
               </div>
             )}
           </Dropdown>
         </div>
 
         <div className={styles.dropdownContainer}>
-          <Dropdown
-            show={openDropdowns.form3}
-            onToggle={() => toggleDropdown("form3")}
-          >
+          <Dropdown show={openDropdowns.form3} onToggle={() => toggleDropdown("form3")}>
             <Dropdown.Toggle variant="success" className="btn-lg w-100">
               Operador de Sensoriamento Remoto
             </Dropdown.Toggle>
             {openDropdowns.form3 && (
               <div className={styles.dropdownExpand}>
-                <Form3 onSubmit={setForm3Data} initialData={form3Data} />
+                <Form3
+                  onSubmit={setForm3Data}
+                  initialData={form3Data}
+                />
               </div>
             )}
           </Dropdown>
         </div>
       </div>
 
-      {/* Container para o botão de enviar garantir que ele fique sempre no final */}
       <div className="mt-4 w-50 text-center">
         <button
           type="button"
-          className="btn btn-success "
+          className="btn btn-success"
           onClick={handleSubmit}
           disabled={
             !form1Data || form2Data.length === 0 || form3Data.length === 0

@@ -8,24 +8,23 @@
  */
 export const validateNDVI = (NDVI) => {
 
-    const NDVIvalue =  parseFloat(NDVI);
-    if (isNaN(NDVIvalue)) {
-        return "NDVI precisa ser um número.";
+    if (NDVI === null || NDVI === undefined || NDVI.trim() === '') {
+        return "NDVI é obrigatório.";
     }
-    if ( NDVIvalue < -1 || NDVIvalue > 1) {
+    if ( NDVI < -1 || NDVI > 1) {
         return "NDVI precisa estar entre -1 e 1."
     }
-    return null;
+    return true;
 };
 
 export const validateNDTI = (NDTI) => {
 
-    const NDTIvalue =  parseFloat(NDTI);
-    if (isNaN(NDTIvalue)) {
-        return "NDTI precisa ser um número.";
+    
+    if (NDTI === null || NDTI === undefined || NDTI.trim() === '') {
+        return "NDTI é obrigatório.";
     }
-    if ( NDTIvalue < -1 || NDTIvalue > 1) {
+    if ( NDTI < -1 || NDTI > 1) {
         return "NDTI precisa estar entre -1 e 1."
     }
-    return null;
+    return true;
 };

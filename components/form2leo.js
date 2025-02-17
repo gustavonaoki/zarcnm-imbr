@@ -4,6 +4,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { modeloAnaliseSolo } from "../modelos/modeloAnaliseSolo";
 import { validateCPF } from "../utils/validateCPF";
 import { validateSoilComponents } from "../utils/validateSoil";
+import { validateEmptyField } from "../utils/validateEmptyField";
 import InputMask from "react-input-mask";
 
 
@@ -39,6 +40,7 @@ export default function Form2({ initialData, onSubmit }) {
       [index]: prev[index] || {}, // Garante que o objeto de erros para o índice existe
     }));
 
+
     // Validação de CPF e componentes do solo
     if (field === "cpfResponsavelColeta") {
       const isValid = validateCPF(value);
@@ -66,7 +68,47 @@ export default function Form2({ initialData, onSubmit }) {
         },
       }));
     }
+
+    //Validação da data da analise
+    if (field === "dataColeta") {
+      const error = validateEmptyField(value); // Chama a validação externa
+
+
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateDateSoilColect: error,
+        }
+      }))
+    }
+    //Validação da data da analise
+    if (field === "pontoColeta") {
+      const error = validateEmptyField(value); // Chama a validação externa
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateColectPoint: error,
+        }
+      }))
+    }
+    if (field === "calcio" || field === "magnesio" || field === "potassio" || field === "sodio" || field === "aluminio" || field === "acidezPotencial" || field === "phh2o" || field === "phcaci" || field === "fosforoMehlich" || field === "fosforoResina" || field === "enxofre" || field === "mos" || field === "arilsulfatase" || field === "betaGlicosedade" || field === "densidadeSolo") {
+      let error = false;
+      if (validateEmptyField(value)) {
+        error = true;
+      }
+      setErrors((prev) => ({
+        ...prev,
+        [index]: {
+          ...prev[index],
+          validateEmptyField: error ? "Todos os campos são obrigatórios!" : null,
+        }
+      }))
+    }
+
   };
+
 
   const addAnalise = () => {
     setAnalisesSolo((prev) => [...prev, { ...modeloAnaliseSolo }]);
@@ -107,7 +149,8 @@ export default function Form2({ initialData, onSubmit }) {
   };
 
   // Função para envio do formulário
-  const handleSubmit = async (e) => { };
+  const handleSubmit = async (e) => { 
+  };
 
   return (
     <div className="container my-4">
@@ -145,6 +188,7 @@ export default function Form2({ initialData, onSubmit }) {
                     <InputMask
                       mask="999.999.999-99"
                       className="form-control"
+                      placeholder="EX: 123.456.789-00"
                       value={analise.cpfResponsavelColeta || ""}
                       onChange={(e) => handleChange(e, index, "cpfResponsavelColeta")}
                     />
@@ -162,8 +206,13 @@ export default function Form2({ initialData, onSubmit }) {
                       className="form-control"
                       value={analise.dataColeta || ""}
                       onChange={(e) => handleChange(e, index, "dataColeta")}
-                      required
+
                     />
+                    {errors[index]?.validateDateSoilColect && (
+                      <div className="text-danger mt-1">
+                        {errors[index]?.validateDateSoilColect}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="row mb-4">
@@ -171,10 +220,15 @@ export default function Form2({ initialData, onSubmit }) {
                     <label className="form-label">Ponto de Coleta: *</label>
                     <textarea
                       className="form-control"
+                      placeholder="EX: POINT (-11.11111 -11.11111)"
                       value={analise.pontoColeta || ""}
                       onChange={(e) => handleChange(e, index, "pontoColeta")}
-                      required
                     ></textarea>
+                    {errors[index]?.validateColectPoint && (
+                      <div className="text-danger mt-1">
+                        {errors[index]?.validateColectPoint}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="row mb-4">
@@ -214,6 +268,9 @@ export default function Form2({ initialData, onSubmit }) {
                       <label className="form-label">Areia (%): *</label>
                       <input
                         type="number"
+                        placeholder="EX: 20"
+                        min={0}
+                        max={100}
                         className="form-control"
                         value={analise.areia || ""}
                         onChange={(e) => handleChange(e, index, "areia")}
@@ -225,6 +282,9 @@ export default function Form2({ initialData, onSubmit }) {
                       <label className="form-label">Silte (%): *</label>
                       <input
                         type="number"
+                        placeholder="EX: 10"
+                        min={0}
+                        max={100}
                         className="form-control"
                         value={analise.silte || ""}
                         onChange={(e) => handleChange(e, index, "silte")}
@@ -236,6 +296,9 @@ export default function Form2({ initialData, onSubmit }) {
                       <label className="form-label">Argila (%): *</label>
                       <input
                         type="number"
+                        min={0}
+                        max={100}
+                        placeholder="EX: 70"
                         className="form-control"
                         value={analise.argila || ""}
                         onChange={(e) => handleChange(e, index, "argila")}
@@ -260,7 +323,11 @@ export default function Form2({ initialData, onSubmit }) {
                     style={{ backgroundColor: "#20691a" }}
                   >
                     <h4 className="mb-0">Informações Químicas</h4>
+                    {errors[index]?.validateEmptyField && (
+                      <div className="text-danger mt-2">{errors[index].validateEmptyField}</div>
+                    )}
                   </div>
+
                   <div
                     className="card-body overflow-auto"
                     style={{ maxHeight: "273px" }}
@@ -271,6 +338,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.calcio || ""}
                         onChange={(e) => handleChange(e, index, "calcio")}
@@ -283,6 +352,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.magnesio || ""}
                         onChange={(e) => handleChange(e, index, "magnesio")}
@@ -295,6 +366,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.potassio || ""}
                         onChange={(e) => handleChange(e, index, "potassio")}
@@ -307,6 +380,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.sodio || ""}
                         onChange={(e) => handleChange(e, index, "sodio")}
@@ -319,6 +394,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.aluminio || ""}
                         onChange={(e) => handleChange(e, index, "aluminio")}
@@ -331,6 +408,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.acidezPotencial || ""}
                         onChange={(e) =>
@@ -345,6 +424,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.phh2o || ""}
                         onChange={(e) => handleChange(e, index, "phh2o")}
@@ -357,6 +438,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.phcaci || ""}
                         onChange={(e) => handleChange(e, index, "phcaci")}
@@ -368,6 +451,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.fosforoMehlich || ""}
                         onChange={(e) =>
@@ -382,6 +467,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.fosforoResina || ""}
                         onChange={(e) =>
@@ -395,6 +482,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.enxofre || ""}
                         onChange={(e) => handleChange(e, index, "enxofre")}
@@ -405,6 +494,8 @@ export default function Form2({ initialData, onSubmit }) {
                       <label className="form-label">MOS (Matéria organica do solo) (g/dm³): *</label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.mos || ""}
                         onChange={(e) => handleChange(e, index, "mos")}
@@ -417,6 +508,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.arilsulfatase || ""}
                         onChange={(e) =>
@@ -430,6 +523,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.betaGlicosedade || ""}
                         onChange={(e) =>
@@ -443,6 +538,8 @@ export default function Form2({ initialData, onSubmit }) {
                       </label>
                       <input
                         type="number"
+                        min={0}
+                        placeholder="EX: 20"
                         className="form-control"
                         value={analise.densidadeSolo || ""}
                         onChange={(e) =>
@@ -473,3 +570,4 @@ export default function Form2({ initialData, onSubmit }) {
     </div>
   );
 };
+

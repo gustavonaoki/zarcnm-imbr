@@ -5,13 +5,13 @@ import { culturaOptions } from "../optionsInputs/culturas";
 import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
 import { errorsValidate } from "../errors/errorsValidators";
 import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
-import { validateNDTI } from "../utils/validateNDVI_NDTI";
-import { validateNDVI } from "../utils/validateNDVI_NDTI";
 
 
 export default function Form3({ initialData }) {
   const [formData, setFormData] = useState(modeloSensoriamento());
   const [errors, setErrors] = useState({});
+
+  
 
   useEffect(() => {
     if (initialData && initialData.length > 0) {
@@ -36,7 +36,7 @@ export default function Form3({ initialData }) {
 
   const handleArrayChange = (e, index, arrayField, field) => {
     const { value } = e.target;
-    
+
     // Atualiza o valor no formulário
     setFormData((prev) => {
       const updatedArray = [...prev[arrayField]];
@@ -89,6 +89,7 @@ export default function Form3({ initialData }) {
   };
 
   const handleSubmit = async (e) => {
+
   };
 
   return (
@@ -109,8 +110,11 @@ export default function Form3({ initialData }) {
                 className="form-control"
                 value={formData.dataInicial}
                 onChange={(e) => handleChange(e, "dataInicial")}
-                required
               />
+              {errors[0]?.validateDateMonitoring && (
+                <div className="text-danger mt-2">{errors[0].validateDateMonitoring}</div>
+              )
+              }
             </div>
             <div className="mb-3">
               <label className="form-label">Data Término do Monitoramento *</label>
@@ -119,13 +123,19 @@ export default function Form3({ initialData }) {
                 className="form-control"
                 value={formData.dataFinal}
                 onChange={(e) => handleChange(e, "dataFinal")}
-                required
               />
+              {errors[0]?.validateDateMonitoringEnds && (
+                <div className="text-danger mt-2">{errors[0].validateDateMonitoringEnds}</div>
+              )
+              }
             </div>
             <div className="mb-3">
               <label className="form-label">Declividade média da gleba/talhão (%):</label>
               <input
-                type="text"
+                type="number"
+                min={0}
+                max={100}
+                placeholder="EX: 10"
                 className="form-control"
                 value={formData.declividadeMedia}
                 onChange={(e) => handleChange(e, "declividadeMedia")}
@@ -187,53 +197,68 @@ export default function Form3({ initialData }) {
                     className="form-control"
                     value={indice.data}
                     onChange={(e) => handleArrayChange(e, index, "indices", "data")}
-                    required
                   />
+                  {errors[index]?.validateDatePixelImg && (
+                    <div className="text-danger mt-2">{errors[0].validateDatePixelImg}</div>
+                  )
+                  }
                 </div>
                 <div className="mb-2">
                   <label className="form-label">Satélite*:</label>
                   <input
                     type="text"
                     className="form-control"
+                    placeholder="Sentinel"
                     value={indice.satelite}
                     onChange={(e) => handleArrayChange(e, index, "indices", "satelite")}
-                    required
                   />
+                  {errors[index]?.validateSatellite && (
+                    <div className="text-danger mt-2">{errors[0].validateSatellite}</div>
+                  )
+                  }
                 </div>
                 <div className="mb-2">
                   <label className="form-label">Coordenada (WKT)*:</label>
                   <input
                     type="text"
                     className="form-control"
+                    placeholder="EX: POINT(11.11111111 -11.11111111)"
                     value={indice.coordenada}
                     onChange={(e) => handleArrayChange(e, index, "indices", "coordenada")}
-                    required
                   />
+                  {errors[index]?.validateCoordinateWKT && (
+                    <div className="text-danger mt-2">{errors[0].validateCoordinateWKT}</div>
+                  )
+                  }
                 </div>
                 <div className="mb-2">
                   <label className="form-label">NDVI*:</label>
                   <input
-                    type="text"
+                    type="number"
+                    min={0}
+                    max={1}
+                    placeholder="EX: 0.111"
                     className="form-control"
                     value={indice.ndvi}
                     onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
-                    required
                   />
-                  {errors.indices?.[index]?.ndvi && (
-                    <div className="text-danger mt-2">{errors.indices[index].ndvi}</div>
+                  {errors[index]?.validateNDVI && (
+                    <div className="text-danger mt-2">{errors[index]?.validateNDVI}</div>
                   )}
                 </div>
                 <div className="mb-2">
                   <label className="form-label">NDTI*:</label>
                   <input
-                    type="text"
+                    type="number"
+                    min={0}
+                    max={1}                 
+                    placeholder="EX: -0.111"
                     className="form-control"
                     value={indice.ndti}
                     onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
-                    required
                   />
-                  {errors.indices?.[index]?.ndti && (
-                    <div className="text-danger mt-2">{errors.indices[index].ndti}</div>
+                  {errors[index]?.validateNDTI && (
+                    <div className="text-danger mt-2">{errors[index]?.validateNDTI}</div>
                   )}
                 </div>
               </div>
@@ -301,15 +326,12 @@ export default function Form3({ initialData }) {
                   <input
                     type="text"
                     className="form-control"
+                    placeholder="EX: 10"
                     value={cultura.coberturaSolo}
                     onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
                   />
-                  
+
                 </div>
-                {errors[index]?.validateGroundCover && (
-                    <div className="text-danger mt-2">{errors[index].validateGroundCover}</div>
-                  )
-                  }
               </div>
             ))}
             <button
@@ -354,6 +376,7 @@ export default function Form3({ initialData }) {
                 <input
                   type="text"
                   className="form-control"
+                  placeholder="EX: Revolvimento do solo"
                   value={manejo.operacao}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "operacao")}
                 />
@@ -361,6 +384,7 @@ export default function Form3({ initialData }) {
                 <input
                   type="text"
                   className="form-control"
+                  placeholder="EX: Aração"
                   value={manejo.tipoOperacao}
                   onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "tipoOperacao")}
                 />
