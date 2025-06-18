@@ -1,406 +1,386 @@
-import { useState, useEffect } from "react";
+import { useForm, FormProvider, useFieldArray } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect } from "react";
+import InputField from "./inputField";
+import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
+import { form3Schema } from "../utils/validators/schemaForm3";
+import { culturaOptions } from "../optionsInputs/culturas";
+import { debounce } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { culturaOptions } from "../optionsInputs/culturas";
-import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
-import { errorsValidate } from "../errors/errorsValidators";
-import { errorsValidateArray } from "../errors/errorsvalidatorsArray";
 
+export default function Form3({ initialData, onChange }) {
+  const methods = useForm({
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    resolver: yupResolver(form3Schema),
+    defaultValues: initialData?.length ? initialData[0] : modeloSensoriamento(),
+  });
 
-export default function Form3({ initialData }) {
-  const [formData, setFormData] = useState(modeloSensoriamento());
-  const [errors, setErrors] = useState({});
-
-  
+  const {
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = methods;
 
   useEffect(() => {
-    if (initialData && initialData.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        ...initialData[0], // Usa o primeiro item do array
-        indices: initialData[0].indices || prev.indices,
-        interpretacoesCultura: initialData[0].interpretacoesCultura || prev.interpretacoesCultura,
-        interpretacoesManejo: initialData[0].interpretacoesManejo || prev.interpretacoesManejo,
-      }));
-    }
-  }, [initialData]);
-
-  const handleChange = (e, field) => {
-    const { value } = e.target;
-
-    // Validando os erros
-    errorsValidate(e, field, setErrors);
-
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleArrayChange = (e, index, arrayField, field) => {
-    const { value } = e.target;
-
-    // Atualiza o valor no formulário
-    setFormData((prev) => {
-      const updatedArray = [...prev[arrayField]];
-      updatedArray[index][field] = value;
-      return { ...prev, [arrayField]: updatedArray };
-    });
-
-    errorsValidateArray(e, index, arrayField, field, setErrors);
-  };
-
-
-  const addEntry = (arrayField, defaultValues) => {
-    setFormData((prev) => ({
-      ...prev,
-      [arrayField]: [...prev[arrayField], defaultValues],
-    }));
-  };
-
-  // Função para verificar se o formulário é válido
-  const isFormValid = () => {
-    return (
-      formData.dataInicial &&
-      formData.dataFinal &&
-      formData.indices.every(
-        (indice, index) =>
-          indice.data &&
-          indice.satelite &&
-          indice.coordenada &&
-          indice.ndvi &&
-          indice.ndti &&
-          !errors[index]?.validateNDVI &&
-          !errors[index]?.validateNDTI
-      ) &&
-      formData.interpretacoesCultura.every(
-        (cultura, index) =>
-          cultura.cultura &&
-          cultura.dataInicio &&
-          cultura.dataFim &&
-          cultura.coberturaSolo &&
-          !errors[index]?.validateGroundCover
-      )
+    const subscription = watch(
+      debounce((data) => {
+        onChange(data);
+      }, 300)
     );
-  };
+    return () => subscription.unsubscribe();
+  }, [watch, onChange]);
 
-  const removeEntry = (arrayField, index) => {
-    setFormData((prev) => ({
-      ...prev,
-      [arrayField]: prev[arrayField].filter((_, i) => i !== index),
-    }));
-  };
+  useEffect(() => {
+    if (initialData?.length) {
+      const data = initialData[0];
+      if (data.cpfProdutor) setValue("cpfProdutor", data.cpfProdutor);
+      if (data.cnpj) setValue("cnpj", data.cnpj);
+    }
+  }, [initialData, setValue]);
 
-  const handleSubmit = async (e) => {
+  const {
+    fields: indices,
+    append: appendIndice,
+    remove: removeIndice,
+  } = useFieldArray({ control, name: "indices" });
+  const {
+    fields: culturas,
+    append: appendCultura,
+    remove: removeCultura,
+  } = useFieldArray({ control, name: "interpretacoesCultura" });
+  const {
+    fields: manejos,
+    append: appendManejo,
+    remove: removeManejo,
+  } = useFieldArray({ control, name: "interpretacoesManejo" });
+  const {
+    fields: coberturas,
+    append: appendCobertura,
+    remove: removeCobertura,
+  } = useFieldArray({ control, name: "interpretacoesCoberturaSolo" });
 
-  };
+  useEffect(() => {
+    if (indices.length === 0)
+      appendIndice({
+        satelite: "",
+        coordenada: "",
+        data: "",
+        ndvi: undefined,
+        ndti: undefined,
+      });
+    if (culturas.length === 0)
+      appendCultura({ tipoCultivo: "", dataInicio: "", dataFim: "" });
+    if (manejos.length === 0)
+      appendManejo({ data: "", operacao: "", tipoOperacao: "" });
+    if (coberturas.length === 0)
+      appendCobertura({ dataAvaliacao: "", porcentualPalhada: "" });
+  }, []);
 
   return (
-    <div className="container my-4">
-      <h2 className="text-center mb-4">Dados de Monitoramento</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Dados de Sensoriamento Remoto */}
-        <div className="card mb-4 border-0">
-          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
-            <h3>Dados de Sensoriamento Remoto</h3>
+    <FormProvider {...methods}>
+      <div className="container my-4">
+        <div className="card border-0 shadow-sm">
+          <div
+            className="card-header text-white"
+            style={{ backgroundColor: "#0b4809" }}
+          >
+            <h2 className="mb-0">Sensoriamento Remoto</h2>
           </div>
-          <div className="card-body">
-            {/* Campos principais */}
-            <div className="mb-3">
-              <label className="form-label">Data Início do Monitoramento *</label>
-              <input
-                type="date"
-                className="form-control"
-                value={formData.dataInicial}
-                onChange={(e) => handleChange(e, "dataInicial")}
-              />
-              {errors[0]?.validateDateMonitoring && (
-                <div className="text-danger mt-2">{errors[0].validateDateMonitoring}</div>
-              )
-              }
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Data Término do Monitoramento *</label>
-              <input
-                type="date"
-                className="form-control"
-                value={formData.dataFinal}
-                onChange={(e) => handleChange(e, "dataFinal")}
-              />
-              {errors[0]?.validateDateMonitoringEnds && (
-                <div className="text-danger mt-2">{errors[0].validateDateMonitoringEnds}</div>
-              )
-              }
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Declividade média da gleba/talhão (%):</label>
-              <input
-                type="number"
-                min={0}
-                max={100}
-                placeholder="EX: 10"
-                className="form-control"
-                value={formData.declividadeMedia}
-                onChange={(e) => handleChange(e, "declividadeMedia")}
-              />
-              {errors[0]?.validateSlope && (
-                <div className="text-danger mt-2">{errors[0].validateSlope}</div>
-              )
-              }
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Plantio em contorno:</label>
-              <select
-                className="form-select"
-                value={formData.plantioContorno}
-                onChange={(e) => handleChange(e, "plantioContorno")}
+          <form
+            onSubmit={handleSubmit(onChange)}
+            className="card-body row gx-3 gy-4"
+          >
+            <InputField
+              name="cpfProdutor"
+              label="CPF do Produtor"
+              required
+              mask="999.999.999-99"
+              className="col-md-6"
+              readOnly
+            />
+            <InputField
+              name="cnpj"
+              label="CNPJ da Propriedade"
+              required
+              mask="99.999.999/9999-99"
+              className="col-md-6"
+              readOnly
+            />
+            <InputField
+              name="dataInicial"
+              label="Data Inicial do Monitoramento"
+              type="date"
+              required
+              className="col-md-4"
+            />
+            <InputField
+              name="dataFinal"
+              label="Data Final do Monitoramento"
+              type="date"
+              required
+              className="col-md-4"
+            />
+            <InputField
+              name="declividadeMedia"
+              label="Declividade Média da gleba/talhão (%)"
+              type="number"
+              required
+              className="col-md-4"
+            />
+            <InputField
+              name="plantioContorno"
+              label="Plantio em Contorno"
+              type="select"
+              required
+              options={[
+                { value: "1", label: "Sim" },
+                { value: "0", label: "Não" },
+              ]}
+              className="col-md-4"
+            />
+            <InputField
+              name="terraceamento"
+              label="Terraceamento"
+              type="select"
+              required
+              options={[
+                { value: "1", label: "Sim" },
+                { value: "0", label: "Não" },
+              ]}
+              className="col-md-4"
+            />
+
+            {/* Índices */}
+            {indices.map((_, index) => (
+              <div key={index} className="col-12">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0">Índices (Nº {index + 1})</h5>
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeIndice(index)}
+                      disabled={indices.length === 1}
+                    >
+                      Remover
+                    </button>
+                  </div>
+                  <div className="card-body row gx-3 gy-3">
+                    <InputField
+                      name={`indices.${index}.data`}
+                      label="Data da imagem do pixel"
+                      type="date"
+                      required
+                      className="col-md-3"
+                    />
+                    <InputField
+                      name={`indices.${index}.satelite`}
+                      label="Nome do satélite"
+                      required
+                      className="col-md-3"
+                    />
+                    <InputField
+                      name={`indices.${index}.coordenada`}
+                      label="Coordenada do pixel (WKT)"
+                      required
+                      className="col-md-6"
+                    />
+                    <InputField
+                      name={`indices.${index}.ndvi`}
+                      label="NDVI"
+                      type="number"
+                      required
+                      className="col-md-3"
+                    />
+                    <InputField
+                      name={`indices.${index}.ndti`}
+                      label="NDTI"
+                      type="number"
+                      required
+                      className="col-md-3"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="col-12 ">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() =>
+                  appendIndice({
+                    satelite: "",
+                    coordenada: "",
+                    data: "",
+                    ndvi: 0,
+                    ndti: 0,
+                  })
+                }
               >
-                <option value="1">SIM</option>
-                <option value="0">NÃO</option>
-              </select>
+                + Adicionar Índice
+              </button>
             </div>
-            <div className="mb-3">
-              <label className="form-label">Terraceamento:</label>
-              <select
-                className="form-select"
-                value={formData.terraceamento}
-                onChange={(e) => handleChange(e, "terraceamento")}
+            {/* Histórico de cobertura do solo em pré-semeadura */}
+            {coberturas.map((_, index) => (
+              <div key={index} className="col-12">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0">Histórico de cobertura do solo em pré-semeadura (Nº {index + 1})</h5>
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeCobertura(index)}
+                      disabled={coberturas.length === 1}
+                    >
+                      Remover
+                    </button>
+                  </div>
+
+                  <div className="card-body row gx-3 gy-3">
+                    <InputField
+                      name={`interpretacoesCoberturaSolo.${index}.dataAvaliacao`}
+                      label="Data da avaliação"
+                      type="date"
+                      required
+                      className="col-md-6"
+                    />
+                    <InputField
+                      name={`interpretacoesCoberturaSolo.${index}.porcentualPalhada`}
+                      label="Cobertura do solo (%)"
+                      type="number"
+                      required
+                      className="col-md-6"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="col-12 ">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() =>
+                  appendCobertura({ dataAvaliacao: "", porcentualPalhada: "" })
+                }
               >
-                <option value="1">SIM</option>
-                <option value="0">NÃO</option>
-              </select>
+                + Adicionar histórico de cobertura
+              </button>
             </div>
-          </div>
-        </div>
 
-        {/* Índices */}
-        <div className="card mb-4 border-0">
-          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
-            <h3>Índices</h3>
-          </div>
-          <div className="card-body">
-            {formData.indices.map((indice, index) => (
-              <div key={index} className="mb-3 border p-3 rounded">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Índice {index + 1}</h5>
-                  {formData.indices.length > 1 && (
+            {/* Interpretações de Culturas */}
+            {culturas.map((_, index) => (
+              <div key={index} className="col-12">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0">Interpretações das Culturas (Nº {index + 1})</h5>
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"
-                      onClick={() => removeEntry("indices", index)}
+                      onClick={() => removeCultura(index)}
+                      disabled={culturas.length === 1}
                     >
-                      <i className="bi bi-trash-fill"></i> Remover
+                      Remover
                     </button>
-                  )}
-                </div>
-                <div className="mb-2">
-                  <label className="form-label">Data da imagem do pixel*:</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={indice.data}
-                    onChange={(e) => handleArrayChange(e, index, "indices", "data")}
-                  />
-                  {errors[index]?.validateDatePixelImg && (
-                    <div className="text-danger mt-2">{errors[0].validateDatePixelImg}</div>
-                  )
-                  }
-                </div>
-                <div className="mb-2">
-                  <label className="form-label">Satélite*:</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Sentinel"
-                    value={indice.satelite}
-                    onChange={(e) => handleArrayChange(e, index, "indices", "satelite")}
-                  />
-                  {errors[index]?.validateSatellite && (
-                    <div className="text-danger mt-2">{errors[0].validateSatellite}</div>
-                  )
-                  }
-                </div>
-                <div className="mb-2">
-                  <label className="form-label">Coordenada (WKT)*:</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="EX: POINT(11.11111111 -11.11111111)"
-                    value={indice.coordenada}
-                    onChange={(e) => handleArrayChange(e, index, "indices", "coordenada")}
-                  />
-                  {errors[index]?.validateCoordinateWKT && (
-                    <div className="text-danger mt-2">{errors[0].validateCoordinateWKT}</div>
-                  )
-                  }
-                </div>
-                <div className="mb-2">
-                  <label className="form-label">NDVI*:</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={1}
-                    placeholder="EX: 0.111"
-                    className="form-control"
-                    value={indice.ndvi}
-                    onChange={(e) => handleArrayChange(e, index, "indices", "ndvi")}
-                  />
-                  {errors[index]?.validateNDVI && (
-                    <div className="text-danger mt-2">{errors[index]?.validateNDVI}</div>
-                  )}
-                </div>
-                <div className="mb-2">
-                  <label className="form-label">NDTI*:</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={1}                 
-                    placeholder="EX: -0.111"
-                    className="form-control"
-                    value={indice.ndti}
-                    onChange={(e) => handleArrayChange(e, index, "indices", "ndti")}
-                  />
-                  {errors[index]?.validateNDTI && (
-                    <div className="text-danger mt-2">{errors[index]?.validateNDTI}</div>
-                  )}
+                  </div>
+                  <div className="card-body row gx-3 gy-3">
+                    <InputField
+                      name={`interpretacoesCultura.${index}.tipoCultivo`}
+                      label="Cultivo"
+                      required
+                      setValueAs={(v) => String(v)}
+                      className="col-md-6"
+                    />
+                    <InputField
+                      name={`interpretacoesCultura.${index}.dataInicio`}
+                      label="Data de Emergência"
+                      type="date"
+                      required
+                      className="col-md-3"
+                    />
+                    <InputField
+                      name={`interpretacoesCultura.${index}.dataFim`}
+                      label="Data da Colheita"
+                      type="date"
+                      required
+                      className="col-md-3"
+                    />
+                  </div>
                 </div>
               </div>
             ))}
-            <button
-              type="button"
-              className="btn"
-              style={{ backgroundColor: "#25526d", color: "white" }}
-              onClick={() => addEntry("indices", { satelite: "", coordenada: "", data: "", ndvi: 0, ndti: 0 })}
-            >
-              Adicionar Índice
-            </button>
-          </div>
-        </div>
+            <div className="col-12 ">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() =>
+                  appendCultura({
+                    tipoCultivo: "",
+                    dataInicio: "",
+                    dataFim: "",
+                  })
+                }
+              >
+                + Adicionar interpretações das culturas
+              </button>
+            </div>
 
-        {/* Interpretações de Cultura */}
-        <div className="card mb-4 border-0">
-          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
-            <h3>Interpretações de Cultura</h3>
-          </div>
-          <div className="card-body">
-            {formData.interpretacoesCultura.map((cultura, index) => (
-              <div key={index} className="mb-3 border p-3 rounded">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Cultura {index + 1}</h5>
-                  {formData.interpretacoesCultura.length > 1 && (
+            {/* Interpretações de Manejo */}
+            {manejos.map((_, index) => (
+              <div key={index} className="col-12">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0">Operações mecanizadas realizadas na gleba (Nº {index + 1})</h5>
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"
-                      onClick={() => removeEntry("interpretacoesCultura", index)}
+                      onClick={() => removeManejo(index)}
+                      disabled={manejos.length === 1}
                     >
-                      <i className="bi bi-trash-fill"></i> Remover
+                      Remover
                     </button>
-                  )}
-                </div>
-                <label className="form-label">Cultura:</label>
-                <select
-                  className="form-control"
-                  value={cultura.cultura}
-                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "cultura")}
-                >
-                  <option value="">Selecione uma cultura</option>
-                  {culturaOptions.map((option, i) => (
-                    <option key={i} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-                <label className="form-label">Data de Emergência:</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={cultura.dataInicio}
-                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "dataInicio")}
-                />
-                <label className="form-label">Data da Colheita:</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={cultura.dataFim}
-                  onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "dataFim")}
-                />
-                <div>
-                  <label className="form-label">Cobertura do solo (%):</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="EX: 10"
-                    value={cultura.coberturaSolo}
-                    onChange={(e) => handleArrayChange(e, index, "interpretacoesCultura", "coberturaSolo")}
-                  />
-
+                  </div>
+                  <div className="card-body row gx-3 gy-3">
+                    <InputField
+                      name={`interpretacoesManejo.${index}.data`}
+                      label="Data da última operação"
+                      type="date"
+                      required
+                      className="col-md-3"
+                    />
+                    <InputField
+                      name={`interpretacoesManejo.${index}.operacao`}
+                      label="Operações mecanizadas"
+                      required
+                      className="col-md-4"
+                    />
+                    <InputField
+                      name={`interpretacoesManejo.${index}.tipoOperacao`}
+                      label="Tipo de operação"
+                      required
+                      className="col-md-4"
+                    />
+                  </div>
                 </div>
               </div>
             ))}
-            <button
-              type="button"
-              className="btn"
-              style={{ backgroundColor: "#25526d", color: "white" }}
-              onClick={() => addEntry("interpretacoesCultura", { cultura: "", dataInicio: "", dataFim: "", coberturaSolo: 0 })}
-            >
-              Adicionar Cultura
-            </button>
-          </div>
+            <div className="col-12 ">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() =>
+                  appendManejo({ data: "", operacao: "", tipoOperacao: "" })
+                }
+              >
+                + Adicionar operação mecanizada
+              </button>
+            </div>
+          </form>
         </div>
-
-        {/* Interpretações de Manejo */}
-        <div className="card mb-4 border-0">
-          <div className="card-header text-white" style={{ backgroundColor: "#0b4809" }}>
-            <h3>Interpretações de Manejo</h3>
-          </div>
-          <div className="card-body">
-            {formData.interpretacoesManejo.map((manejo, index) => (
-              <div key={index} className="mb-3 border p-3 rounded">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Manejo {index + 1}</h5>
-                  {formData.interpretacoesManejo.length > 1 && (
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => removeEntry("interpretacoesManejo", index)}
-                    >
-                      <i className="bi bi-trash-fill"></i> Remover
-                    </button>
-                  )}
-                </div>
-                <label className="form-label">Data:</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={manejo.data}
-                  onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "data")}
-                />
-                <label className="form-label">Operação:</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="EX: Revolvimento do solo"
-                  value={manejo.operacao}
-                  onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "operacao")}
-                />
-                <label className="form-label">Tipo de Operação:</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="EX: Aração"
-                  value={manejo.tipoOperacao}
-                  onChange={(e) => handleArrayChange(e, index, "interpretacoesManejo", "tipoOperacao")}
-                />
-              </div>
-            ))}
-            <button
-              type="button"
-              className="btn"
-              style={{ backgroundColor: "#25526d", color: "white" }}
-              onClick={() => addEntry("interpretacoesManejo", { data: "", operacao: "", tipoOperacao: "" })}
-            >
-              Adicionar Manejo
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+      </div>
+    </FormProvider>
   );
 }

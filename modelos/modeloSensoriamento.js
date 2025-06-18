@@ -1,5 +1,7 @@
 export const modeloSensoriamento = () => {
     return {
+        cpfProdutor: "",
+        cnpj: "",
         dataInicial: "",
         dataFinal: "",
         declividadeMedia:"",
@@ -14,12 +16,17 @@ export const modeloSensoriamento = () => {
                 ndti:"",
             },
         ],
+        interpretacoesCoberturaSolo: [
+            {
+                dataAvaliacao: "",
+                porcentualPalhada: "",
+            },
+        ],
         interpretacoesCultura: [
             {
-                cultura: "",
+                tipoCultivo: "",
                 dataInicio: "",
                 dataFim: "",
-                coberturaSolo: "",
             },
         ],
         interpretacoesManejo: [
