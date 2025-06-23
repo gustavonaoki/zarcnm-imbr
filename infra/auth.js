@@ -1,25 +1,26 @@
 export async function getAccessToken() {
   try {
-    const res = await fetch(process.env.NEXT_PUBLIC_AUTH_URL, {
+    const res = await fetch(process.env.AUTH_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
         grant_type: "password",
-        client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
-        client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
-        username: process.env.NEXT_PUBLIC_USERNAME,
-        password: process.env.NEXT_PUBLIC_PASSWORD,
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        username: process.env.USER,
+        password: process.env.PASSWORD,
       }),
     });
 
     const data = await res.json();
 
-    if (!res.ok)
+    if (!res.ok) {
       throw new Error(
         data.error_description || data.error || "Erro ao buscar token"
       );
+    }
 
     return data.access_token;
   } catch (error) {

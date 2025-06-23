@@ -229,7 +229,10 @@ export default function Form3({ initialData, onChange }) {
               <div key={index} className="col-12">
                 <div className="card border-0 shadow-sm">
                   <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Histórico de cobertura do solo em pré-semeadura (Nº {index + 1})</h5>
+                    <h5 className="mb-0">
+                      Histórico de cobertura do solo em pré-semeadura (Nº{" "}
+                      {index + 1})
+                    </h5>
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"
@@ -276,7 +279,9 @@ export default function Form3({ initialData, onChange }) {
               <div key={index} className="col-12">
                 <div className="card border-0 shadow-sm">
                   <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Interpretações das Culturas (Nº {index + 1})</h5>
+                    <h5 className="mb-0">
+                      Interpretações das Culturas (Nº {index + 1})
+                    </h5>
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"
@@ -333,7 +338,9 @@ export default function Form3({ initialData, onChange }) {
               <div key={index} className="col-12">
                 <div className="card border-0 shadow-sm">
                   <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Operações mecanizadas realizadas na gleba (Nº {index + 1})</h5>
+                    <h5 className="mb-0">
+                      Operações mecanizadas realizadas na gleba (Nº {index + 1})
+                    </h5>
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"

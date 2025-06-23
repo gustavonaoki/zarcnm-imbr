@@ -1,16 +1,16 @@
 export async function getAccessToken2() {
   try {
-    const res = await fetch(process.env.NEXT_PUBLIC_AUTH_URL, {
+    const res = await fetch(process.env.AUTH_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
         grant_type: "password",
-        client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
-        client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
-        username: process.env.NEXT_PUBLIC_USERNAME2,
-        password: process.env.NEXT_PUBLIC_PASSWORD2,
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        username: process.env.USER2,
+        password: process.env.PASSWORD2,
       }),
     });
 

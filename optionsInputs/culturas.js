@@ -101,5 +101,5 @@ export const culturaOptions = [
   { nome: "Mix 3 espécies (pelo menos 1 gramínia)", codigo: "100" },
   { nome: "Mix 3 espécies (sem gramínea)", codigo: "101" },
   { nome: "Mix 4 espécies (pelo menos 1 gramínia)", codigo: "102" },
-  { nome: "Mix 4 espécies (sem gramínia)", codigo: "103" }
+  { nome: "Mix 4 espécies (sem gramínia)", codigo: "103" },
 ];

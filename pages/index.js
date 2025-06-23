@@ -3,7 +3,7 @@ import { Dropdown } from "react-bootstrap";
 import FormPage from "../components/form1";
 import Form2 from "../components/form2";
 import Form3 from "../components/form3";
-import NM1a from "../data/NM1a.json";
+import TesteFuncional from "../data/NM1a.json";
 import NM1b from "../data/NM1b.json";
 import NM2a from "../data/NM2a.json";
 import NM2b from "../data/NM2b.json";
@@ -36,7 +36,16 @@ export default function GeneralForms() {
     }));
   };
 
-  const opcoesJson = { NM1a, NM1b, NM2a, NM2b, NM3a, NM3b, NM4a, NM4b };
+  const opcoesJson = {
+    TesteFuncional,
+    NM1b,
+    NM2a,
+    NM2b,
+    NM3a,
+    NM3b,
+    NM4a,
+    NM4b,
+  };
 
   const handleAutoPreencher = () => {
     const jsonSelecionado = opcoesJson[opcaoSelecionada];
@@ -59,19 +68,14 @@ export default function GeneralForms() {
 
       alert("Dados preenchidos com sucesso!");
     } catch (error) {
-      console.error("Erro ao acessar os dados do JSON:", error);
       alert("Erro ao acessar os dados no JSON selecionado.");
     }
   };
 
   const handleSubmit = async () => {
-    console.log("🔁 Enviando formulário com:", form1Data, form2Data, form3Data);
     try {
       await submitForms(form1Data, form2Data, form3Data);
-      console.log("✅ Envio concluído com sucesso!");
-    } catch (err) {
-      console.error("❌ Erro durante envio:", err);
-    }
+    } catch (err) {}
   };
 
   const handleObterScore = async () => {
@@ -84,7 +88,6 @@ export default function GeneralForms() {
       }
 
       setScoreData(data);
-      console.log("🎯 Score obtido:", data);
     } catch (error) {
       console.error("❌ Erro ao obter score:", error);
       alert(error.message);
@@ -96,7 +99,6 @@ export default function GeneralForms() {
 
   return (
     <div className="container-fluid min-vh-100 d-flex flex-column align-items-center bg-light">
-      {/* Cabeçalho */}
       <div className="w-100 p-3 d-flex justify-content-end align-items-center bg-light shadow">
         <label className="form-label fs-4 mb-0 me-3">Selecione o JSON:</label>
         <select
@@ -284,6 +286,11 @@ export default function GeneralForms() {
                     {scoreData.scoreFinal}
                   </strong>
                 </h5>
+                <p className="mt-1">
+                  <small>Chave Classificação NM:</small>
+                  <br />
+                  <code>{scoreData.chaveClassificacaoNM}</code>
+                </p>
                 <p>
                   <strong>Data do Cálculo:</strong>{" "}
                   {new Date(scoreData.dataCalculo).toLocaleString()}

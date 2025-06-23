@@ -1,4 +1,4 @@
-import { getAccessToken } from "../../infra/auth"; 
+import { getAccessToken } from "../../infra/auth";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -8,11 +8,13 @@ export default async function handler(req, res) {
   const { chave } = req.query;
 
   if (!chave) {
-    return res.status(400).json({ error: "Parâmetro 'chave' é obrigatório na URL." });
+    return res
+      .status(400)
+      .json({ error: "Parâmetro 'chave' é obrigatório na URL." });
   }
 
   try {
-    const token = await getAccessToken(); 
+    const token = await getAccessToken();
 
     const response = await fetch(
       `${process.env.API_URL}/api/v1/classificacoes/${chave}`,
@@ -34,7 +36,6 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data });
     }
 
-    console.log("📊 Score recebido com sucesso:", data);
     return res.status(200).json(data);
   } catch (error) {
     console.error("🔥 Erro interno na rota /api/getScore:", error);

@@ -14,10 +14,8 @@ export default async function handler(req, res) {
   try {
     const token = await getAccessToken2();
 
-    console.log("📦 Form3 recebido do Front:", JSON.stringify(form3Data, null, 2));
-
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/sensoriamentos-remotos/${chaveClassificacaoNM}`,
+      `${process.env.API_URL}/api/v1/sensoriamentos-remotos/${chaveClassificacaoNM}`,
       {
         method: "POST",
         headers: {
@@ -29,7 +27,6 @@ export default async function handler(req, res) {
     );
 
     const raw = await response.text();
-    console.log("📥 Resposta da API externa (Form3):", raw);
 
     if (!response.ok) {
       console.error("❌ Erro da API externa (Form3):", raw);
