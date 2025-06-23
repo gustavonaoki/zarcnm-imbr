@@ -3,7 +3,7 @@ export const modeloAnaliseSolo = () => {
     cpfResponsavelColeta: "",
     dataColeta: "",
     pontoColeta: "",
-    camada: "20",
+    camada: "",
     areia: "",
     silte: "",
     argila: "",
@@ -21,6 +21,6 @@ export const modeloAnaliseSolo = () => {
     mos: "",
     arilsulfatase: "",
     betaGlicosedade: "",
-    densidadeSolo: "",
+    densidadeSolo: undefined,
   };
 };
