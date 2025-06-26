@@ -40,7 +40,7 @@ export function useFormsApi() {
       setChaveNM(chaveClassificacaoNM);
       setResults((r) => ({ ...r, form1: { success: true } }));
 
-      // 👉 Envio do Form2
+      // Envio do Form2
       try {
         await api.post("/api/form2", {
           chaveClassificacaoNM,
@@ -58,7 +58,7 @@ export function useFormsApi() {
         }));
       }
 
-      // 👉 Envio do Form3
+      // Envio do Form3
       try {
         await api.post("/api/form3", {
           chaveClassificacaoNM,
@@ -89,5 +89,24 @@ export function useFormsApi() {
     }
   };
 
-  return { submitForms, loading, error, success, chaveNM, results };
+  const resetResults = () => {
+    setResults({
+      form1: null,
+      form2: null,
+      form3: null,
+    });
+    setChaveNM(null);
+    setError(null);
+    setSuccess(false);
+  };
+
+  return {
+    submitForms,
+    loading,
+    error,
+    success,
+    chaveNM,
+    results,
+    resetResults,
+  };
 }
