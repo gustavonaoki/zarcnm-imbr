@@ -17,7 +17,7 @@ export default function GeneralForms() {
   const [opcaoSelecionada, setOpcaoSelecionada] = useState("");
   const [scoreData, setScoreData] = useState(null);
 
-  const { submitForms, results, chaveNM } = useFormsApi();
+  const { submitForms, results, chaveNM, resetResults } = useFormsApi();
 
   const [openDropdowns, setOpenDropdowns] = useState({
     form1: false,
@@ -47,6 +47,10 @@ export default function GeneralForms() {
     }
 
     try {
+      // Resetar dados e resultados anteriores
+      resetResults();
+      setScoreData(null);
+
       const dadosGlebaTalhao =
         jsonSelecionado.item[0]?.item[0]?.request?.body?.raw || [];
       const dadosLaboratorio =
