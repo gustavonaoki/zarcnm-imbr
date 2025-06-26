@@ -9,7 +9,7 @@
               "mode": "raw",
               "raw": {
                 "produtor": {
-                  "nome": "Teste Leo 2",
+                  "nome": "Aristides da Silva",
                   "cpf": "73172549089"
                 },
                 "propriedade": {
@@ -23,7 +23,7 @@
                   "poligono": "POLYGON ((-47.112207 -22.809752, -47.104869 -22.809969, -47.102916 -22.809, -47.10135 -22.809633, -47.100041 -22.811749, -47.1065 -22.813253, -47.112358 -22.80991, -47.112207 -22.809752))",
                   "area": 32,
                   "tipoProdutor": "Proprietário",
-                  "plantioContorno": 1
+                  "plantioContorno": 0
                 },
                 "manejos": [
                   {
@@ -39,11 +39,11 @@
                 "coberturas": [
                   {
                     "dataAvaliacao": "2022-01-01",
-                    "porcentualPalhada": 50
+                    "porcentualPalhada": 23
                   },
                   {
                     "dataAvaliacao": "2023-01-01",
-                    "porcentualPalhada": 55
+                    "porcentualPalhada": 20
                   }
                 ],
                 "producoes": [

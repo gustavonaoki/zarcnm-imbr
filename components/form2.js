@@ -34,7 +34,7 @@ export default function Form2({ initialData, onChange }) {
     const subscription = watch(
       debounce((data) => {
         onChange(data);
-      }, 300)
+      }, 10)
     );
     return () => subscription.unsubscribe();
   }, [watch, onChange]);

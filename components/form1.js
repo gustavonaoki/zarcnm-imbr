@@ -26,7 +26,7 @@ export default function Form1({ onChange, initialData }) {
     const subscription = watch(
       debounce((data) => {
         onChange(data);
-      }, 300) // espera 300ms de inatividade
+      }, 10) // espera 300ms de inatividade
     );
     return () => subscription.unsubscribe();
   }, [watch, onChange]);
