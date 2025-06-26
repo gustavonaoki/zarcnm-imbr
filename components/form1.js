@@ -19,14 +19,21 @@ export default function Form1({ onChange, initialData }) {
     handleSubmit,
     control,
     watch,
+    reset,
     formState: { errors },
   } = methods;
+
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData);
+    }
+  }, [initialData, reset]);
 
   useEffect(() => {
     const subscription = watch(
       debounce((data) => {
         onChange(data);
-      }, 10) // espera 300ms de inatividade
+      }, 10) 
     );
     return () => subscription.unsubscribe();
   }, [watch, onChange]);

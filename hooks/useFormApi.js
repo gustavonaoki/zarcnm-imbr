@@ -12,6 +12,35 @@ export function useFormsApi() {
     form3: null,
   });
 
+  const parseError = (err, fallback = "Erro desconhecido") => {
+    try {
+      const data = err?.response?.data;
+
+      if (typeof data === "object" && data?.detail) {
+        return data.detail;
+      }
+
+      if (typeof data?.raw === "string") {
+        const parsed = JSON.parse(data.raw);
+        if (parsed?.detail) return parsed.detail;
+      }
+
+      if (typeof data === "string") {
+        const parsed = JSON.parse(data);
+        if (parsed?.detail) return parsed.detail;
+      }
+    } catch (e) {
+      console.warn("Falha ao parsear erro:", e);
+    }
+
+    return (
+      err?.response?.data?.message ||
+      err?.response?.data?.error ||
+      err?.message ||
+      fallback
+    );
+  };
+
   const submitForms = async (form1Data, form2Data, form3Data) => {
     setLoading(true);
     setError(null);
@@ -22,25 +51,19 @@ export function useFormsApi() {
       form3: null,
     });
 
+    // 🔴 FORM1
     try {
       const res1 = await api.post("/api/form1", form1Data);
       const chaveClassificacaoNM = res1.data?.chaveClassificacaoNM;
 
       if (!chaveClassificacaoNM) {
-        setResults((r) => ({
-          ...r,
-          form1: {
-            success: false,
-            error: "chaveClassificacaoNM não retornada pela API.",
-          },
-        }));
-        throw new Error("chaveClassificacaoNM não retornada.");
+        throw new Error("chaveClassificacaoNM não retornada pela API.");
       }
 
       setChaveNM(chaveClassificacaoNM);
       setResults((r) => ({ ...r, form1: { success: true } }));
 
-      // Envio do Form2
+      // 🟠 FORM2
       try {
         await api.post("/api/form2", {
           chaveClassificacaoNM,
@@ -48,17 +71,14 @@ export function useFormsApi() {
         });
         setResults((r) => ({ ...r, form2: { success: true } }));
       } catch (err) {
-        const msg =
-          err.response?.data?.error ||
-          err.message ||
-          "Erro desconhecido da API (Form2)";
+        const msg = parseError(err, "Erro no envio do Form2");
         setResults((r) => ({
           ...r,
           form2: { success: false, error: msg },
         }));
       }
 
-      // Envio do Form3
+      // 🟢 FORM3
       try {
         await api.post("/api/form3", {
           chaveClassificacaoNM,
@@ -66,10 +86,7 @@ export function useFormsApi() {
         });
         setResults((r) => ({ ...r, form3: { success: true } }));
       } catch (err) {
-        const msg =
-          err.response?.data?.error ||
-          err.message ||
-          "Erro desconhecido da API (Form3)";
+        const msg = parseError(err, "Erro no envio do Form3");
         setResults((r) => ({
           ...r,
           form3: { success: false, error: msg },
@@ -78,12 +95,11 @@ export function useFormsApi() {
 
       setSuccess(true);
     } catch (err) {
-      console.error("Erro geral no envio:", err);
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Erro desconhecido ao enviar os formulários."
-      );
+      const msg = parseError(err, "Erro no envio do Form1");
+      setResults((r) => ({
+        ...r,
+        form1: { success: false, error: msg },
+      }));
     } finally {
       setLoading(false);
     }

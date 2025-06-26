@@ -22,8 +22,59 @@ export default function Form3({ initialData, onChange }) {
     control,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = methods;
+
+  const {
+    fields: indices,
+    append: appendIndice,
+    remove: removeIndice,
+    replace: replaceIndices,
+  } = useFieldArray({ control, name: "indices" });
+
+  const {
+    fields: culturas,
+    append: appendCultura,
+    remove: removeCultura,
+    replace: replaceCulturas,
+  } = useFieldArray({ control, name: "interpretacoesCultura" });
+
+  const {
+    fields: manejos,
+    append: appendManejo,
+    remove: removeManejo,
+    replace: replaceManejos,
+  } = useFieldArray({ control, name: "interpretacoesManejo" });
+
+  const {
+    fields: coberturas,
+    append: appendCobertura,
+    remove: removeCobertura,
+    replace: replaceCoberturas,
+  } = useFieldArray({ control, name: "interpretacoesCoberturaSolo" });
+
+  useEffect(() => {
+    if (initialData?.length) {
+      const data = initialData[0];
+
+      reset(data);
+
+      if (data.indices) replaceIndices(data.indices);
+      if (data.interpretacoesCultura)
+        replaceCulturas(data.interpretacoesCultura);
+      if (data.interpretacoesManejo) replaceManejos(data.interpretacoesManejo);
+      if (data.interpretacoesCoberturaSolo)
+        replaceCoberturas(data.interpretacoesCoberturaSolo);
+    }
+  }, [
+    initialData,
+    reset,
+    replaceIndices,
+    replaceCulturas,
+    replaceManejos,
+    replaceCoberturas,
+  ]);
 
   useEffect(() => {
     const subscription = watch(
@@ -33,52 +84,6 @@ export default function Form3({ initialData, onChange }) {
     );
     return () => subscription.unsubscribe();
   }, [watch, onChange]);
-
-  useEffect(() => {
-    if (initialData?.length) {
-      const data = initialData[0];
-      if (data.cpfProdutor) setValue("cpfProdutor", data.cpfProdutor);
-      if (data.cnpj) setValue("cnpj", data.cnpj);
-    }
-  }, [initialData, setValue]);
-
-  const {
-    fields: indices,
-    append: appendIndice,
-    remove: removeIndice,
-  } = useFieldArray({ control, name: "indices" });
-  const {
-    fields: culturas,
-    append: appendCultura,
-    remove: removeCultura,
-  } = useFieldArray({ control, name: "interpretacoesCultura" });
-  const {
-    fields: manejos,
-    append: appendManejo,
-    remove: removeManejo,
-  } = useFieldArray({ control, name: "interpretacoesManejo" });
-  const {
-    fields: coberturas,
-    append: appendCobertura,
-    remove: removeCobertura,
-  } = useFieldArray({ control, name: "interpretacoesCoberturaSolo" });
-
-  useEffect(() => {
-    if (indices.length === 0)
-      appendIndice({
-        satelite: "",
-        coordenada: "",
-        data: "",
-        ndvi: undefined,
-        ndti: undefined,
-      });
-    if (culturas.length === 0)
-      appendCultura({ tipoCultivo: "", dataInicio: "", dataFim: "" });
-    if (manejos.length === 0)
-      appendManejo({ data: "", operacao: "", tipoOperacao: "" });
-    if (coberturas.length === 0)
-      appendCobertura({ dataAvaliacao: "", porcentualPalhada: "" });
-  }, []);
 
   return (
     <FormProvider {...methods}>

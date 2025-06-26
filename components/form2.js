@@ -2,11 +2,12 @@ import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import InputField from "./inputField";
 import { modeloAnaliseSolo } from "../modelos/modeloAnaliseSolo";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { form2Schema } from "../utils/validators/schemaForm2";
 import { debounce } from "lodash";
 
 export default function Form2({ initialData, onChange }) {
+  const isFirstRender = useRef(true);
   const methods = useForm({
     mode: "onBlur",
     reValidateMode: "onChange",
@@ -27,27 +28,57 @@ export default function Form2({ initialData, onChange }) {
     watch,
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = methods;
 
-  useEffect(() => {
-    const subscription = watch(
-      debounce((data) => {
-        onChange(data);
-      }, 10)
-    );
-    return () => subscription.unsubscribe();
-  }, [watch, onChange]);
-
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: "amostras",
   });
 
+  useEffect(() => {
+    if (initialData) {
+      const amostrasValidas =
+        initialData.amostras && initialData.amostras.length > 0
+          ? initialData.amostras
+          : [
+              { ...modeloAnaliseSolo(), camada: "20" },
+              { ...modeloAnaliseSolo(), camada: "20" },
+              { ...modeloAnaliseSolo(), camada: "40" },
+              { ...modeloAnaliseSolo(), camada: "40" },
+            ];
+
+      reset({
+        cpfProdutor: initialData.cpfProdutor || "",
+        cnpj: initialData.cnpj || "",
+        amostras: amostrasValidas,
+      });
+
+      replace(amostrasValidas);
+    }
+  }, [initialData, reset, replace]);
+
+  useEffect(() => {
+    const subscription = watch(
+      debounce((data) => {
+        if (isFirstRender.current) {
+          isFirstRender.current = false;
+          return;
+        }
+
+        onChange(data);
+      }, 10)
+    );
+
+    return () => subscription.unsubscribe();
+  }, [watch, onChange]);
+
+
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onChange)} className="row gx-3 gy-4">
-        <h2 className="mb-4">Análises de Solo</h2>
+      <form onSubmit={handleSubmit(onChange)} className="row gx-0">
+        <h2 className="mb-4 text-center">Análises de Solo</h2>
         {fields.map((_, index) => (
           <div key={index} className="card mb-4 border-0">
             <div className="border-2">

@@ -9,6 +9,7 @@ import NM3 from "../data/NM3a.json";
 import NM4 from "../data/NM4a.json";
 import styles from "../styles/GeneralForms.module.css";
 import { useFormsApi } from "../hooks/useFormApi";
+import { formatErrors } from "../utils/formatErrors";
 
 export default function GeneralForms() {
   const [form1Data, setForm1Data] = useState(null);
@@ -47,7 +48,6 @@ export default function GeneralForms() {
     }
 
     try {
-      // Resetar dados e resultados anteriores
       resetResults();
       setScoreData(null);
 
@@ -58,9 +58,21 @@ export default function GeneralForms() {
       const dadosSensoriamento =
         jsonSelecionado.item[2]?.item[0]?.request?.body?.raw || [];
 
-      setForm1Data(dadosGlebaTalhao);
-      setForm2Data(dadosLaboratorio);
-      setForm3Data(dadosSensoriamento);
+      const cpf = dadosGlebaTalhao?.produtor?.cpf?.replace(/\D/g, "") || "";
+      const cnpj =
+        dadosGlebaTalhao?.propriedade?.cnpj?.replace(/\D/g, "") || "";
+
+      setForm1Data({ ...dadosGlebaTalhao });
+      setForm2Data({
+        ...dadosLaboratorio,
+        cpfProdutor: cpf,
+        cnpj: cnpj,
+      });
+      setForm3Data({
+        ...dadosSensoriamento,
+        cpfProdutor: cpf,
+        cnpj: cnpj,
+      });
 
       alert("Dados preenchidos com sucesso!");
     } catch (error) {
@@ -153,24 +165,14 @@ export default function GeneralForms() {
               <div className={styles.dropdownExpand}>
                 <Form2
                   onChange={(form2) => {
-                    const cpfProdutor =
-                      form1Data?.produtor?.cpf?.replace(/\D/g, "") || "";
-                    const cnpj =
-                      form1Data?.propriedade?.cnpj?.replace(/\D/g, "") || "";
-
-                    setForm2Data({
-                      cpfProdutor,
-                      cnpj,
-                      amostras: form2.amostras || [],
-                    });
+                    setForm2Data((prev) => ({
+                      ...form2,
+                      cpfProdutor:
+                        prev?.cpfProdutor || form2?.cpfProdutor || "",
+                      cnpj: prev?.cnpj || form2?.cnpj || "",
+                    }));
                   }}
-                  initialData={{
-                    cpfProdutor:
-                      form1Data?.produtor?.cpf?.replace(/\D/g, "") || "",
-                    cnpj:
-                      form1Data?.propriedade?.cnpj?.replace(/\D/g, "") || "",
-                    amostras: form2Data?.amostras || undefined,
-                  }}
+                  initialData={form2Data}
                 />
               </div>
             )}
@@ -250,18 +252,20 @@ export default function GeneralForms() {
                     )}
                   </h5>
                   {res?.error && (
-                    <pre
-                      className="bg-light border rounded p-2 text-danger"
-                      style={{ whiteSpace: "pre-wrap" }}
+                    <div
+                      className="alert alert-danger mt-2 d-flex align-items-start"
+                      role="alert"
                     >
-                      {res.error}
-                    </pre>
+                      <i className="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                      <span className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
+                        {formatErrors(res.error)}
+                      </span>
+                    </div>
                   )}
                 </div>
               );
             })}
 
-            {/* ✅ Botão Obter Score abaixo da caixa */}
             {todosComSucesso && (
               <div className="text-center mt-3">
                 <button
@@ -273,7 +277,6 @@ export default function GeneralForms() {
               </div>
             )}
 
-            {/* Exibição do score, se obtido */}
             {scoreData && (
               <div className="mt-4">
                 <h5>
