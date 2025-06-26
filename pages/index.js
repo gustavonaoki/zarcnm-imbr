@@ -3,14 +3,10 @@ import { Dropdown } from "react-bootstrap";
 import FormPage from "../components/form1";
 import Form2 from "../components/form2";
 import Form3 from "../components/form3";
-import TesteFuncional from "../data/NM1a.json";
-import NM1b from "../data/NM1b.json";
-import NM2a from "../data/NM2a.json";
-import NM2b from "../data/NM2b.json";
-import NM3a from "../data/NM3a.json";
-import NM3b from "../data/NM3b.json";
-import NM4a from "../data/NM4a.json";
-import NM4b from "../data/NM4b.json";
+import NM1 from "../data/NM1a.json";
+import NM2 from "../data/NM2a.json";
+import NM3 from "../data/NM3a.json";
+import NM4 from "../data/NM4a.json";
 import styles from "../styles/GeneralForms.module.css";
 import { useFormsApi } from "../hooks/useFormApi";
 
@@ -37,14 +33,10 @@ export default function GeneralForms() {
   };
 
   const opcoesJson = {
-    TesteFuncional,
-    NM1b,
-    NM2a,
-    NM2b,
-    NM3a,
-    NM3b,
-    NM4a,
-    NM4b,
+    NM1,
+    NM2,
+    NM3,
+    NM4,
   };
 
   const handleAutoPreencher = () => {

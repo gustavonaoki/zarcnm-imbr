@@ -29,7 +29,7 @@ export default function Form3({ initialData, onChange }) {
     const subscription = watch(
       debounce((data) => {
         onChange(data);
-      }, 300)
+      }, 10)
     );
     return () => subscription.unsubscribe();
   }, [watch, onChange]);
