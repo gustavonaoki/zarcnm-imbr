@@ -1,7 +1,6 @@
 export const modeloSensoriamento = () => {
   return {
     cpfProdutor: "",
-    cnpj: "",
     dataInicial: "",
     dataFinal: "",
     declividadeMedia: "",

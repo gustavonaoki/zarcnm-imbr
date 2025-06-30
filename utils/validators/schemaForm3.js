@@ -36,11 +36,6 @@ export const form3Schema = yup.object().shape({
     .required("CPF do produtor é obrigatório")
     .matches(/^\d{11}$/, "CPF inválido, deve conter 11 números"),
 
-  cnpj: yup
-    .string()
-    .required("CNPJ da propriedade é obrigatório")
-    .matches(/^\d{14}$/, "CNPJ inválido, deve conter 14 números"),
-
   dataInicial: yup
     .string()
     .required("Data inicial do monitoramento é obrigatória"),

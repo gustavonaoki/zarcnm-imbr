@@ -6,7 +6,6 @@ export const modeloCadastroGleba = () => {
     },
     propriedade: {
       nome: "",
-      cnpj: "",
       codigoCar: "",
       codigoIbge: "",
       poligono: "",

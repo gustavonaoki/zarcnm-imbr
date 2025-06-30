@@ -7,14 +7,12 @@ import { form2Schema } from "../utils/validators/schemaForm2";
 import { debounce } from "lodash";
 
 export default function Form2({ initialData, onChange }) {
-  const isFirstRender = useRef(true);
   const methods = useForm({
     mode: "onBlur",
     reValidateMode: "onChange",
     resolver: yupResolver(form2Schema),
     defaultValues: {
       cpfProdutor: initialData?.cpfProdutor || "",
-      cnpj: initialData?.cnpj || "",
       amostras: initialData?.amostras || [
         { ...modeloAnaliseSolo(), camada: "20" },
         { ...modeloAnaliseSolo(), camada: "20" },
@@ -24,13 +22,7 @@ export default function Form2({ initialData, onChange }) {
     },
   });
 
-  const {
-    watch,
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = methods;
+  const { watch, control, handleSubmit, reset, getValues, trigger } = methods;
 
   const { fields, append, remove, replace } = useFieldArray({
     control,
@@ -51,7 +43,6 @@ export default function Form2({ initialData, onChange }) {
 
       reset({
         cpfProdutor: initialData.cpfProdutor || "",
-        cnpj: initialData.cnpj || "",
         amostras: amostrasValidas,
       });
 
@@ -60,20 +51,15 @@ export default function Form2({ initialData, onChange }) {
   }, [initialData, reset, replace]);
 
   useEffect(() => {
-    const subscription = watch(
-      debounce((data) => {
-        if (isFirstRender.current) {
-          isFirstRender.current = false;
-          return;
-        }
-
-        onChange(data);
-      }, 10)
-    );
-
+    const debounced = debounce(async () => {
+      const isValid = await trigger();
+      if (isValid) {
+        onChange(getValues());
+      }
+    }, 10);
+    const subscription = watch(debounced);
     return () => subscription.unsubscribe();
-  }, [watch, onChange]);
-
+  }, [watch, trigger, getValues, onChange]);
 
   return (
     <FormProvider {...methods}>
@@ -105,16 +91,15 @@ export default function Form2({ initialData, onChange }) {
                     label="CPF do Produtor:"
                     className="col-md-6"
                     mask="999.999.999-99"
-                    readOnly
                   />
 
-                  <InputField
+                  {/* <InputField
                     name="cnpj"
                     label="CNPJ da Propriedade:"
                     mask="99.999.999/9999-99"
                     className="col-md-6"
                     readOnly
-                  />
+                  /> */}
 
                   <InputField
                     name={`amostras.${index}.cpfResponsavelColeta`}

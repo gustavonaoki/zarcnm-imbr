@@ -44,11 +44,6 @@ export const form1Schema = yup.object({
   }),
 
   propriedade: yup.object({
-    cnpj: yup
-      .string()
-      .required("CNPJ da propriedade é obrigatório")
-      .matches(/^\d{14}$/, "CNPJ deve conter 14 dígitos"),
-
     codigoCar: yup.string().required("Código CAR é obrigatório"),
 
     codigoIbge: yup

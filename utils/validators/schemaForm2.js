@@ -126,11 +126,6 @@ export const form2Schema = yup.object({
     .matches(/^\d{11}$/, "CPF inválido")
     .required("CPF do produtor é obrigatório"),
 
-  cnpj: yup
-    .string()
-    .matches(/^\d{14}$/, "CNPJ inválido")
-    .required("CNPJ da propriedade é obrigatório"),
-
   amostras: yup
     .array()
     .of(amostraSchema)

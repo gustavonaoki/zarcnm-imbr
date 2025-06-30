@@ -21,8 +21,8 @@ export default function Form3({ initialData, onChange }) {
     handleSubmit,
     control,
     watch,
-    setValue,
     reset,
+    getValues,
     formState: { errors },
   } = methods;
 
@@ -77,13 +77,13 @@ export default function Form3({ initialData, onChange }) {
   ]);
 
   useEffect(() => {
-    const subscription = watch(
-      debounce((data) => {
-        onChange(data);
-      }, 10)
-    );
+    const debounced = debounce(() => {
+      const data = getValues();
+      onChange(data);
+    }, 10);
+    const subscription = watch(debounced);
     return () => subscription.unsubscribe();
-  }, [watch, onChange]);
+  }, [watch, getValues, onChange]);
 
   return (
     <FormProvider {...methods}>
@@ -105,16 +105,15 @@ export default function Form3({ initialData, onChange }) {
               required
               mask="999.999.999-99"
               className="col-md-6"
-              readOnly
             />
-            <InputField
+            {/* <InputField
               name="cnpj"
               label="CNPJ da Propriedade"
               required
               mask="99.999.999/9999-99"
               className="col-md-6"
               readOnly
-            />
+            /> */}
             <InputField
               name="dataInicial"
               label="Data Inicial do Monitoramento"
