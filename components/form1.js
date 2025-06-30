@@ -109,7 +109,7 @@ export default function Form1({ onChange, initialData }) {
             </div>
 
             <div className="card-body">
-              <div>
+              {/* <div>
                 <InputField
                   name="propriedade.cnpj"
                   label="CNPJ:"
@@ -118,7 +118,7 @@ export default function Form1({ onChange, initialData }) {
                   className="col-md-12 mb-3"
                   required
                 />
-              </div>
+              </div> */}
               <div>
                 <InputField
                   name="propriedade.nome"
