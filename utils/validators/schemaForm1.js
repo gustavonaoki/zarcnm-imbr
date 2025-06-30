@@ -78,7 +78,12 @@ export const form1Schema = yup.object({
           nomeOperacao: yup.string().required("Nome da operação é obrigatório"),
         }),
         tipoOperacao: yup.object({
-          tipo: yup.string().required("Tipo da operação é obrigatório"),
+          tipo: yup
+            .string()
+            .transform((v) =>
+              v?.toLocaleUpperCase("pt-BR") === "ARACAO" ? "ARAÇÃO" : v
+            )
+            .required("Tipo da operação é obrigatório"),
         }),
       })
     )

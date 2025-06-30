@@ -1,4 +1,9 @@
-import { useForm, FormProvider, useFieldArray } from "react-hook-form";
+import {
+  useForm,
+  FormProvider,
+  useFieldArray,
+  useWatch,
+} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { form1Schema } from "../utils/validators/schemaForm1";
 import { modeloCadastroGleba } from "../modelos/modeloCadastroGleba";
@@ -6,6 +11,7 @@ import InputField from "./inputField";
 import { culturaOptions } from "../optionsInputs/culturas";
 import { useEffect } from "react";
 import { debounce } from "lodash";
+import HelpButton from "./helpButton";
 
 export default function Form1({ onChange, initialData }) {
   const methods = useForm({
@@ -30,11 +36,16 @@ export default function Form1({ onChange, initialData }) {
   }, [initialData, reset]);
 
   useEffect(() => {
-    const subscription = watch(
-      debounce((data) => {
-        onChange(data);
-      }, 10) 
-    );
+    const handleChange = debounce((data) => {
+      onChange(data);
+    }, 400);
+
+    const subscription = watch((data, { type }) => {
+      if (type === "change" || type === "blur") {
+        handleChange(data);
+      }
+    });
+
     return () => subscription.unsubscribe();
   }, [watch, onChange]);
 
@@ -60,6 +71,10 @@ export default function Form1({ onChange, initialData }) {
   const idxProximo = producoes.findIndex(
     (p) => String(p.isHistorical) === "false"
   );
+
+  const coberturasData = useWatch({ control, name: "coberturas" });
+  const valoresCobertura =
+    coberturasData?.map((c) => c.porcentualPalhada) || [];
 
   return (
     <FormProvider {...methods}>
@@ -242,6 +257,7 @@ export default function Form1({ onChange, initialData }) {
                   label="Tipo"
                   placeholder="Ex: Aração"
                   className="col-md-4"
+                  setValueAs={(v) => v?.toLocaleUpperCase("pt-BR")}
                   required
                 />
               </div>
@@ -287,7 +303,32 @@ export default function Form1({ onChange, initialData }) {
                         label="Cobertura do solo (%)"
                         className="col-md-6"
                         type="number"
+                        placeholder="Ex: 70"
                         required
+                      />
+                    </div>
+                    <div className="d-flex ms-2 mb-3">
+                      <HelpButton
+                        label={
+                          <>
+                            <div>
+                              <strong>C</strong> = Média da Cobertura de Solo
+                            </div>
+                            <div>
+                              se <strong>C &lt; 30</strong> = <strong>NM1</strong>
+                            </div>
+                            <div>
+                              se <strong>30 ≤ C &lt; 60</strong> = <strong>NM2</strong>
+                            </div>
+                            <div>
+                              se <strong>60 ≤ C &lt; 90</strong> = <strong>NM3</strong>
+                            </div>
+                            <div>
+                              se <strong>C ≥ 90</strong> = <strong>NM4</strong>
+                            </div>
+                          </>
+                        }
+                        values={valoresCobertura}
                       />
                     </div>
                   </div>

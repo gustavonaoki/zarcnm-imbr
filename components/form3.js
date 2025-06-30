@@ -4,84 +4,76 @@ import { useEffect } from "react";
 import InputField from "./inputField";
 import { modeloSensoriamento } from "../modelos/modeloSensoriamento";
 import { form3Schema } from "../utils/validators/schemaForm3";
-import { culturaOptions } from "../optionsInputs/culturas";
-import { debounce } from "lodash";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function Form3({ initialData, onChange }) {
   const methods = useForm({
-    mode: "onBlur",
+    mode: "onTouched",
     reValidateMode: "onChange",
     resolver: yupResolver(form3Schema),
-    defaultValues: initialData?.length ? initialData[0] : modeloSensoriamento(),
+    shouldUnregister: true, // ✅ garante que reset reatribua os campos corretamente
+    defaultValues: {
+      ...modeloSensoriamento(),
+      ...(initialData?.[0] || {}),
+    },
   });
 
-  const {
-    handleSubmit,
-    control,
-    watch,
-    reset,
-    getValues,
-    formState: { errors },
-  } = methods;
+  const { handleSubmit, control, watch, reset, getValues } = methods;
 
-  const {
-    fields: indices,
-    append: appendIndice,
-    remove: removeIndice,
-    replace: replaceIndices,
-  } = useFieldArray({ control, name: "indices" });
+  const { fields: indices, append: appendIndice, remove: removeIndice } =
+    useFieldArray({ control, name: "indices" });
 
   const {
     fields: culturas,
     append: appendCultura,
     remove: removeCultura,
-    replace: replaceCulturas,
   } = useFieldArray({ control, name: "interpretacoesCultura" });
 
   const {
     fields: manejos,
     append: appendManejo,
     remove: removeManejo,
-    replace: replaceManejos,
   } = useFieldArray({ control, name: "interpretacoesManejo" });
 
   const {
     fields: coberturas,
     append: appendCobertura,
     remove: removeCobertura,
-    replace: replaceCoberturas,
   } = useFieldArray({ control, name: "interpretacoesCoberturaSolo" });
 
   useEffect(() => {
     if (initialData?.length) {
       const data = initialData[0];
 
-      reset(data);
-
-      if (data.indices) replaceIndices(data.indices);
-      if (data.interpretacoesCultura)
-        replaceCulturas(data.interpretacoesCultura);
-      if (data.interpretacoesManejo) replaceManejos(data.interpretacoesManejo);
-      if (data.interpretacoesCoberturaSolo)
-        replaceCoberturas(data.interpretacoesCoberturaSolo);
+      reset({
+        ...modeloSensoriamento(),
+        ...data,
+        indices: data.indices?.length
+          ? data.indices
+          : modeloSensoriamento().indices,
+        interpretacoesCultura: data.interpretacoesCultura?.length
+          ? data.interpretacoesCultura
+          : modeloSensoriamento().interpretacoesCultura,
+        interpretacoesManejo: data.interpretacoesManejo?.length
+          ? data.interpretacoesManejo
+          : modeloSensoriamento().interpretacoesManejo,
+        interpretacoesCoberturaSolo: data.interpretacoesCoberturaSolo?.length
+          ? data.interpretacoesCoberturaSolo
+          : modeloSensoriamento().interpretacoesCoberturaSolo,
+      });
     }
-  }, [
-    initialData,
-    reset,
-    replaceIndices,
-    replaceCulturas,
-    replaceManejos,
-    replaceCoberturas,
-  ]);
+  }, [initialData, reset]);
 
   useEffect(() => {
-    const debounced = debounce(() => {
-      const data = getValues();
-      onChange(data);
-    }, 10);
-    const subscription = watch(debounced);
+    const subscription = watch((_, { type }) => {
+      if (type === "blur") {
+        const data = getValues();
+        if (data?.cpfProdutor || data?.indices?.length > 0) {
+          onChange(data);
+        }
+      }
+    });
     return () => subscription.unsubscribe();
   }, [watch, getValues, onChange]);
 
@@ -104,6 +96,7 @@ export default function Form3({ initialData, onChange }) {
               label="CPF do Produtor"
               required
               mask="999.999.999-99"
+              placeholder="Ex: 000.000.000-00"
               className="col-md-6"
             />
             {/* <InputField
@@ -132,6 +125,7 @@ export default function Form3({ initialData, onChange }) {
               name="declividadeMedia"
               label="Declividade Média da gleba/talhão (%)"
               type="number"
+              placeholder="Ex: 10"
               required
               className="col-md-4"
             />
@@ -184,6 +178,7 @@ export default function Form3({ initialData, onChange }) {
                     <InputField
                       name={`indices.${index}.satelite`}
                       label="Nome do satélite"
+                      placeholder="Ex: Sentinel"
                       required
                       className="col-md-3"
                     />
@@ -191,12 +186,14 @@ export default function Form3({ initialData, onChange }) {
                       name={`indices.${index}.coordenada`}
                       label="Coordenada do pixel (WKT)"
                       required
+                      placeholder="Ex: POINT(40.71727401 -74.00898606)"
                       className="col-md-6"
                     />
                     <InputField
                       name={`indices.${index}.ndvi`}
                       label="NDVI"
                       type="number"
+                      placeholder="Ex: 0.5"
                       required
                       className="col-md-3"
                     />
@@ -204,6 +201,7 @@ export default function Form3({ initialData, onChange }) {
                       name={`indices.${index}.ndti`}
                       label="NDTI"
                       type="number"
+                      placeholder="Ex: 0.3"
                       required
                       className="col-md-3"
                     />
@@ -260,6 +258,7 @@ export default function Form3({ initialData, onChange }) {
                       label="Cobertura do solo (%)"
                       type="number"
                       required
+                      placeholder="Ex: 50"
                       className="col-md-6"
                     />
                   </div>
@@ -299,9 +298,9 @@ export default function Form3({ initialData, onChange }) {
                     <InputField
                       name={`interpretacoesCultura.${index}.tipoCultivo`}
                       label="Cultivo"
-                      required
                       setValueAs={(v) => String(v)}
                       className="col-md-6"
+                      placeholder="Ex: Cultivo 2º safra"
                     />
                     <InputField
                       name={`interpretacoesCultura.${index}.dataInicio`}
@@ -366,12 +365,14 @@ export default function Form3({ initialData, onChange }) {
                       name={`interpretacoesManejo.${index}.operacao`}
                       label="Operações mecanizadas"
                       required
+                      placeholder="Ex: Revolvimento do solo"
                       className="col-md-4"
                     />
                     <InputField
                       name={`interpretacoesManejo.${index}.tipoOperacao`}
                       label="Tipo de operação"
                       required
+                      placeholder="Ex: ARAÇÃO"
                       className="col-md-4"
                     />
                   </div>
