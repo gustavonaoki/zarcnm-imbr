@@ -19,7 +19,6 @@ const indiceSchema = yup.object().shape({
 });
 
 const culturaSchema = yup.object().shape({
-  tipoCultivo: yup.string().required("Cultivo é obrigatória"),
   dataInicio: yup.string().required("Data de emergência é obrigatória"),
   dataFim: yup.string().required("Data da colheita é obrigatória"),
 });
@@ -27,7 +26,10 @@ const culturaSchema = yup.object().shape({
 const manejoSchema = yup.object().shape({
   data: yup.string().required("Data é obrigatória"),
   operacao: yup.string().required("Operação é obrigatória"),
-  tipoOperacao: yup.string().required("Tipo de operação é obrigatório"),
+  tipoOperacao: yup
+    .string()
+    .transform((value) => value?.toLocaleUpperCase("pt-BR"))
+    .required("Tipo de operação é obrigatório"),
 });
 
 export const form3Schema = yup.object().shape({

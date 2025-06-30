@@ -2,15 +2,17 @@ import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import InputField from "./inputField";
 import { modeloAnaliseSolo } from "../modelos/modeloAnaliseSolo";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { form2Schema } from "../utils/validators/schemaForm2";
 import { debounce } from "lodash";
 
 export default function Form2({ initialData, onChange }) {
   const methods = useForm({
-    mode: "onBlur",
+    mode: "onTouched",
     reValidateMode: "onChange",
-    resolver: yupResolver(form2Schema),
+    shouldUnregister: false, 
+    shouldFocusError: true,
+    resolver: yupResolver(form2Schema, { abortEarly: false }), 
     defaultValues: {
       cpfProdutor: initialData?.cpfProdutor || "",
       amostras: initialData?.amostras || [
@@ -30,37 +32,30 @@ export default function Form2({ initialData, onChange }) {
   });
 
   useEffect(() => {
-    if (initialData) {
-      const amostrasValidas =
-        initialData.amostras && initialData.amostras.length > 0
-          ? initialData.amostras
-          : [
-              { ...modeloAnaliseSolo(), camada: "20" },
-              { ...modeloAnaliseSolo(), camada: "20" },
-              { ...modeloAnaliseSolo(), camada: "40" },
-              { ...modeloAnaliseSolo(), camada: "40" },
-            ];
-
-      reset({
-        cpfProdutor: initialData.cpfProdutor || "",
-        amostras: amostrasValidas,
-      });
-
-      replace(amostrasValidas);
+    if (
+      initialData?.cpfProdutor &&
+      Array.isArray(initialData.amostras) &&
+      initialData.amostras.length > 0
+    ) {
+      reset(initialData);
+      replace(initialData.amostras);
     }
-  }, [initialData, reset, replace]);
+  }, [initialData?.cpfProdutor, initialData?.amostras?.length]);
 
   useEffect(() => {
-    const debounced = debounce(async () => {
-      const isValid = await trigger();
-      if (isValid) {
-        onChange(getValues());
+    const subscription = watch((values, { name, type }) => {
+      // Só dispara onChange se for input do usuário, e não reset inicial
+      if (type === "change" || type === "blur") {
+        const valid = methods.formState.isValid;
+        if (valid) {
+          onChange(values);
+        }
       }
-    }, 10);
-    const subscription = watch(debounced);
+    });
     return () => subscription.unsubscribe();
-  }, [watch, trigger, getValues, onChange]);
+  }, [watch, onChange, methods.formState.isValid]);
 
+  
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onChange)} className="row gx-0">
@@ -90,6 +85,7 @@ export default function Form2({ initialData, onChange }) {
                     name="cpfProdutor"
                     label="CPF do Produtor:"
                     className="col-md-6"
+                    placeholder="Ex: 111.111.111-11"
                     mask="999.999.999-99"
                   />
 
@@ -106,6 +102,7 @@ export default function Form2({ initialData, onChange }) {
                     label="CPF do Responsável:"
                     mask="999.999.999-99"
                     className="col-md-6"
+                    placeholder="Ex: 000.000.000-00"
                     required
                   />
 
@@ -122,6 +119,7 @@ export default function Form2({ initialData, onChange }) {
                   name={`amostras.${index}.pontoColeta`}
                   label="Ponto de Coleta:"
                   type="textarea"
+                  placeholder="Ex: POLYGON((x y, x y, ...))"
                   className="col-md-12"
                   required
                 />
@@ -159,8 +157,10 @@ export default function Form2({ initialData, onChange }) {
                           name={`amostras.${index}.areia`}
                           label="Areia (%)"
                           type="number"
+                          placeholder="Ex: 30"
                           required
                           className="col-md-12"
+                          onBlur={() => trigger(`amostras.${index}`)}
                         />
                       </div>
                       <div className="mb-3">
@@ -168,8 +168,10 @@ export default function Form2({ initialData, onChange }) {
                           name={`amostras.${index}.silte`}
                           label="Silte (%)"
                           type="number"
+                          placeholder="Ex: 30"
                           required
                           className="col-md-12"
+                          onBlur={() => trigger(`amostras.${index}`)}
                         />
                       </div>
                       <div>
@@ -177,8 +179,10 @@ export default function Form2({ initialData, onChange }) {
                           name={`amostras.${index}.argila`}
                           label="Argila (%)"
                           type="number"
+                          placeholder="Ex: 40"
                           required
                           className="col-md-12"
+                          onBlur={() => trigger(`amostras.${index}`)}
                         />
                       </div>
                     </div>
@@ -203,6 +207,7 @@ export default function Form2({ initialData, onChange }) {
                           label="Cálcio (cmolc/dm³)"
                           type="number"
                           required
+                          placeholder="Ex: 1,8"
                           className="col-md-12"
                         />
                       </div>
@@ -212,6 +217,7 @@ export default function Form2({ initialData, onChange }) {
                           label="Magnésio (cmolc/dm³)"
                           type="number"
                           required
+                          placeholder="Ex: 1,5"
                           className="col-md-12"
                         />
                       </div>
@@ -221,6 +227,7 @@ export default function Form2({ initialData, onChange }) {
                           label="Potássio (mg/dm³)"
                           type="number"
                           required
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -230,6 +237,7 @@ export default function Form2({ initialData, onChange }) {
                           label="Sódio (mg/dm³)"
                           type="number"
                           required
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -239,6 +247,7 @@ export default function Form2({ initialData, onChange }) {
                           label="Alumínio (cmolc/dm³)"
                           type="number"
                           required
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -248,6 +257,7 @@ export default function Form2({ initialData, onChange }) {
                           label="Acidez Potencial (cmolc/dm³)"
                           type="number"
                           required
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -256,6 +266,7 @@ export default function Form2({ initialData, onChange }) {
                           name={`amostras.${index}.phh2o`}
                           label="pH H₂O"
                           type="number"
+                          placeholder="Ex: 1,2"
                           className="col-md-12"
                         />
                       </div>
@@ -265,6 +276,7 @@ export default function Form2({ initialData, onChange }) {
                           label="pH CaCl₂"
                           type="number"
                           className="col-md-12"
+                          placeholder="Ex: 1,5"
                         />
                       </div>
                       <div>
@@ -272,6 +284,7 @@ export default function Form2({ initialData, onChange }) {
                           name={`amostras.${index}.fosforoMehlich`}
                           label="Fósforo Mehlich (mg/dm³)"
                           type="number"
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -280,6 +293,7 @@ export default function Form2({ initialData, onChange }) {
                           name={`amostras.${index}.fosforoResina`}
                           label="Fósforo Resina (mg/dm³)"
                           type="number"
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -289,6 +303,7 @@ export default function Form2({ initialData, onChange }) {
                           label="Enxofre (mg/dm³)"
                           type="number"
                           required
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -298,6 +313,7 @@ export default function Form2({ initialData, onChange }) {
                           label="MOS (g/dm³)"
                           type="number"
                           required
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -307,6 +323,7 @@ export default function Form2({ initialData, onChange }) {
                           label="Arilsulfatase (mg PNP Kg-1 h-1)"
                           type="number"
                           className="col-md-12"
+                          placeholder="Ex: 30"
                         />
                       </div>
                       <div>
@@ -314,6 +331,7 @@ export default function Form2({ initialData, onChange }) {
                           name={`amostras.${index}.betaGlicosedade`}
                           label="Beta-glicosidase (PNP Kg-1 h-1)"
                           type="number"
+                          placeholder="Ex: 30"
                           className="col-md-12"
                         />
                       </div>
@@ -322,6 +340,7 @@ export default function Form2({ initialData, onChange }) {
                           name={`amostras.${index}.densidadeSolo`}
                           label="Densidade do solo (g/cm³)"
                           type="number"
+                          placeholder="Ex: 60"
                           className="col-md-12"
                         />
                       </div>

@@ -5,8 +5,8 @@ const amostraSchema = yup
   .shape({
     cpfResponsavelColeta: yup
       .string()
-      .matches(/^\d{11}$/, "CPF inválido")
-      .required("CPF do responsável é obrigatório"),
+      .required("CPF do responsável é obrigatório")
+      .matches(/^\d{11}$/, "CPF deve conter 11 dígitos"),
 
     dataColeta: yup.string().required("Data da coleta é obrigatória"),
     pontoColeta: yup.string().required("Ponto de coleta é obrigatório"),
@@ -17,14 +17,38 @@ const amostraSchema = yup
       .typeError("Areia é obrigatória")
       .min(0, "Valor mínimo é 0%")
       .max(100, "Valor máximo é 100%")
-      .required("Areia é obrigatória"),
+      .required("Areia é obrigatória")
+      .test("soma-100", function (_, ctx) {
+        const { areia = 0, silte = 0, argila = 0 } = ctx.parent;
+        const soma = (areia || 0) + (silte || 0) + (argila || 0);
+
+        const arredondado = Math.round(soma * 100) / 100;
+
+        return soma === 100
+          ? true
+          : ctx.createError({
+              message: `Areia + Silte + Argila deve ser igual a 100% (atualmente: ${arredondado}%)`,
+            });
+      }),
 
     silte: yup
       .number()
       .typeError("Silte é obrigatória")
       .min(0, "Valor mínimo é 0%")
       .max(100, "Valor máximo é 100%")
-      .required("Silte é obrigatória"),
+      .required("Silte é obrigatória")
+      .test("soma-100", function (_, ctx) {
+        const { areia = 0, silte = 0, argila = 0 } = ctx.parent;
+        const soma = (areia || 0) + (silte || 0) + (argila || 0);
+
+        const arredondado = Math.round(soma * 100) / 100;
+
+        return soma === 100
+          ? true
+          : ctx.createError({
+              message: `Areia + Silte + Argila deve ser igual a 100% (atualmente: ${arredondado}%)`,
+            });
+      }),
 
     argila: yup
       .number()
